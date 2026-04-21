@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BFC Member Directory — Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bfc: {
+            orange: '#FA660E',
+            black: '#000000',
+            dark: '#0A0A0A',
+            panel: '#1D1D1D',
+            line: '#2A2A2A',
+            gray: '#D4D3D3',
+          },
+        },
+        fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
+      },
+    },
+  };
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  html, body { background: #000000; color: #FFFFFF; }
+  .tier-dropzone.drag-over { outline: 2px dashed #FA660E; outline-offset: -6px; background: rgba(250,102,14,0.04); }
+  .sortable-ghost { opacity: 0.35; }
+  .sortable-chosen { cursor: grabbing; }
+  .card-grab { cursor: grab; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 8px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
+  .ticker-pill { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body class="min-h-screen font-sans">
+
+<!-- Top Bar -->
+<header class="sticky top-0 z-40 bg-bfc-black/90 backdrop-blur border-b border-bfc-line">
+  <div class="max-w-[1400px] mx-auto px-6 py-4 flex items-center gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-bfc-orange flex items-center justify-center font-black text-black text-lg">₿</div>
+      <div class="leading-tight">
+        <div class="text-[11px] font-bold tracking-[0.14em] text-bfc-orange uppercase">Bitcoin For Corporations</div>
+        <div class="text-sm font-semibold tracking-tight">Member Directory · Admin</div>
+      </div>
+    </div>
+
+    <div class="flex-1 flex items-center gap-2 max-w-md mx-auto">
+      <div class="relative w-full">
+        <i data-lucide="search" class="w-4 h-4 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+        <input id="searchInput" type="text" placeholder="Search companies or tickers…"
+          class="w-full bg-bfc-panel border border-bfc-line rounded-lg pl-9 pr-3 py-2 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-bfc-orange" />
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <!-- Theme toggle -->
+      <div class="inline-flex bg-bfc-panel border border-bfc-line rounded-lg p-1 text-xs">
+        <button id="themeDark" class="px-2.5 py-1 rounded font-medium inline-flex items-center gap-1"><i data-lucide="moon" class="w-3.5 h-3.5"></i> Dark</button>
+        <button id="themeLight" class="px-2.5 py-1 rounded font-medium inline-flex items-center gap-1"><i data-lucide="sun" class="w-3.5 h-3.5"></i> Light</button>
+      </div>
+
+      <button id="btnPreview" class="inline-flex items-center gap-1.5 bg-bfc-orange hover:brightness-110 text-black font-semibold text-sm px-3 py-2 rounded-lg transition">
+        <i data-lucide="eye" class="w-4 h-4"></i> Open preview
+      </button>
+      <button id="btnAdd" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
+        <i data-lucide="plus" class="w-4 h-4"></i> Add company
+      </button>
+      <button id="btnAddTier" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
+        <i data-lucide="layers" class="w-4 h-4"></i> Add tier
+      </button>
+      <button id="btnImport" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
+        <i data-lucide="upload" class="w-4 h-4"></i> Import
+      </button>
+      <button id="btnExport" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
+        <i data-lucide="download" class="w-4 h-4"></i> Export JSON
+      </button>
+      <button id="btnEmbed" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
+        <i data-lucide="code-2" class="w-4 h-4"></i> Copy embed
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Stats strip -->
+<div class="max-w-[1400px] mx-auto px-6 pt-5">
+  <div id="statsStrip" class="grid grid-cols-4 gap-3 text-sm"></div>
+</div>
+
+<!-- Tier sections -->
+<main class="max-w-[1400px] mx-auto px-6 py-6 space-y-6" id="tiersRoot"></main>
+
+<!-- Empty hint -->
+<div id="emptyHint" class="hidden max-w-[1400px] mx-auto px-6 py-20 text-center text-neutral-500">
+  <i data-lucide="inbox" class="w-10 h-10 mx-auto mb-3"></i>
+  <p>No tiers yet. Click <span class="text-bfc-orange font-semibold">Add tier</span> to start.</p>
+</div>
+
+<!-- Add/Edit Company Modal -->
+<div id="modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm items-center justify-center p-4">
+  <div class="bg-bfc-panel border border-bfc-line rounded-2xl w-full max-w-lg shadow-2xl">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-bfc-line">
+      <h3 id="modalTitle" class="font-semibold">Add company</h3>
+      <button onclick="closeModal()" class="text-neutral-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <form id="companyForm" class="p-5 space-y-4">
+      <input type="hidden" id="fCompanyId" />
+      <div>
+        <label class="block text-xs font-medium text-neutral-400 mb-1">Company name *</label>
+        <input required id="fName" class="w-full bg-bfc-dark border border-bfc-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-bfc-orange" />
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-neutral-400 mb-1">Logo</label>
+        <div class="flex gap-2 items-start">
+          <div class="flex-1">
+            <input id="fLogoSlug" list="logoSlugs" placeholder="slug (e.g. strategy)" class="w-full bg-bfc-dark border border-bfc-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-bfc-orange" />
+            <datalist id="logoSlugs"></datalist>
+            <div class="text-[10px] text-neutral-500 mt-1">Pick from 39 known logos</div>
+          </div>
+          <span class="text-neutral-500 text-xs pt-2.5">or</span>
+          <div class="flex-1">
+            <label for="fLogoUpload" class="block cursor-pointer bg-bfc-dark border border-dashed border-bfc-line hover:border-bfc-orange rounded-lg px-3 py-2 text-sm text-center text-neutral-400 hover:text-bfc-orange transition">
+              <i data-lucide="upload-cloud" class="w-4 h-4 inline-block align-middle mr-1"></i> Upload image
+            </label>
+            <input type="file" id="fLogoUpload" accept="image/png,image/jpeg,image/svg+xml,image/webp" class="hidden" />
+            <div class="text-[10px] text-neutral-500 mt-1">PNG/SVG/JPG, under 500 KB</div>
+          </div>
+        </div>
+        <input type="hidden" id="fLogoDataUrl" />
+        <div id="logoPreview" class="mt-3 hidden bg-bfc-dark border border-bfc-line rounded-lg p-3 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 flex-1 min-w-0">
+            <div class="h-12 w-12 flex items-center justify-center bg-black/40 rounded border border-bfc-line">
+              <img id="logoPreviewImg" class="max-h-10 max-w-10 object-contain" />
+            </div>
+            <div class="text-xs text-neutral-400 truncate" id="logoPreviewLabel"></div>
+          </div>
+          <button type="button" id="logoClearBtn" class="text-xs text-neutral-500 hover:text-red-400">Clear</button>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium text-neutral-400 mb-1">Stock ticker</label>
+          <input id="fTicker" placeholder="e.g. MSTR" class="w-full bg-bfc-dark border border-bfc-line rounded-lg px-3 py-2 text-sm uppercase focus:outline-none focus:border-bfc-orange" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-neutral-400 mb-1">Type</label>
+          <div class="grid grid-cols-2 gap-1 bg-bfc-dark border border-bfc-line rounded-lg p-1">
+            <button type="button" data-type="Member" class="type-toggle py-1.5 rounded text-xs font-medium">Member</button>
+            <button type="button" data-type="Vendor" class="type-toggle py-1.5 rounded text-xs font-medium">Vendor</button>
+          </div>
+          <input type="hidden" id="fType" value="Member" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-neutral-400 mb-1">Website URL (optional)</label>
+        <input id="fUrl" placeholder="https://…" class="w-full bg-bfc-dark border border-bfc-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-bfc-orange" />
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-neutral-400 mb-1">Tier</label>
+        <select id="fTierSelect" class="w-full bg-bfc-dark border border-bfc-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-bfc-orange"></select>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeModal()" class="px-3 py-2 text-sm rounded-lg border border-bfc-line hover:bg-neutral-800">Cancel</button>
+        <button type="submit" class="px-3 py-2 text-sm rounded-lg bg-bfc-orange text-black font-semibold hover:brightness-110">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Import Modal -->
+<div id="importModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm items-center justify-center p-4">
+  <div class="bg-bfc-panel border border-bfc-line rounded-2xl w-full max-w-2xl shadow-2xl">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-bfc-line">
+      <h3 class="font-semibold">Import JSON</h3>
+      <button onclick="document.getElementById('importModal').classList.add('hidden')" class="text-neutral-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="p-5 space-y-3">
+      <p class="text-sm text-neutral-400">Paste exported JSON below, or load from a file. This will replace the current state.</p>
+      <input type="file" id="importFile" accept=".json,application/json" class="text-sm" />
+      <textarea id="importText" rows="10" placeholder='{ "tiers": [ … ] }' class="w-full bg-bfc-dark border border-bfc-line rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-bfc-orange"></textarea>
+      <div class="flex justify-end gap-2">
+        <button onclick="document.getElementById('importModal').classList.add('hidden')" class="px-3 py-2 text-sm rounded-lg border border-bfc-line hover:bg-neutral-800">Cancel</button>
+        <button id="btnImportConfirm" class="px-3 py-2 text-sm rounded-lg bg-bfc-orange text-black font-semibold hover:brightness-110">Load</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Embed Code Modal -->
+<div id="embedModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm items-center justify-center p-4">
+  <div class="bg-bfc-panel border border-bfc-line rounded-2xl w-full max-w-3xl shadow-2xl">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-bfc-line">
+      <div>
+        <h3 class="font-semibold">WordPress embed code</h3>
+        <p class="text-xs text-neutral-400">Paste into any Custom HTML block on bitcoinforcorporations.com. Logos resolve from the WP CDN.</p>
+      </div>
+      <button onclick="document.getElementById('embedModal').classList.add('hidden')" class="text-neutral-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="p-5 space-y-3">
+      <textarea id="embedOutput" rows="18" class="w-full bg-bfc-dark border border-bfc-line rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-bfc-orange"></textarea>
+      <div class="flex justify-between items-center">
+        <a id="linkPreview" href="preview.html" target="_blank" class="text-sm text-bfc-orange hover:underline inline-flex items-center gap-1">
+          <i data-lucide="external-link" class="w-4 h-4"></i> Open full preview in new tab
+        </a>
+        <button id="btnCopyEmbed" class="px-3 py-2 text-sm rounded-lg bg-bfc-orange text-black font-semibold hover:brightness-110 inline-flex items-center gap-1.5">
+          <i data-lucide="copy" class="w-4 h-4"></i> Copy to clipboard
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="hidden fixed bottom-6 right-6 bg-bfc-panel border border-bfc-orange text-sm px-4 py-2 rounded-lg shadow-lg z-50"></div>
+
+<script>
+// ---------- Available logos (from /logos folder) ----------
+const AVAILABLE_LOGOS = [
+  'aifinyo','avalon-labs','bitgo','blockspaces','btc-inc','byte-federal','capital-b',
+  'crypto-com','ddc','fold','giga','jetking','kraken-institutional','kulr',
+  'locate-technologies','london-bitcoin-co','lqwd','luxalgo','matador','meliuz',
+  'meteplanet','mnav','moon-inc','naas','nakamoto','next-layer-capital','prenetics',
+  'public-square','salt','samara','semler-scientific','solar-strategy','strategy',
+  'strive','swc','treasury','uproot-company','utxo','vaultz-capital'
+];
+
+// ---------- Theme ----------
+let theme = localStorage.getItem('bfc_theme') || 'dark';
+
+// ---------- State ----------
+const STORAGE_KEY = 'bfc_directory_v4';
+const WP_CDN = 'https://bitcoinforcorporations.com/wp-content/uploads/company-logos/';
+
+// Logo resolution:
+//   1. Uploaded data URI wins (works in admin + embed)
+//   2. Else slug → local folder (admin/preview) or WP CDN (embed)
+function companyLogoSrc(c, t = theme) {
+  if (c && c.logoDataUrl) return c.logoDataUrl;
+  if (c && c.logoSlug) return `logos/${c.logoSlug}-logo-${t === 'light' ? 'dark' : 'light'}.png`;
+  return '';
+}
+function companyEmbedLogoSrc(c, t) {
+  if (c && c.logoDataUrl) return c.logoDataUrl;
+  if (c && c.logoSlug) return `${WP_CDN}${c.logoSlug}-logo-${t === 'light' ? 'dark' : 'light'}.png`;
+  return '';
+}
+// Back-compat for admin preview on the slug input
+function logoPathFromSlug(slug, t = theme) {
+  if (!slug) return '';
+  return `logos/${slug}-logo-${t === 'light' ? 'dark' : 'light'}.png`;
+}
+
+const DEFAULT_STATE = {
+  tiers: [
+    { id: 't_founding', name: 'Founding Members', companies: [
+      { id: 'c_strategy', name: 'Strategy', ticker: 'MSTR', type: 'Member', logoSlug: 'strategy', url: 'https://www.strategy.com' },
+      { id: 'c_btcinc',   name: 'BTC Inc',  ticker: '',     type: 'Member', logoSlug: 'btc-inc',  url: 'https://btcinc.com' },
+    ]},
+    { id: 't_chairman', name: "Chairman's Circle", companies: [
+      { id: 'c_treasury', name: 'Treasury', ticker: '', type: 'Member', logoSlug: 'treasury', url: 'https://treasury.b' },
+    ]},
+    { id: 't_executive', name: 'Executive Members', companies: [
+      { id: 'c_aifinyo',   name: 'aifinyo',             ticker: '',      type: 'Member', logoSlug: 'aifinyo',              url: 'https://aifinyo.com' },
+      { id: 'c_avalon',    name: 'Avalon Labs',         ticker: '',      type: 'Member', logoSlug: 'avalon-labs',          url: 'https://avalonlabs.io' },
+      { id: 'c_bitgo',     name: 'BitGo',               ticker: '',      type: 'Vendor', logoSlug: 'bitgo',                url: 'https://www.bitgo.com' },
+      { id: 'c_bytefed',   name: 'Byte Federal',        ticker: '',      type: 'Vendor', logoSlug: 'byte-federal',         url: 'https://bytefederal.com' },
+      { id: 'c_cryptocom', name: 'crypto.com',          ticker: '',      type: 'Vendor', logoSlug: 'crypto-com',           url: 'https://crypto.com' },
+      { id: 'c_ddc',       name: 'DDC Enterprise',      ticker: 'DDC',   type: 'Member', logoSlug: 'ddc',                  url: 'https://ddcenterprise.com' },
+      { id: 'c_fold',      name: 'Fold',                ticker: 'FLD',   type: 'Member', logoSlug: 'fold',                 url: 'https://foldapp.com' },
+      { id: 'c_giga',      name: 'GIGA',                ticker: '',      type: 'Member', logoSlug: 'giga',                 url: 'https://gigaenergy.com' },
+      { id: 'c_kraken',    name: 'Kraken Institutional',ticker: '',      type: 'Vendor', logoSlug: 'kraken-institutional', url: 'https://www.kraken.com/institutional' },
+      { id: 'c_kulr',      name: 'KULR',                ticker: 'KULR',  type: 'Member', logoSlug: 'kulr',                 url: 'https://www.kulrtechnology.com' },
+      { id: 'c_london',    name: 'The London Bitcoin Co.', ticker: '',   type: 'Member', logoSlug: 'london-bitcoin-co',    url: 'https://thelondonbitcoinco.com' },
+      { id: 'c_lqwd',      name: 'LQWD',                ticker: 'LQWD',  type: 'Member', logoSlug: 'lqwd',                 url: 'https://lqwdfintech.com' },
+      { id: 'c_meliuz',    name: 'Méliuz',              ticker: 'MLIU3', type: 'Member', logoSlug: 'meliuz',               url: 'https://meliuz.com.br' },
+      { id: 'c_mnav',      name: 'mNAV.com',            ticker: '',      type: 'Member', logoSlug: 'mnav',                 url: 'https://mnav.com' },
+      { id: 'c_1723hk',    name: '1723.HK',             ticker: '1723',  type: 'Member', logoSlug: '',                     url: '' },
+      { id: 'c_naas',      name: 'NaaS',                ticker: 'NAAS',  type: 'Member', logoSlug: 'naas',                 url: 'https://naas.io' },
+      { id: 'c_nakamoto',  name: 'Nakamoto',            ticker: '',      type: 'Member', logoSlug: 'nakamoto',             url: 'https://nakamoto.com' },
+      { id: 'c_oranje',    name: 'Oranje BTC',          ticker: '',      type: 'Member', logoSlug: '',                     url: 'https://oranjebtc.com' },
+      { id: 'c_prenetics', name: 'Prenetics',           ticker: 'PRE',   type: 'Member', logoSlug: 'prenetics',            url: 'https://prenetics.com' },
+      { id: 'c_publicsq',  name: 'PublicSquare',        ticker: 'PSQH',  type: 'Member', logoSlug: 'public-square',        url: 'https://publicsq.com' },
+      { id: 'c_salt',      name: 'SALT',                ticker: '',      type: 'Vendor', logoSlug: 'salt',                 url: 'https://saltlending.com' },
+      { id: 'c_samara',    name: 'SAMARA Asset Group',  ticker: '',      type: 'Member', logoSlug: 'samara',               url: 'https://samara-ag.com' },
+      { id: 'c_solar',     name: 'Solar Strategy',      ticker: '',      type: 'Member', logoSlug: 'solar-strategy',       url: '' },
+      { id: 'c_strive',    name: 'Strive',              ticker: 'ASST',  type: 'Member', logoSlug: 'strive',               url: 'https://strive.com' },
+    ]},
+    { id: 't_premier', name: 'Premier Members', companies: [
+      { id: 'c_blockspaces', name: 'BlockSpaces',       ticker: '',      type: 'Vendor', logoSlug: 'blockspaces',          url: 'https://blockspaces.com' },
+      { id: 'c_capitalb',    name: 'Capital B',         ticker: 'ALCPB', type: 'Member', logoSlug: 'capital-b',            url: 'https://thecapitalb.com' },
+      { id: 'c_jetking',     name: 'Jetking',           ticker: '',      type: 'Member', logoSlug: 'jetking',              url: 'https://jetking.com' },
+      { id: 'c_metaplanet',  name: 'Metaplanet',        ticker: '3350',  type: 'Member', logoSlug: 'meteplanet',           url: 'https://metaplanet.jp' },
+      { id: 'c_nextlayer',   name: 'Next Layer Capital',ticker: '',      type: 'Member', logoSlug: 'next-layer-capital',   url: '' },
+      { id: 'c_semler',      name: 'Semler Scientific', ticker: 'SMLR',  type: 'Member', logoSlug: 'semler-scientific',    url: 'https://semlerscientific.com' },
+      { id: 'c_utxo',        name: 'UTXO',              ticker: '',      type: 'Member', logoSlug: 'utxo',                 url: '' },
+    ]},
+    { id: 't_industry', name: 'Industry Members', companies: [
+      { id: 'c_arch',     name: 'ARCH',                 ticker: '',      type: 'Vendor', logoSlug: '',                     url: 'https://archpublic.com' },
+      { id: 'c_locate',   name: 'Locate Technologies',  ticker: '',      type: 'Vendor', logoSlug: 'locate-technologies',  url: 'https://locatetech.com' },
+      { id: 'c_matador',  name: 'Matador',              ticker: '',      type: 'Member', logoSlug: 'matador',              url: 'https://matadortechnologies.com' },
+      { id: 'c_oranje2',  name: 'OranjeBTC',            ticker: '',      type: 'Vendor', logoSlug: '',                     url: 'https://oranjebtc.com' },
+      { id: 'c_uproot',   name: 'Uproot Company',       ticker: '',      type: 'Vendor', logoSlug: 'uproot-company',       url: 'https://uprootcompany.com' },
+      { id: 'c_xce',      name: 'XCE',                  ticker: '',      type: 'Vendor', logoSlug: '',                     url: '' },
+    ]},
+  ],
+};
+
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return structuredClone(DEFAULT_STATE);
+}
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+function uid(prefix='c') {
+  return prefix + '_' + Math.random().toString(36).slice(2, 9);
+}
+
+// ---------- Theme ----------
+function applyTheme(t) {
+  theme = t;
+  localStorage.setItem('bfc_theme', t);
+
+  const isDark = t === 'dark';
+  document.documentElement.style.background = isDark ? '#000' : '#F7F7F7';
+  document.body.style.background = isDark ? '#000' : '#F7F7F7';
+  document.body.style.color = isDark ? '#fff' : '#111';
+
+  document.getElementById('themeDark').className = 'px-2.5 py-1 rounded font-medium inline-flex items-center gap-1 ' + (isDark ? 'bg-bfc-orange text-black' : 'text-neutral-400');
+  document.getElementById('themeLight').className = 'px-2.5 py-1 rounded font-medium inline-flex items-center gap-1 ' + (!isDark ? 'bg-bfc-orange text-black' : 'text-neutral-400');
+  render();
+}
+document.getElementById('themeDark').addEventListener('click', () => applyTheme('dark'));
+document.getElementById('themeLight').addEventListener('click', () => applyTheme('light'));
+
+// ---------- Render ----------
+const root = document.getElementById('tiersRoot');
+const emptyHint = document.getElementById('emptyHint');
+
+function render() {
+  const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+  root.innerHTML = '';
+
+  if (!state.tiers.length) emptyHint.classList.remove('hidden');
+  else emptyHint.classList.add('hidden');
+
+  const isDark = theme === 'dark';
+  const sectionBg = isDark ? 'bg-bfc-panel/50' : 'bg-white';
+  const sectionBorder = isDark ? 'border-bfc-line' : 'border-neutral-200';
+  const cardBg = isDark ? 'bg-bfc-dark' : 'bg-white';
+  const cardBorder = isDark ? 'border-bfc-line' : 'border-neutral-200';
+  const nameColor = isDark ? 'text-white' : 'text-neutral-900';
+  const subColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
+
+  state.tiers.forEach(tier => {
+    const section = document.createElement('section');
+    section.className = `rounded-xl border ${sectionBorder} ${sectionBg}`;
+    section.dataset.tierId = tier.id;
+
+    const header = document.createElement('div');
+    header.className = `flex items-center justify-between px-5 py-3 border-b ${sectionBorder}`;
+    header.innerHTML = `
+      <div class="flex items-center gap-3">
+        <button class="text-neutral-500 hover:text-${isDark ? 'white' : 'black'} tier-drag-handle cursor-grab" title="Drag tier">
+          <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+        </button>
+        <h2 contenteditable="true" spellcheck="false"
+            class="tier-name text-sm font-semibold tracking-wide uppercase text-bfc-orange outline-none focus:bg-black/10 px-1 rounded">${escapeHtml(tier.name)}</h2>
+        <span class="text-xs ${subColor}">${tier.companies.length} ${tier.companies.length === 1 ? 'company' : 'companies'}</span>
+      </div>
+      <div class="flex items-center gap-1">
+        <button class="tier-add-btn text-xs px-2 py-1 rounded hover:bg-neutral-800 hover:text-white ${subColor} inline-flex items-center gap-1">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add
+        </button>
+        <button class="tier-delete-btn text-xs px-2 py-1 rounded hover:bg-red-900/30 hover:text-red-400 ${subColor} inline-flex items-center gap-1">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    `;
+    section.appendChild(header);
+
+    const grid = document.createElement('div');
+    grid.className = 'tier-dropzone grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 p-4 min-h-[120px]';
+    grid.dataset.tierId = tier.id;
+
+    const filtered = tier.companies.filter(c => {
+      if (!q) return true;
+      return (c.name || '').toLowerCase().includes(q) || (c.ticker || '').toLowerCase().includes(q);
+    });
+
+    if (!filtered.length) {
+      const empty = document.createElement('div');
+      empty.className = 'col-span-full text-center text-neutral-500 text-sm py-6';
+      empty.textContent = q ? 'No matches in this tier.' : 'Empty — drag a card here or click Add.';
+      grid.appendChild(empty);
+    } else {
+      filtered.forEach(c => grid.appendChild(renderCard(c, { cardBg, cardBorder, nameColor, subColor })));
+    }
+
+    section.appendChild(grid);
+    root.appendChild(section);
+
+    header.querySelector('.tier-add-btn').addEventListener('click', () => openModal({ tierId: tier.id }));
+    header.querySelector('.tier-delete-btn').addEventListener('click', () => {
+      if (!tier.companies.length || confirm(`Delete tier "${tier.name}" and its ${tier.companies.length} companies?`)) {
+        state.tiers = state.tiers.filter(t => t.id !== tier.id);
+        saveState(); render();
+      }
+    });
+    header.querySelector('.tier-name').addEventListener('blur', (e) => {
+      tier.name = e.target.textContent.trim() || tier.name;
+      saveState();
+    });
+    header.querySelector('.tier-name').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); }
+    });
+
+    initSortable(grid);
+  });
+
+  new Sortable(root, {
+    handle: '.tier-drag-handle',
+    animation: 180,
+    onEnd: () => {
+      const order = [...root.children].map(s => s.dataset.tierId);
+      state.tiers.sort((a,b) => order.indexOf(a.id) - order.indexOf(b.id));
+      saveState();
+    },
+  });
+
+  lucide.createIcons();
+  renderStats();
+}
+
+function renderCard(c, opts) {
+  const { cardBg, cardBorder, nameColor, subColor } = opts;
+  const el = document.createElement('div');
+  el.className = `group card-grab relative ${cardBg} border ${cardBorder} hover:border-bfc-orange/60 rounded-xl p-3 flex flex-col items-center gap-2 transition`;
+  el.dataset.companyId = c.id;
+
+  const typeColor = c.type === 'Vendor'
+    ? 'bg-blue-500/15 text-blue-400 border-blue-500/30'
+    : 'bg-bfc-orange/15 text-bfc-orange border-bfc-orange/30';
+
+  const logoSrc = companyLogoSrc(c);
+  const logoHtml = logoSrc
+    ? `<img src="${escapeAttr(logoSrc)}" alt="${escapeAttr(c.name)}" class="max-h-12 max-w-full object-contain" onerror="this.outerHTML='<div class=&quot;text-neutral-500 text-[10px]&quot;>no logo</div>'" />`
+    : `<div class="text-neutral-500 text-[10px]">no logo</div>`;
+
+  el.innerHTML = `
+    <div class="absolute top-1.5 right-1.5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+      <button class="edit-btn p-1 rounded bg-black/60 text-white hover:bg-neutral-700" title="Edit"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+      <button class="delete-btn p-1 rounded bg-black/60 text-white hover:bg-red-900/60 hover:text-red-400" title="Delete"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+    </div>
+    <div class="h-14 w-full flex items-center justify-center overflow-hidden">${logoHtml}</div>
+    <div class="text-center w-full">
+      <div class="font-semibold text-xs ${nameColor} truncate">${escapeHtml(c.name)}</div>
+      ${c.ticker ? `<div class="ticker-pill text-[10px] ${subColor} uppercase">${escapeHtml(c.ticker)}</div>` : ''}
+    </div>
+    <span class="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded border ${typeColor}">${escapeHtml(c.type || 'Member')}</span>
+  `;
+
+  el.querySelector('.edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openModal({ company: c }); });
+  el.querySelector('.delete-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (confirm(`Delete "${c.name}"?`)) {
+      state.tiers.forEach(t => t.companies = t.companies.filter(x => x.id !== c.id));
+      saveState(); render();
+    }
+  });
+  return el;
+}
+
+function initSortable(grid) {
+  new Sortable(grid, {
+    group: 'companies',
+    animation: 180,
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    onAdd: () => syncFromDOM(),
+    onUpdate: () => syncFromDOM(),
+    onStart: () => document.querySelectorAll('.tier-dropzone').forEach(z => z.classList.add('drag-over')),
+    onEnd: () => document.querySelectorAll('.tier-dropzone').forEach(z => z.classList.remove('drag-over')),
+  });
+}
+
+function syncFromDOM() {
+  const byId = new Map();
+  state.tiers.forEach(t => t.companies.forEach(c => byId.set(c.id, c)));
+  state.tiers.forEach(t => t.companies = []);
+  document.querySelectorAll('[data-tier-id].tier-dropzone').forEach(grid => {
+    const tier = state.tiers.find(t => t.id === grid.dataset.tierId);
+    if (!tier) return;
+    grid.querySelectorAll('[data-company-id]').forEach(card => {
+      const c = byId.get(card.dataset.companyId);
+      if (c) tier.companies.push(c);
+    });
+  });
+  saveState();
+  renderStats();
+}
+
+// ---------- Stats ----------
+function renderStats() {
+  const strip = document.getElementById('statsStrip');
+  const all = state.tiers.flatMap(t => t.companies);
+  const members = all.filter(c => (c.type || 'Member') === 'Member').length;
+  const vendors = all.filter(c => c.type === 'Vendor').length;
+  const stat = (label, value, icon) => `
+    <div class="rounded-lg bg-bfc-panel border border-bfc-line px-4 py-3 flex items-center gap-3">
+      <div class="w-8 h-8 rounded-md bg-black flex items-center justify-center text-bfc-orange">
+        <i data-lucide="${icon}" class="w-4 h-4"></i>
+      </div>
+      <div>
+        <div class="text-xs text-neutral-400">${label}</div>
+        <div class="font-semibold text-white">${value}</div>
+      </div>
+    </div>`;
+  strip.innerHTML = [
+    stat('Tiers', state.tiers.length, 'layers'),
+    stat('Total companies', all.length, 'building-2'),
+    stat('Members', members, 'users'),
+    stat('Vendors', vendors, 'package'),
+  ].join('');
+  lucide.createIcons();
+}
+
+// ---------- Modal ----------
+function populateSlugList() {
+  document.getElementById('logoSlugs').innerHTML = AVAILABLE_LOGOS.map(s => `<option value="${s}"></option>`).join('');
+}
+
+function openModal({ company = null, tierId = null } = {}) {
+  const modal = document.getElementById('modal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  document.getElementById('modalTitle').textContent = company ? 'Edit company' : 'Add company';
+  document.getElementById('fCompanyId').value = company?.id || '';
+  document.getElementById('fName').value = company?.name || '';
+  document.getElementById('fLogoSlug').value = company?.logoSlug || '';
+  document.getElementById('fLogoDataUrl').value = company?.logoDataUrl || '';
+  document.getElementById('fTicker').value = company?.ticker || '';
+  document.getElementById('fUrl').value = company?.url || '';
+  document.getElementById('fLogoUpload').value = '';
+  setType(company?.type || 'Member');
+
+  const sel = document.getElementById('fTierSelect');
+  sel.innerHTML = state.tiers.map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
+  if (company) {
+    const parent = state.tiers.find(t => t.companies.some(c => c.id === company.id));
+    if (parent) sel.value = parent.id;
+  } else if (tierId) {
+    sel.value = tierId;
+  }
+  updateLogoPreview();
+}
+function closeModal() {
+  const modal = document.getElementById('modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+function setType(type) {
+  document.getElementById('fType').value = type;
+  document.querySelectorAll('.type-toggle').forEach(b => {
+    const active = b.dataset.type === type;
+    b.className = 'type-toggle py-1.5 rounded text-xs font-medium ' +
+      (active ? 'bg-bfc-orange text-black' : 'text-neutral-400 hover:text-white');
+  });
+}
+document.querySelectorAll('.type-toggle').forEach(b => b.addEventListener('click', () => setType(b.dataset.type)));
+
+document.getElementById('fLogoSlug').addEventListener('input', () => {
+  // Typing a slug clears the uploaded data URL so slug wins
+  if (document.getElementById('fLogoSlug').value.trim()) {
+    document.getElementById('fLogoDataUrl').value = '';
+  }
+  updateLogoPreview();
+});
+
+document.getElementById('fLogoUpload').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 500 * 1024) {
+    alert('Image is too large. Please use one under 500 KB.');
+    e.target.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    document.getElementById('fLogoDataUrl').value = ev.target.result;
+    document.getElementById('fLogoSlug').value = ''; // upload takes precedence
+    document.getElementById('logoPreviewLabel').textContent = file.name;
+    updateLogoPreview();
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('logoClearBtn').addEventListener('click', () => {
+  document.getElementById('fLogoSlug').value = '';
+  document.getElementById('fLogoDataUrl').value = '';
+  document.getElementById('fLogoUpload').value = '';
+  updateLogoPreview();
+});
+
+function updateLogoPreview() {
+  const slug = document.getElementById('fLogoSlug').value.trim();
+  const dataUrl = document.getElementById('fLogoDataUrl').value;
+  const p = document.getElementById('logoPreview');
+  const img = document.getElementById('logoPreviewImg');
+  const label = document.getElementById('logoPreviewLabel');
+
+  let src = '';
+  let labelText = '';
+  if (dataUrl) { src = dataUrl; labelText = label.textContent || 'Uploaded image'; }
+  else if (slug) { src = logoPathFromSlug(slug); labelText = `logos/${slug}-logo-light.png`; }
+
+  if (src) {
+    p.classList.remove('hidden');
+    p.classList.add('flex');
+    img.src = src;
+    img.onerror = () => { img.style.display = 'none'; label.textContent = 'File not found: ' + labelText; };
+    img.style.display = '';
+    label.textContent = labelText;
+  } else {
+    p.classList.add('hidden');
+    p.classList.remove('flex');
+  }
+}
+
+document.getElementById('companyForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const id = document.getElementById('fCompanyId').value || uid();
+  const data = {
+    id,
+    name: document.getElementById('fName').value.trim(),
+    logoSlug: document.getElementById('fLogoSlug').value.trim(),
+    logoDataUrl: document.getElementById('fLogoDataUrl').value || '',
+    ticker: document.getElementById('fTicker').value.trim().toUpperCase(),
+    url: document.getElementById('fUrl').value.trim(),
+    type: document.getElementById('fType').value,
+  };
+  const targetTierId = document.getElementById('fTierSelect').value;
+
+  state.tiers.forEach(t => t.companies = t.companies.filter(c => c.id !== id));
+  const target = state.tiers.find(t => t.id === targetTierId);
+  if (target) target.companies.push(data);
+
+  saveState();
+  closeModal();
+  render();
+  toast(`Saved "${data.name}"`);
+});
+
+// ---------- Buttons ----------
+document.getElementById('btnAdd').addEventListener('click', () => {
+  if (!state.tiers.length) { toast('Add a tier first.'); return; }
+  openModal({});
+});
+
+document.getElementById('btnAddTier').addEventListener('click', () => {
+  const name = prompt('Tier name:', 'New Tier');
+  if (!name) return;
+  state.tiers.push({ id: uid('t'), name: name.trim(), companies: [] });
+  saveState(); render();
+});
+
+document.getElementById('btnPreview').addEventListener('click', () => {
+  // Save state first, then open preview in new tab (preview reads from localStorage)
+  saveState();
+  window.open(`preview.html?theme=${theme}`, '_blank');
+});
+
+document.getElementById('btnExport').addEventListener('click', () => {
+  const payload = JSON.stringify(state, null, 2);
+  console.log('BFC DIRECTORY EXPORT', state);
+  const blob = new Blob([payload], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `bfc-directory-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Exported JSON — also logged to console.');
+});
+
+document.getElementById('btnImport').addEventListener('click', () => {
+  document.getElementById('importModal').classList.remove('hidden');
+  document.getElementById('importModal').classList.add('flex');
+});
+document.getElementById('importFile').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => { document.getElementById('importText').value = ev.target.result; };
+  reader.readAsText(file);
+});
+document.getElementById('btnImportConfirm').addEventListener('click', () => {
+  try {
+    const text = document.getElementById('importText').value.trim();
+    if (!text) return;
+    const parsed = JSON.parse(text);
+    if (!parsed.tiers || !Array.isArray(parsed.tiers)) throw new Error('Missing tiers array');
+    state = parsed;
+    saveState(); render();
+    document.getElementById('importModal').classList.add('hidden');
+    toast('Imported.');
+  } catch (err) {
+    alert('Invalid JSON: ' + err.message);
+  }
+});
+
+document.getElementById('btnEmbed').addEventListener('click', () => {
+  const html = generateEmbed(theme);
+  document.getElementById('embedOutput').value = html;
+  document.getElementById('linkPreview').href = `preview.html?theme=${theme}`;
+  const modal = document.getElementById('embedModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+});
+document.getElementById('btnCopyEmbed').addEventListener('click', async () => {
+  const text = document.getElementById('embedOutput').value;
+  await navigator.clipboard.writeText(text);
+  toast('Embed code copied.');
+});
+
+document.getElementById('searchInput').addEventListener('input', () => render());
+
+// ---------- Embed Generator ----------
+function generateEmbed(t = 'dark') {
+  const isDark = t === 'dark';
+  const bg = isDark ? '#000' : '#F7F7F7';
+  const card = isDark ? '#1D1D1D' : '#FFFFFF';
+  const line = isDark ? '#2A2A2A' : '#E5E5E5';
+  const text = isDark ? '#FFFFFF' : '#111111';
+  const sub = isDark ? '#D4D3D3' : '#6B7280';
+  const chipBg = isDark ? '#0A0A0A' : '#FFFFFF';
+
+  const css = `
+.bfc-dir{--bfc-orange:#FA660E;background:${bg};color:${text};font-family:Inter,system-ui,sans-serif;padding:28px;border-radius:14px;border:1px solid ${line}}
+.bfc-dir *{box-sizing:border-box}
+.bfc-toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid ${line}}
+.bfc-search{flex:1;min-width:200px;position:relative}
+.bfc-search input{width:100%;background:${chipBg};border:1px solid ${line};color:${text};font:inherit;font-size:13px;padding:9px 12px 9px 34px;border-radius:8px;outline:none;transition:border-color .15s}
+.bfc-search input::placeholder{color:${sub};opacity:.6}
+.bfc-search input:focus{border-color:var(--bfc-orange)}
+.bfc-search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:${sub};pointer-events:none}
+.bfc-chips{display:inline-flex;background:${chipBg};border:1px solid ${line};border-radius:8px;padding:3px;gap:2px}
+.bfc-chip{border:0;background:transparent;color:${sub};font:inherit;font-size:12px;font-weight:500;padding:6px 12px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s}
+.bfc-chip:hover{color:${text}}
+.bfc-chip.active{background:var(--bfc-orange);color:#000;font-weight:600}
+.bfc-sort{background:${chipBg};border:1px solid ${line};color:${text};font:inherit;font-size:12px;padding:8px 10px;border-radius:8px;cursor:pointer;outline:none}
+.bfc-sort:focus{border-color:var(--bfc-orange)}
+.bfc-count{font-size:11px;color:${sub};letter-spacing:.04em}
+.bfc-dir h2{color:var(--bfc-orange);font-size:13px;text-transform:uppercase;letter-spacing:.14em;margin:28px 0 14px;font-weight:700}
+.bfc-dir .bfc-tier:first-child h2{margin-top:0}
+.bfc-tier.bfc-hidden{display:none}
+.bfc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+.bfc-card{background:${card};border:1px solid ${line};border-radius:10px;padding:16px 12px;text-align:center;text-decoration:none;color:inherit;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:10px;min-height:130px;transition:border-color .2s,transform .2s}
+.bfc-card.bfc-hidden{display:none}
+.bfc-card:hover{border-color:var(--bfc-orange);transform:translateY(-2px)}
+.bfc-logo{height:52px;width:100%;display:flex;align-items:center;justify-content:center}
+.bfc-logo img{max-height:48px;max-width:100%;object-fit:contain}
+.bfc-name{font-weight:600;font-size:12px;color:${text};line-height:1.2}
+.bfc-ticker{font-size:10px;color:${sub};text-transform:uppercase;letter-spacing:.06em;margin-top:2px;font-variant-numeric:tabular-nums}
+.bfc-badge{font-size:9px;text-transform:uppercase;letter-spacing:.12em;padding:2px 7px;border-radius:3px;border:1px solid;font-weight:600}
+.bfc-member{color:var(--bfc-orange);border-color:rgba(250,102,14,.35);background:rgba(250,102,14,.10)}
+.bfc-vendor{color:${isDark ? '#93C5FD' : '#2563EB'};border-color:rgba(59,130,246,.35);background:rgba(59,130,246,.10)}
+.bfc-empty{text-align:center;padding:40px 20px;color:${sub};font-size:13px}
+@media(max-width:640px){.bfc-dir{padding:20px}.bfc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.bfc-toolbar{gap:8px}.bfc-search{min-width:100%}}
+`.trim();
+
+  const totalCount = state.tiers.reduce((n, t) => n + t.companies.length, 0);
+  const tiersHtml = state.tiers.map(tier => {
+    const cards = tier.companies.map(c => {
+      const logoUrl = companyEmbedLogoSrc(c, t);
+      const logo = logoUrl
+        ? `<div class="bfc-logo"><img src="${escapeAttr(logoUrl)}" alt="${escapeAttr(c.name)}" loading="lazy"/></div>`
+        : `<div class="bfc-logo"></div>`;
+      const ticker = c.ticker ? `<div class="bfc-ticker">${escapeHtml(c.ticker)}</div>` : '';
+      const badge = `<span class="bfc-badge ${c.type === 'Vendor' ? 'bfc-vendor' : 'bfc-member'}">${escapeHtml(c.type || 'Member')}</span>`;
+      const inner = `${logo}<div><div class="bfc-name">${escapeHtml(c.name)}</div>${ticker}</div>${badge}`;
+      const dataAttrs = `data-name="${escapeAttr((c.name || '').toLowerCase())}" data-ticker="${escapeAttr((c.ticker || '').toLowerCase())}" data-type="${escapeAttr(c.type || 'Member')}"`;
+      return c.url
+        ? `<a class="bfc-card" ${dataAttrs} href="${escapeAttr(c.url)}" target="_blank" rel="noopener">${inner}</a>`
+        : `<div class="bfc-card" ${dataAttrs}>${inner}</div>`;
+    }).join('');
+    return `<div class="bfc-tier"><h2>${escapeHtml(tier.name)}</h2><div class="bfc-grid">${cards}</div></div>`;
+  }).join('');
+
+  const toolbar = `
+<div class="bfc-toolbar">
+  <div class="bfc-search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="search" placeholder="Search companies or tickers…" aria-label="Search"/>
+  </div>
+  <div class="bfc-chips" role="tablist">
+    <button class="bfc-chip active" data-filter="all">All</button>
+    <button class="bfc-chip" data-filter="Member">Members</button>
+    <button class="bfc-chip" data-filter="Vendor">Vendors</button>
+  </div>
+  <select class="bfc-sort" aria-label="Sort">
+    <option value="default">Sort: Tier order</option>
+    <option value="az">Sort: A → Z</option>
+    <option value="za">Sort: Z → A</option>
+  </select>
+  <span class="bfc-count"><span class="bfc-visible">${totalCount}</span> / ${totalCount}</span>
+</div>`.trim();
+
+  // Self-contained filter/sort JS. IIFE-scoped to avoid globals.
+  const js = `
+(function(){
+  var root = document.currentScript && document.currentScript.previousElementSibling;
+  if(!root || !root.classList || !root.classList.contains('bfc-dir')){
+    var dirs = document.getElementsByClassName('bfc-dir');
+    root = dirs[dirs.length-1];
+  }
+  if(!root) return;
+  var input = root.querySelector('.bfc-search input');
+  var chips = root.querySelectorAll('.bfc-chip');
+  var sort = root.querySelector('.bfc-sort');
+  var visibleEl = root.querySelector('.bfc-visible');
+  var currentFilter = 'all';
+  var currentQuery = '';
+
+  function apply(){
+    var total = 0;
+    root.querySelectorAll('.bfc-tier').forEach(function(tier){
+      var shown = 0;
+      tier.querySelectorAll('.bfc-card').forEach(function(card){
+        var name = card.getAttribute('data-name') || '';
+        var ticker = card.getAttribute('data-ticker') || '';
+        var type = card.getAttribute('data-type') || '';
+        var matchQ = !currentQuery || name.indexOf(currentQuery) !== -1 || ticker.indexOf(currentQuery) !== -1;
+        var matchF = currentFilter === 'all' || type === currentFilter;
+        var show = matchQ && matchF;
+        card.classList.toggle('bfc-hidden', !show);
+        if(show) shown++;
+      });
+      tier.classList.toggle('bfc-hidden', shown === 0);
+      total += shown;
+    });
+    if(visibleEl) visibleEl.textContent = total;
+  }
+
+  function doSort(mode){
+    root.querySelectorAll('.bfc-tier').forEach(function(tier){
+      var grid = tier.querySelector('.bfc-grid');
+      if(!grid) return;
+      var cards = Array.prototype.slice.call(grid.children);
+      if(mode === 'default'){
+        if(tier._origOrder){
+          tier._origOrder.forEach(function(c){ grid.appendChild(c); });
+        }
+        return;
+      }
+      if(!tier._origOrder) tier._origOrder = cards.slice();
+      cards.sort(function(a,b){
+        var an = a.getAttribute('data-name') || '';
+        var bn = b.getAttribute('data-name') || '';
+        return mode === 'az' ? an.localeCompare(bn) : bn.localeCompare(an);
+      });
+      cards.forEach(function(c){ grid.appendChild(c); });
+    });
+  }
+
+  input && input.addEventListener('input', function(e){ currentQuery = e.target.value.toLowerCase().trim(); apply(); });
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      chips.forEach(function(c){ c.classList.remove('active'); });
+      chip.classList.add('active');
+      currentFilter = chip.getAttribute('data-filter');
+      apply();
+    });
+  });
+  sort && sort.addEventListener('change', function(e){ doSort(e.target.value); apply(); });
+})();`;
+
+  return `<style>${css}</style>
+<div class="bfc-dir">
+${toolbar}
+${tiersHtml}
+</div>
+<script>${js}</script>`;
+}
+
+// ---------- Utils ----------
+function escapeHtml(s='') { return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+function escapeAttr(s='') { return escapeHtml(s); }
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(toast._tid);
+  toast._tid = setTimeout(() => t.classList.add('hidden'), 2200);
+}
+
+// ---------- Init ----------
+populateSlugList();
+applyTheme(theme);
+lucide.createIcons();
+</script>
+</body>
+</html>

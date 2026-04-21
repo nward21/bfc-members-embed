@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BFC Member Directory — WP Embed Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root { --bfc-orange: #FA660E; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; font-family: Inter, system-ui, sans-serif; }
+  body.theme-dark { background: #000; color: #fff; }
+  body.theme-light { background: #F7F7F7; color: #111; }
+
+  /* Chrome bar (not part of the embed — just preview UI) */
+  .chrome { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; backdrop-filter: blur(8px); }
+  .theme-dark .chrome { background: rgba(0,0,0,.85); border-bottom: 1px solid #2A2A2A; }
+  .theme-light .chrome { background: rgba(247,247,247,.85); border-bottom: 1px solid #E5E5E5; }
+  .chrome .brand { display: flex; align-items: center; gap: 10px; }
+  .chrome .dot { width: 28px; height: 28px; border-radius: 50%; background: var(--bfc-orange); color: #000; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+  .chrome .title { font-size: 13px; font-weight: 600; }
+  .chrome .sub { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--bfc-orange); font-weight: 700; }
+  .chrome a.back { font-size: 12px; color: var(--bfc-orange); text-decoration: none; font-weight: 500; }
+  .theme-toggle { display: inline-flex; padding: 3px; border-radius: 8px; gap: 2px; }
+  .theme-dark .theme-toggle { background: #1D1D1D; border: 1px solid #2A2A2A; }
+  .theme-light .theme-toggle { background: #fff; border: 1px solid #E5E5E5; }
+  .theme-toggle button { border: 0; padding: 6px 12px; border-radius: 6px; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; background: transparent; }
+  .theme-dark .theme-toggle button { color: #999; }
+  .theme-light .theme-toggle button { color: #666; }
+  .theme-toggle button.active { background: var(--bfc-orange); color: #000; font-weight: 600; }
+
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 24px; }
+  .stamp { font-size: 11px; opacity: .6; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .1em; }
+
+  /* ====== The actual embed styling (kept in sync with generateEmbed() in index.html) ====== */
+  .bfc-dir { font-family: Inter, system-ui, sans-serif; padding: 28px; border-radius: 14px; border: 1px solid; }
+  .bfc-dir *{ box-sizing: border-box; }
+  .theme-dark .bfc-dir { background: #000; color: #fff; border-color: #2A2A2A; }
+  .theme-light .bfc-dir { background: #F7F7F7; color: #111; border-color: #E5E5E5; }
+
+  .bfc-toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid; }
+  .theme-dark .bfc-toolbar { border-color: #2A2A2A; }
+  .theme-light .bfc-toolbar { border-color: #E5E5E5; }
+  .bfc-search { flex: 1; min-width: 200px; position: relative; }
+  .bfc-search input { width: 100%; font: inherit; font-size: 13px; padding: 9px 12px 9px 34px; border-radius: 8px; outline: none; transition: border-color .15s; border: 1px solid; }
+  .theme-dark .bfc-search input { background: #0A0A0A; color: #fff; border-color: #2A2A2A; }
+  .theme-light .bfc-search input { background: #fff; color: #111; border-color: #E5E5E5; }
+  .bfc-search input:focus { border-color: var(--bfc-orange); }
+  .bfc-search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; opacity: .55; }
+  .bfc-chips { display: inline-flex; border-radius: 8px; padding: 3px; gap: 2px; border: 1px solid; }
+  .theme-dark .bfc-chips { background: #0A0A0A; border-color: #2A2A2A; }
+  .theme-light .bfc-chips { background: #fff; border-color: #E5E5E5; }
+  .bfc-chip { border: 0; background: transparent; font: inherit; font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: background .15s, color .15s; }
+  .theme-dark .bfc-chip { color: #D4D3D3; }
+  .theme-light .bfc-chip { color: #6B7280; }
+  .bfc-chip.active { background: var(--bfc-orange); color: #000; font-weight: 600; }
+  .bfc-sort { font: inherit; font-size: 12px; padding: 8px 10px; border-radius: 8px; cursor: pointer; outline: none; border: 1px solid; }
+  .theme-dark .bfc-sort { background: #0A0A0A; color: #fff; border-color: #2A2A2A; }
+  .theme-light .bfc-sort { background: #fff; color: #111; border-color: #E5E5E5; }
+  .bfc-sort:focus { border-color: var(--bfc-orange); }
+  .bfc-count { font-size: 11px; letter-spacing: .04em; }
+  .theme-dark .bfc-count { color: #D4D3D3; }
+  .theme-light .bfc-count { color: #6B7280; }
+
+  .bfc-dir h2 { color: var(--bfc-orange); font-size: 13px; text-transform: uppercase; letter-spacing: .14em; margin: 28px 0 14px; font-weight: 700; }
+  .bfc-dir .bfc-tier:first-child h2 { margin-top: 0; }
+  .bfc-tier.bfc-hidden { display: none; }
+  .bfc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+  .bfc-card { border: 1px solid; border-radius: 10px; padding: 16px 12px; text-align: center; text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 10px; min-height: 130px; transition: border-color .2s, transform .2s; }
+  .bfc-card.bfc-hidden { display: none; }
+  .theme-dark .bfc-card { background: #1D1D1D; border-color: #2A2A2A; }
+  .theme-light .bfc-card { background: #FFFFFF; border-color: #E5E5E5; }
+  .bfc-card:hover { border-color: var(--bfc-orange); transform: translateY(-2px); }
+  .bfc-logo { height: 52px; width: 100%; display: flex; align-items: center; justify-content: center; }
+  .bfc-logo img { max-height: 48px; max-width: 100%; object-fit: contain; }
+  .bfc-name { font-weight: 600; font-size: 12px; line-height: 1.2; }
+  .bfc-ticker { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .theme-dark .bfc-ticker { color: #D4D3D3; }
+  .theme-light .bfc-ticker { color: #6B7280; }
+  .bfc-badge { font-size: 9px; text-transform: uppercase; letter-spacing: .12em; padding: 2px 7px; border-radius: 3px; border: 1px solid; font-weight: 600; }
+  .bfc-member { color: var(--bfc-orange); border-color: rgba(250,102,14,.35); background: rgba(250,102,14,.10); }
+  .theme-dark .bfc-vendor { color: #93C5FD; border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.10); }
+  .theme-light .bfc-vendor { color: #2563EB; border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.10); }
+
+  .missing { display: flex; align-items: center; justify-content: center; height: 48px; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; border: 1px dashed; border-radius: 4px; width: 100%; }
+  .theme-dark .missing { color: rgba(255,255,255,.35); border-color: rgba(255,255,255,.15); }
+  .theme-light .missing { color: rgba(0,0,0,.35); border-color: rgba(0,0,0,.15); }
+
+  .empty-state { text-align: center; padding: 80px 20px; opacity: .6; }
+
+  @media(max-width:640px){
+    .bfc-dir { padding: 20px; }
+    .bfc-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+    .chrome { padding: 10px 16px; }
+    .chrome .sub { display: none; }
+    .bfc-toolbar { gap: 8px; }
+    .bfc-search { min-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="brand">
+    <a href="index.html" class="back">← Admin</a>
+    <div style="width:1px; height:20px; background:currentColor; opacity:.2;"></div>
+    <div class="dot">₿</div>
+    <div>
+      <div class="sub">Bitcoin For Corporations</div>
+      <div class="title">Member Directory — WP Embed Preview</div>
+    </div>
+  </div>
+  <div class="theme-toggle">
+    <button id="btnDark">🌙 Dark (website)</button>
+    <button id="btnLight">☀ Light</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="stamp">Rendering from localStorage · This is exactly what visitors will see when embedded on the site.</div>
+  <div id="embedRoot"></div>
+</div>
+
+<script>
+const STORAGE_KEY = 'bfc_directory_v4';
+const AVAILABLE_LOGOS = new Set([
+  'aifinyo','avalon-labs','bitgo','blockspaces','btc-inc','byte-federal','capital-b',
+  'crypto-com','ddc','fold','giga','jetking','kraken-institutional','kulr',
+  'locate-technologies','london-bitcoin-co','lqwd','luxalgo','matador','meliuz',
+  'meteplanet','mnav','moon-inc','naas','nakamoto','next-layer-capital','prenetics',
+  'public-square','salt','samara','semler-scientific','solar-strategy','strategy',
+  'strive','swc','treasury','uproot-company','utxo','vaultz-capital'
+]);
+
+const params = new URLSearchParams(location.search);
+let theme = params.get('theme') || localStorage.getItem('bfc_theme') || 'dark';
+applyTheme(theme);
+
+document.getElementById('btnDark').addEventListener('click', () => applyTheme('dark'));
+document.getElementById('btnLight').addEventListener('click', () => applyTheme('light'));
+
+function applyTheme(t) {
+  theme = t;
+  document.body.className = 'theme-' + t;
+  document.getElementById('btnDark').classList.toggle('active', t === 'dark');
+  document.getElementById('btnLight').classList.toggle('active', t === 'light');
+  render();
+}
+
+function companyLogoSrc(c, t) {
+  if (!c) return '';
+  if (c.logoDataUrl) return c.logoDataUrl;
+  if (c.logoSlug && AVAILABLE_LOGOS.has(c.logoSlug)) {
+    return `logos/${c.logoSlug}-logo-${t === 'light' ? 'dark' : 'light'}.png`;
+  }
+  return '';
+}
+
+function escapeHtml(s='') { return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+function escapeAttr(s='') { return escapeHtml(s); }
+
+function render() {
+  const root = document.getElementById('embedRoot');
+  const raw = localStorage.getItem(STORAGE_KEY);
+
+  if (!raw) {
+    root.innerHTML = `<div class="empty-state">
+      <h2 style="color:var(--bfc-orange)">No data yet</h2>
+      <p>Open <a href="index.html" style="color:var(--bfc-orange)">index.html</a> first, then come back.</p>
+    </div>`;
+    return;
+  }
+
+  const state = JSON.parse(raw);
+  const total = state.tiers.reduce((n, t) => n + t.companies.length, 0);
+
+  const toolbar = `
+    <div class="bfc-toolbar">
+      <div class="bfc-search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="search" id="bfcSearch" placeholder="Search companies or tickers…" aria-label="Search" />
+      </div>
+      <div class="bfc-chips" role="tablist">
+        <button class="bfc-chip active" data-filter="all">All</button>
+        <button class="bfc-chip" data-filter="Member">Members</button>
+        <button class="bfc-chip" data-filter="Vendor">Vendors</button>
+      </div>
+      <select class="bfc-sort" id="bfcSort" aria-label="Sort">
+        <option value="default">Sort: Tier order</option>
+        <option value="az">Sort: A → Z</option>
+        <option value="za">Sort: Z → A</option>
+      </select>
+      <span class="bfc-count"><span id="bfcVisible">${total}</span> / ${total}</span>
+    </div>`;
+
+  const tiersHtml = state.tiers.map(tier => {
+    const cards = (tier.companies || []).map(c => {
+      const logoUrl = companyLogoSrc(c, theme);
+      const logo = logoUrl
+        ? `<div class="bfc-logo"><img src="${escapeAttr(logoUrl)}" alt="${escapeAttr(c.name)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=&quot;missing&quot;>no logo</div>'"/></div>`
+        : `<div class="bfc-logo"><div class="missing">no logo</div></div>`;
+      const ticker = c.ticker ? `<div class="bfc-ticker">${escapeHtml(c.ticker)}</div>` : '';
+      const badge = `<span class="bfc-badge ${c.type === 'Vendor' ? 'bfc-vendor' : 'bfc-member'}">${escapeHtml(c.type || 'Member')}</span>`;
+      const inner = `${logo}<div><div class="bfc-name">${escapeHtml(c.name)}</div>${ticker}</div>${badge}`;
+      const dataAttrs = `data-name="${escapeAttr((c.name || '').toLowerCase())}" data-ticker="${escapeAttr((c.ticker || '').toLowerCase())}" data-type="${escapeAttr(c.type || 'Member')}"`;
+      return c.url
+        ? `<a class="bfc-card" ${dataAttrs} href="${escapeAttr(c.url)}" target="_blank" rel="noopener">${inner}</a>`
+        : `<div class="bfc-card" ${dataAttrs}>${inner}</div>`;
+    }).join('');
+    return `<div class="bfc-tier"><h2>${escapeHtml(tier.name)}</h2><div class="bfc-grid">${cards}</div></div>`;
+  }).join('');
+
+  root.innerHTML = `<div class="bfc-dir">${toolbar}${tiersHtml}</div>`;
+  wireFilters();
+}
+
+function wireFilters() {
+  const dir = document.querySelector('.bfc-dir');
+  if (!dir) return;
+  const input = dir.querySelector('#bfcSearch');
+  const chips = dir.querySelectorAll('.bfc-chip');
+  const sort = dir.querySelector('#bfcSort');
+  const visibleEl = dir.querySelector('#bfcVisible');
+
+  let filter = 'all', query = '';
+
+  function apply() {
+    let total = 0;
+    dir.querySelectorAll('.bfc-tier').forEach(tier => {
+      let shown = 0;
+      tier.querySelectorAll('.bfc-card').forEach(card => {
+        const name = card.getAttribute('data-name') || '';
+        const ticker = card.getAttribute('data-ticker') || '';
+        const type = card.getAttribute('data-type') || '';
+        const matchQ = !query || name.includes(query) || ticker.includes(query);
+        const matchF = filter === 'all' || type === filter;
+        const show = matchQ && matchF;
+        card.classList.toggle('bfc-hidden', !show);
+        if (show) shown++;
+      });
+      tier.classList.toggle('bfc-hidden', shown === 0);
+      total += shown;
+    });
+    if (visibleEl) visibleEl.textContent = total;
+  }
+
+  function doSort(mode) {
+    dir.querySelectorAll('.bfc-tier').forEach(tier => {
+      const grid = tier.querySelector('.bfc-grid');
+      if (!grid) return;
+      const cards = [...grid.children];
+      if (mode === 'default') {
+        if (tier._orig) tier._orig.forEach(c => grid.appendChild(c));
+        return;
+      }
+      if (!tier._orig) tier._orig = cards.slice();
+      cards.sort((a, b) => {
+        const an = a.getAttribute('data-name') || '';
+        const bn = b.getAttribute('data-name') || '';
+        return mode === 'az' ? an.localeCompare(bn) : bn.localeCompare(an);
+      });
+      cards.forEach(c => grid.appendChild(c));
+    });
+  }
+
+  input && input.addEventListener('input', e => { query = e.target.value.toLowerCase().trim(); apply(); });
+  chips.forEach(chip => chip.addEventListener('click', () => {
+    chips.forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    filter = chip.getAttribute('data-filter');
+    apply();
+  }));
+  sort && sort.addEventListener('change', e => { doSort(e.target.value); apply(); });
+}
+</script>
+
+</body>
+</html>
