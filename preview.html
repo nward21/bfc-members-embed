@@ -38,18 +38,12 @@
   .theme-dark .bfc-dir { background: #000; color: #fff; }
   .theme-light .bfc-dir { background: #F7F7F7; color: #111; }
 
-  /* Toolbar — 3 columns: Search / Filter / Sort */
-  .bfc-toolbar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: start; margin-bottom: 16px; padding-bottom: 20px; border-bottom: 1px solid; }
-  .theme-dark .bfc-toolbar { border-color: #2A2A2A; }
-  .theme-light .bfc-toolbar { border-color: #E5E5E5; }
-  .bfc-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-  .bfc-col-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
-  .theme-dark .bfc-col-label { color: #D4D3D3; }
-  .theme-light .bfc-col-label { color: #6B7280; }
+  /* Toolbar — single compact row */
+  .bfc-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
 
-  .bfc-search { position: relative; }
-  .bfc-search .bfc-ico { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); opacity: .55; pointer-events: none; }
-  .bfc-search input { width: 100%; font: inherit; font-size: 13px; padding: 9px 32px 9px 34px; border-radius: 8px; outline: none; transition: border-color .15s; border: 1px solid; }
+  .bfc-search { flex: 1 1 240px; min-width: 200px; position: relative; }
+  .bfc-search .bfc-ico { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: .55; pointer-events: none; }
+  .bfc-search input { width: 100%; font: inherit; font-size: 13px; padding: 8px 32px 8px 36px; border-radius: 8px; outline: none; transition: border-color .15s; border: 1px solid; height: 36px; }
   .theme-dark .bfc-search input { background: #0A0A0A; color: #fff; border-color: #2A2A2A; }
   .theme-light .bfc-search input { background: #fff; color: #111; border-color: #E5E5E5; }
   .bfc-search input:focus { border-color: var(--bfc-orange); }
@@ -58,24 +52,14 @@
   .theme-light .bfc-search-clear { color: #6B7280; }
   .bfc-search-clear.show { display: block; }
 
-  .bfc-chips { display: inline-flex; border-radius: 8px; padding: 3px; gap: 2px; border: 1px solid; align-self: stretch; width: 100%; justify-content: stretch; }
-  .theme-dark .bfc-chips { background: #0A0A0A; border-color: #2A2A2A; }
-  .theme-light .bfc-chips { background: #fff; border-color: #E5E5E5; }
-  .bfc-chip { flex: 1; border: 0; background: transparent; font: inherit; font-size: 12px; font-weight: 500; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background .15s, color .15s; white-space: nowrap; }
-  .theme-dark .bfc-chip { color: #D4D3D3; }
-  .theme-light .bfc-chip { color: #6B7280; }
-  .bfc-chip.active { background: var(--bfc-orange); color: #000; font-weight: 600; }
-
-  .bfc-select { width: 100%; font: inherit; font-size: 13px; padding: 9px 32px 9px 12px; border-radius: 8px; cursor: pointer; outline: none; border: 1px solid; appearance: none; -webkit-appearance: none; background-repeat: no-repeat; background-position: right 12px center; }
+  .bfc-select { font: inherit; font-size: 13px; padding: 0 28px 0 12px; border-radius: 8px; cursor: pointer; outline: none; border: 1px solid; appearance: none; -webkit-appearance: none; background-repeat: no-repeat; background-position: right 10px center; height: 36px; }
   .theme-dark .bfc-select { background-color: #0A0A0A; color: #fff; border-color: #2A2A2A; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23D4D3D3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); }
   .theme-light .bfc-select { background-color: #fff; color: #111; border-color: #E5E5E5; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); }
+  .theme-dark .bfc-select:hover { border-color: #3A3A3A; }
+  .theme-light .bfc-select:hover { border-color: #CCCCCC; }
   .bfc-select:focus { border-color: var(--bfc-orange); }
   .theme-dark .bfc-select option { background: #1D1D1D; color: #fff; }
   .theme-light .bfc-select option { background: #fff; color: #111; }
-
-  .bfc-meta { font-size: 11px; letter-spacing: .04em; margin: 0 0 16px; text-align: right; }
-  .theme-dark .bfc-meta { color: #D4D3D3; }
-  .theme-light .bfc-meta { color: #6B7280; }
 
   .bfc-dir h2 { color: var(--bfc-orange); font-size: 13px; text-transform: uppercase; letter-spacing: .14em; margin: 28px 0 14px; font-weight: 700; }
   .bfc-dir .bfc-tier:first-child h2 { margin-top: 0; }
@@ -92,24 +76,25 @@
   .theme-dark .bfc-nologo { color: #D4D3D3; }
   .theme-light .bfc-nologo { color: #6B7280; }
 
-  .bfc-badges { display: flex; gap: 6px; justify-content: center; align-items: center; }
-  .bfc-badge { width: 22px; height: 22px; border-radius: 50%; border: 1px solid; display: inline-flex; align-items: center; justify-content: center; background: transparent; flex: none; cursor: help; opacity: .7; transition: transform .15s, opacity .15s; }
-  .bfc-badge:hover { opacity: 1; transform: scale(1.1); }
-  .bfc-badge svg { width: 11px; height: 11px; flex: none; }
-  .bfc-member { color: var(--bfc-orange); border-color: rgba(250,102,14,.5); }
-  .theme-dark .bfc-vendor { color: #93C5FD; border-color: rgba(59,130,246,.5); }
-  .theme-light .bfc-vendor { color: #2563EB; border-color: rgba(59,130,246,.5); }
-  .theme-dark .bfc-public { color: #6EE7B7; border-color: rgba(16,185,129,.5); }
-  .theme-light .bfc-public { color: #059669; border-color: rgba(16,185,129,.5); }
-  .theme-dark .bfc-private { color: #D4D3D3; border-color: #2A2A2A; }
-  .theme-light .bfc-private { color: #6B7280; border-color: #E5E5E5; }
+  .bfc-badges { display: flex; gap: 8px; justify-content: center; align-items: center; }
+  .bfc-badge { display: inline-flex; align-items: center; justify-content: center; cursor: help; opacity: .85; transition: transform .15s, opacity .15s; }
+  .bfc-badge:hover { opacity: 1; transform: scale(1.15); }
+  .bfc-badge svg { width: 16px; height: 16px; display: block; }
+  .bfc-member { color: var(--bfc-orange); }
+  .theme-dark .bfc-vendor { color: #93C5FD; }
+  .theme-light .bfc-vendor { color: #2563EB; }
+  .theme-dark .bfc-public { color: #34D399; }
+  .theme-light .bfc-public { color: #059669; }
+  .theme-dark .bfc-private { color: #D4D3D3; }
+  .theme-light .bfc-private { color: #6B7280; }
 
   .empty-state { text-align: center; padding: 80px 20px; opacity: .6; }
 
-  @media(max-width:768px){ .bfc-toolbar { grid-template-columns: 1fr; gap: 14px; } }
   @media(max-width:640px){
     .bfc-dir { padding: 20px; }
     .bfc-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+    .bfc-search { flex-basis: 100%; }
+    .bfc-select { flex: 1; }
     .chrome { padding: 10px 16px; }
     .chrome .sub { display: none; }
   }
@@ -149,11 +134,10 @@ const AVAILABLE_LOGOS = new Set([
   'strive','swc','treasury','uproot-company','utxo','vaultz-capital'
 ]);
 
-const SW = 'stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
-const ICON_MEMBER  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ${SW}><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></svg>`;
-const ICON_VENDOR  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ${SW}><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`;
-const ICON_PUBLIC  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ${SW}><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`;
-const ICON_PRIVATE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ${SW}><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
+const ICON_MEMBER  = `<svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>`;
+const ICON_VENDOR  = `<svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M7.5 5.25a3 3 0 013-3h3a3 3 0 013 3v.205c.933.085 1.857.197 2.774.334 1.454.218 2.476 1.483 2.476 2.917v3.033c0 1.211-.734 2.352-1.936 2.752A24.726 24.726 0 0112 15.75c-2.73 0-5.357-.442-7.814-1.259-1.202-.4-1.936-1.541-1.936-2.752V8.706c0-1.434 1.022-2.699 2.476-2.917A48.814 48.814 0 017.5 5.455V5.25zm7.5 0v.09a49.488 49.488 0 00-6 0v-.09a1.5 1.5 0 011.5-1.5h3a1.5 1.5 0 011.5 1.5zm-3 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/><path d="M3 18.4v-2.796a4.3 4.3 0 00.713.31A26.226 26.226 0 0012 17.25c2.892 0 5.68-.468 8.287-1.335.252-.084.49-.189.713-.311V18.4c0 1.452-1.047 2.728-2.523 2.923-2.12.282-4.282.427-6.477.427a49.19 49.19 0 01-6.477-.427C4.047 21.128 3 19.852 3 18.4z"/></svg>`;
+const ICON_PUBLIC  = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.584 2.376a.75.75 0 01.832 0l9 6a.75.75 0 11-.832 1.248L12 3.901 3.416 9.624a.75.75 0 01-.832-1.248l9-6z"/><path fill-rule="evenodd" d="M20.25 10.332v9.918H21a.75.75 0 010 1.5H3a.75.75 0 010-1.5h.75v-9.918a.75.75 0 01.634-.74A49.109 49.109 0 0112 9c2.59 0 5.134.202 7.616.592a.75.75 0 01.634.74zm-7.5 2.418a.75.75 0 00-1.5 0v6.75a.75.75 0 001.5 0v-6.75zm3-.75a.75.75 0 01.75.75v6.75a.75.75 0 01-1.5 0v-6.75a.75.75 0 01.75-.75zM9 12.75a.75.75 0 00-1.5 0v6.75a.75.75 0 001.5 0v-6.75z" clip-rule="evenodd"/><path d="M12 7.875a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z"/></svg>`;
+const ICON_PRIVATE = `<svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clip-rule="evenodd"/></svg>`;
 
 const params = new URLSearchParams(location.search);
 let theme = params.get('theme') || localStorage.getItem('bfc_theme') || 'dark';
@@ -195,48 +179,37 @@ function render() {
   }
 
   const state = JSON.parse(raw);
-  const total = state.tiers.reduce((n, t) => n + t.companies.length, 0);
   const tierOptions = state.tiers.map(t => `<option value="${escapeAttr(t.id)}">${escapeHtml(t.name)}</option>`).join('');
 
   const toolbar = `
     <div class="bfc-toolbar">
-      <div class="bfc-col">
-        <label class="bfc-col-label" for="bfcSearch">Search</label>
-        <div class="bfc-search">
-          <svg class="bfc-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input id="bfcSearch" type="search" placeholder="Name or ticker…" aria-label="Search"/>
-          <button type="button" class="bfc-search-clear" aria-label="Clear search">×</button>
-        </div>
+      <div class="bfc-search">
+        <svg class="bfc-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="bfcSearch" type="search" placeholder="Search name or ticker…" aria-label="Search"/>
+        <button type="button" class="bfc-search-clear" aria-label="Clear search">×</button>
       </div>
-      <div class="bfc-col">
-        <span class="bfc-col-label">Filter</span>
-        <div class="bfc-chips" role="tablist" aria-label="Filter by type">
-          <button class="bfc-chip active" data-filter-type="all">All</button>
-          <button class="bfc-chip" data-filter-type="Member">Members</button>
-          <button class="bfc-chip" data-filter-type="Vendor">Vendors</button>
-        </div>
-        <div class="bfc-chips" role="tablist" aria-label="Filter by visibility">
-          <button class="bfc-chip active" data-filter-vis="all">All</button>
-          <button class="bfc-chip" data-filter-vis="Public">Public</button>
-          <button class="bfc-chip" data-filter-vis="Private">Private</button>
-        </div>
-        <select class="bfc-select" data-filter-tier aria-label="Filter by tier">
-          <option value="all">All tiers</option>
-          ${tierOptions}
-        </select>
-      </div>
-      <div class="bfc-col">
-        <label class="bfc-col-label" for="bfcSort">Sort</label>
-        <select id="bfcSort" class="bfc-select" data-sort>
-          <option value="default">Tier order</option>
-          <option value="name-asc">Name (A → Z)</option>
-          <option value="name-desc">Name (Z → A)</option>
-          <option value="ticker-asc">Ticker (A → Z)</option>
-          <option value="ticker-desc">Ticker (Z → A)</option>
-        </select>
-      </div>
-    </div>
-    <p class="bfc-meta"><span id="bfcVisible">${total}</span> of ${total} visible</p>`;
+      <select class="bfc-select" data-filter-type aria-label="Filter by type">
+        <option value="all">All types</option>
+        <option value="Member">Members</option>
+        <option value="Vendor">Vendors</option>
+      </select>
+      <select class="bfc-select" data-filter-vis aria-label="Filter by visibility">
+        <option value="all">All companies</option>
+        <option value="Public">Public</option>
+        <option value="Private">Private</option>
+      </select>
+      <select class="bfc-select" data-filter-tier aria-label="Filter by tier">
+        <option value="all">All tiers</option>
+        ${tierOptions}
+      </select>
+      <select class="bfc-select" data-sort aria-label="Sort">
+        <option value="default">Tier order</option>
+        <option value="name-asc">Name A → Z</option>
+        <option value="name-desc">Name Z → A</option>
+        <option value="ticker-asc">Ticker A → Z</option>
+        <option value="ticker-desc">Ticker Z → A</option>
+      </select>
+    </div>`;
 
   const tiersHtml = state.tiers.map(tier => {
     const cards = (tier.companies || []).map(c => {
@@ -247,7 +220,7 @@ function render() {
         : `<div class="bfc-logo"><span class="bfc-nologo">${escapeHtml(c.name)}</span></div>`;
       const typeLabel = c.type || 'Member';
       const typeBadge = `<span class="bfc-badge ${typeLabel === 'Vendor' ? 'bfc-vendor' : 'bfc-member'}" title="${escapeAttr(typeLabel)}" aria-label="${escapeAttr(typeLabel)}">${typeLabel === 'Vendor' ? ICON_VENDOR : ICON_MEMBER}</span>`;
-      const visBadge = `<span class="bfc-badge ${vis === 'Public' ? 'bfc-public' : 'bfc-private'}" title="${escapeAttr(vis + ' company')}" aria-label="${escapeAttr(vis + ' company')}">${vis === 'Public' ? ICON_PUBLIC : ICON_PRIVATE}</span>`;
+      const visBadge  = `<span class="bfc-badge ${vis === 'Public' ? 'bfc-public' : 'bfc-private'}" title="${escapeAttr(vis + ' company')}" aria-label="${escapeAttr(vis + ' company')}">${vis === 'Public' ? ICON_PUBLIC : ICON_PRIVATE}</span>`;
       const titleAttr = c.ticker ? `${c.name} (${c.ticker})` : c.name;
       const inner = `${logo}<div class="bfc-badges">${typeBadge}${visBadge}</div>`;
       const dataAttrs = `data-name="${escapeAttr((c.name || '').toLowerCase())}" data-ticker="${escapeAttr((c.ticker || '').toLowerCase())}" data-type="${escapeAttr(c.type || 'Member')}" data-visibility="${escapeAttr(vis)}" data-tier-id="${escapeAttr(tier.id)}" title="${escapeAttr(titleAttr)}"`;
@@ -267,11 +240,10 @@ function wireFilters() {
   if (!dir) return;
   const input = dir.querySelector('#bfcSearch');
   const clearBtn = dir.querySelector('.bfc-search-clear');
-  const typeChips = dir.querySelectorAll('.bfc-chip[data-filter-type]');
-  const visChips = dir.querySelectorAll('.bfc-chip[data-filter-vis]');
+  const typeSelect = dir.querySelector('[data-filter-type]');
+  const visSelect  = dir.querySelector('[data-filter-vis]');
   const tierSelect = dir.querySelector('[data-filter-tier]');
   const sortSelect = dir.querySelector('[data-sort]');
-  const visibleEl = dir.querySelector('#bfcVisible');
 
   // Snapshot original order per tier.
   dir.querySelectorAll('.bfc-tier').forEach(tier => {
@@ -302,7 +274,6 @@ function wireFilters() {
       tier.classList.toggle('bfc-hidden', shown === 0);
       total += shown;
     });
-    if (visibleEl) visibleEl.textContent = total;
   }
 
   function doSort() {
@@ -333,18 +304,8 @@ function wireFilters() {
   clearBtn && clearBtn.addEventListener('click', () => {
     input.value = ''; s.query = ''; clearBtn.classList.remove('show'); input.focus(); apply();
   });
-  typeChips.forEach(chip => chip.addEventListener('click', () => {
-    typeChips.forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    s.type = chip.getAttribute('data-filter-type');
-    apply();
-  }));
-  visChips.forEach(chip => chip.addEventListener('click', () => {
-    visChips.forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    s.vis = chip.getAttribute('data-filter-vis');
-    apply();
-  }));
+  typeSelect && typeSelect.addEventListener('change', e => { s.type = e.target.value; apply(); });
+  visSelect  && visSelect.addEventListener('change',  e => { s.vis  = e.target.value; apply(); });
   tierSelect && tierSelect.addEventListener('change', e => { s.tier = e.target.value; apply(); });
   sortSelect && sortSelect.addEventListener('change', e => { s.sort = e.target.value; doSort(); apply(); });
 }
