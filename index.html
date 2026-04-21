@@ -888,12 +888,12 @@ function generateEmbed(t = 'dark') {
   sort && sort.addEventListener('change', function(e){ doSort(e.target.value); apply(); });
 })();`;
 
-  return `<style>${css}</style>
+  return `<style>${css}<\/style>
 <div class="bfc-dir">
 ${toolbar}
 ${tiersHtml}
 </div>
-<script>${js}</script>`;
+<script>${js}<\/script>`;
 }
 
 // ---------- Utils ----------
