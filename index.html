@@ -733,9 +733,22 @@ document.getElementById('companyForm').addEventListener('submit', (e) => {
   };
   const targetTierId = document.getElementById('fTierSelect').value;
 
-  state.tiers.forEach(t => t.companies = t.companies.filter(c => c.id !== id));
-  const target = state.tiers.find(t => t.id === targetTierId);
-  if (target) target.companies.push(data);
+  // Find existing location so edits preserve position within the same tier
+  let currentTier = null, currentIndex = -1;
+  for (const t of state.tiers) {
+    const idx = t.companies.findIndex(c => c.id === id);
+    if (idx !== -1) { currentTier = t; currentIndex = idx; break; }
+  }
+
+  if (currentTier && currentTier.id === targetTierId) {
+    // Same tier — update in place, preserve position
+    currentTier.companies[currentIndex] = data;
+  } else {
+    // New company, or moved to a different tier — remove from old, append to target
+    if (currentTier) currentTier.companies.splice(currentIndex, 1);
+    const target = state.tiers.find(t => t.id === targetTierId);
+    if (target) target.companies.push(data);
+  }
 
   saveState();
   closeModal();
