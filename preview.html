@@ -116,8 +116,12 @@
   .theme-light .bfc-modal-meta { border-color: #E5E5E5; }
   .bfc-modal-row { display: flex; align-items: center; gap: 10px; justify-content: flex-start; font-size: 13px; }
   .bfc-modal-row svg { width: 18px; height: 18px; flex: none; }
-  .bfc-modal-link { display: inline-flex; align-items: center; gap: 6px; background: var(--bfc-orange); color: #fff; padding: 11px 22px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 13px; transition: filter .15s; }
-  .bfc-modal-link:hover { filter: brightness(1.1); }
+  .bfc-modal-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .bfc-modal-btn, .bfc-modal-btn:link, .bfc-modal-btn:visited, .bfc-modal-btn:hover, .bfc-modal-btn:active, .bfc-modal-btn:focus { display: inline-flex; align-items: center; gap: 6px; color: #fff; padding: 11px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 13px; transition: filter .15s; border: 0; }
+  .bfc-modal-btn:hover { filter: brightness(1.12); }
+  .bfc-modal-btn-primary { background: var(--bfc-orange); }
+  .theme-dark .bfc-modal-btn-secondary { background: #4B5563; }
+  .theme-light .bfc-modal-btn-secondary { background: #6B7280; }
 
   .empty-state { text-align: center; padding: 80px 20px; opacity: .6; }
 
@@ -341,13 +345,16 @@ function generateEmbed(state, t = 'dark') {
 .bfc-dir .bfc-modal-meta{display:flex;flex-direction:column;gap:12px;margin:20px 0 24px;padding:20px 8px;border-top:1px solid ${line};border-bottom:1px solid ${line}}
 .bfc-dir .bfc-modal-row{display:flex;align-items:center;gap:10px;justify-content:flex-start;font-size:13px;color:${text}}
 .bfc-dir .bfc-modal-row svg{width:18px;height:18px;flex:none}
-.bfc-dir .bfc-modal-link,
-.bfc-dir .bfc-modal-link:link,
-.bfc-dir .bfc-modal-link:visited,
-.bfc-dir .bfc-modal-link:hover,
-.bfc-dir .bfc-modal-link:active,
-.bfc-dir .bfc-modal-link:focus{display:inline-flex;align-items:center;gap:6px;background:${orange};color:#fff;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;transition:filter .15s;box-shadow:none;border:0}
-.bfc-dir .bfc-modal-link:hover{filter:brightness(1.1)}
+.bfc-dir .bfc-modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.bfc-dir .bfc-modal-btn,
+.bfc-dir .bfc-modal-btn:link,
+.bfc-dir .bfc-modal-btn:visited,
+.bfc-dir .bfc-modal-btn:hover,
+.bfc-dir .bfc-modal-btn:active,
+.bfc-dir .bfc-modal-btn:focus{display:inline-flex;align-items:center;gap:6px;color:#fff;padding:11px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;transition:filter .15s;box-shadow:none;border:0}
+.bfc-dir .bfc-modal-btn:hover{filter:brightness(1.12)}
+.bfc-dir .bfc-modal-btn-primary{background:${orange}}
+.bfc-dir .bfc-modal-btn-secondary{background:${isDark ? '#4B5563' : '#6B7280'}}
 @media(max-width:640px){.bfc-dir{padding:30px 20px 60px}.bfc-dir .bfc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.bfc-dir .bfc-toolbar{flex-wrap:wrap}.bfc-dir .bfc-search{flex:1 1 100%}.bfc-dir .bfc-select{flex:1 1 calc(50% - 4px)}}
 `.trim();
 
@@ -370,6 +377,7 @@ function generateEmbed(state, t = 'dark') {
         `data-tier-id="${escapeAttr(tier.id)}"`,
         `data-tier-name="${escapeAttr(tier.name)}"`,
         `data-url="${escapeAttr(c.url || '')}"`,
+        `data-directory-url="${escapeAttr(c.directoryUrl || '#')}"`,
         `data-logo="${escapeAttr(logoUrl)}"`,
       ].join(' ');
       return `<button type="button" class="bfc-card" ${dataAttrs} title="${escapeAttr(titleAttr)}"><div class="bfc-logo">${logoInner}</div></button>`;
@@ -469,11 +477,19 @@ function generateEmbed(state, t = 'dark') {
     var vis = card.getAttribute('data-visibility') || 'Private';
     var tierName = card.getAttribute('data-tier-name') || '';
     var url = card.getAttribute('data-url') || '';
+    var directoryUrl = card.getAttribute('data-directory-url') || '';
     var logoUrl = card.getAttribute('data-logo') || '';
     var typeIcon = type === 'Vendor' ? ICONS.Vendor : ICONS.Member;
     var visIcon  = vis === 'Public' ? ICONS.Public : ICONS.Private;
     var typeCls = type === 'Vendor' ? 'bfc-vendor' : 'bfc-member';
     var visCls  = vis === 'Public' ? 'bfc-public' : 'bfc-private';
+    var actions = '';
+    if(directoryUrl || url){
+      actions = '<div class="bfc-modal-actions">'+
+        (directoryUrl ? '<a class="bfc-modal-btn bfc-modal-btn-primary" href="'+eH(directoryUrl)+'" target="_blank" rel="noopener">Directory Listing '+ICONS.External+'</a>' : '')+
+        (url ? '<a class="bfc-modal-btn bfc-modal-btn-secondary" href="'+eH(url)+'" target="_blank" rel="noopener">Visit website '+ICONS.External+'</a>' : '')+
+      '</div>';
+    }
     overlay.innerHTML = ''+
       '<div class="bfc-modal">'+
         '<button type="button" class="bfc-modal-close" aria-label="Close">&times;</button>'+
@@ -484,7 +500,7 @@ function generateEmbed(state, t = 'dark') {
           '<div class="bfc-modal-row"><span class="'+visCls+'" style="display:inline-flex;width:18px;height:18px">'+visIcon+'</span><span>'+eH(vis)+' company</span></div>'+
           (tierName ? '<div class="bfc-modal-row"><span style="display:inline-flex;width:18px;height:18px;color:var(--bfc-orange)">'+ICONS.Tier+'</span><span>'+eH(tierName)+'</span></div>' : '')+
         '</div>'+
-        (url ? '<a class="bfc-modal-link" href="'+eH(url)+'" target="_blank" rel="noopener">Visit website '+ICONS.External+'</a>' : '')+
+        actions+
       '</div>';
     overlay.classList.add('bfc-open');
     var closeBtn = overlay.querySelector('.bfc-modal-close');
@@ -608,6 +624,7 @@ function render() {
         `data-tier-id="${escapeAttr(tier.id)}"`,
         `data-tier-name="${escapeAttr(tier.name)}"`,
         `data-url="${escapeAttr(c.url || '')}"`,
+        `data-directory-url="${escapeAttr(c.directoryUrl || '#')}"`,
         `data-logo="${escapeAttr(logoUrl)}"`,
       ].join(' ');
       return `<button type="button" class="bfc-card" ${dataAttrs} title="${escapeAttr(titleAttr)}"><div class="bfc-logo">${logoInner}</div></button>`;
@@ -693,28 +710,32 @@ function wireFilters() {
   function closeModal() { overlay.classList.remove('bfc-open'); overlay.innerHTML = ''; }
   function openModal(card) {
     const name = card.getAttribute('data-name') || '';
-    const ticker = card.getAttribute('data-ticker') || '';
     const type = card.getAttribute('data-type') || 'Member';
     const vis = card.getAttribute('data-visibility') || 'Private';
     const tierName = card.getAttribute('data-tier-name') || '';
     const url = card.getAttribute('data-url') || '';
+    const directoryUrl = card.getAttribute('data-directory-url') || '';
     const logoUrl = card.getAttribute('data-logo') || '';
     const typeIcon = type === 'Vendor' ? ICON_VENDOR : ICON_MEMBER;
     const visIcon  = vis === 'Public' ? ICON_PUBLIC : ICON_PRIVATE;
     const typeCls  = type === 'Vendor' ? 'bfc-vendor' : 'bfc-member';
     const visCls   = vis === 'Public' ? 'bfc-public' : 'bfc-private';
+    const actions = (directoryUrl || url) ? `
+      <div class="bfc-modal-actions">
+        ${directoryUrl ? `<a class="bfc-modal-btn bfc-modal-btn-primary" href="${escapeAttr(directoryUrl)}" target="_blank" rel="noopener">Directory Listing ${ICON_EXTERNAL}</a>` : ''}
+        ${url ? `<a class="bfc-modal-btn bfc-modal-btn-secondary" href="${escapeAttr(url)}" target="_blank" rel="noopener">Visit website ${ICON_EXTERNAL}</a>` : ''}
+      </div>` : '';
     overlay.innerHTML = `
       <div class="bfc-modal">
         <button type="button" class="bfc-modal-close" aria-label="Close">&times;</button>
         ${logoUrl ? `<div class="bfc-modal-logo"><img src="${escapeAttr(logoUrl)}" alt="${escapeAttr(name)}"/></div>` : ''}
         <h3 class="bfc-modal-name">${escapeHtml(name)}</h3>
-        ${ticker ? `<div class="bfc-modal-ticker">${escapeHtml(ticker)}</div>` : ''}
         <div class="bfc-modal-meta">
           <div class="bfc-modal-row"><span class="${typeCls}" style="display:inline-flex;width:18px;height:18px">${typeIcon}</span><span>${escapeHtml(type)}</span></div>
           <div class="bfc-modal-row"><span class="${visCls}" style="display:inline-flex;width:18px;height:18px">${visIcon}</span><span>${escapeHtml(vis)} company</span></div>
           ${tierName ? `<div class="bfc-modal-row"><span style="display:inline-flex;width:18px;height:18px;color:var(--bfc-orange)">${ICON_TIER}</span><span>${escapeHtml(tierName)}</span></div>` : ''}
         </div>
-        ${url ? `<a class="bfc-modal-link" href="${escapeAttr(url)}" target="_blank" rel="noopener">Visit website ${ICON_EXTERNAL}</a>` : ''}
+        ${actions}
       </div>`;
     overlay.classList.add('bfc-open');
     overlay.querySelector('.bfc-modal-close')?.focus();

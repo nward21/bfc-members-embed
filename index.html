@@ -174,6 +174,10 @@
         </div>
       </div>
       <div>
+        <label class="block text-xs font-medium text-neutral-400 mb-1">Directory listing URL <span class="text-neutral-600">(BFC members page)</span></label>
+        <input id="fDirectoryUrl" placeholder="https://bitcoinforcorporations.com/members/…" class="w-full bg-bfc-dark border border-bfc-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-bfc-orange" />
+      </div>
+      <div>
         <label class="block text-xs font-medium text-neutral-400 mb-1">Website URL (optional)</label>
         <input id="fUrl" placeholder="https://…" class="w-full bg-bfc-dark border border-bfc-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-bfc-orange" />
       </div>
@@ -334,8 +338,11 @@ const SEED_COMPANIES = {
     { id: 'c_xce',      name: 'XCE',                  ticker: '',      type: 'Vendor', logoSlug: 'xce',                  url: 'https://xce.io/' },
   ],
 };
-// Inject visibility on every seed entry.
-Object.values(SEED_COMPANIES).forEach(list => list.forEach(c => { c.visibility = derivedVisibility(c.ticker); }));
+// Inject visibility + default directoryUrl placeholder on every seed entry.
+Object.values(SEED_COMPANIES).forEach(list => list.forEach(c => {
+  c.visibility = derivedVisibility(c.ticker);
+  if (c.directoryUrl == null) c.directoryUrl = '#';
+}));
 
 const DEFAULT_STATE = {
   tiers: [
@@ -414,7 +421,7 @@ function loadState() {
         const before = t.companies ? t.companies.length : 0;
         t.companies = (t.companies || []).filter(c => !REMOVE_COMPANY_IDS.has(c.id));
         if (t.companies.length !== before) migrated = true;
-        // URL + visibility patches for existing companies
+        // URL + visibility + directoryUrl patches for existing companies
         t.companies.forEach(c => {
           if (URL_MIGRATIONS[c.id] && LEGACY_URLS.has(c.url || '')) {
             c.url = URL_MIGRATIONS[c.id]; migrated = true;
@@ -422,6 +429,7 @@ function loadState() {
           if (VISIBILITY_OVERRIDES[c.id] && c.visibility !== VISIBILITY_OVERRIDES[c.id]) {
             c.visibility = VISIBILITY_OVERRIDES[c.id]; migrated = true;
           }
+          if (c.directoryUrl == null) { c.directoryUrl = '#'; migrated = true; }
         });
       });
       // Add any new seed companies that don't already exist anywhere
@@ -707,6 +715,7 @@ function openModal({ company = null, tierId = null } = {}) {
   document.getElementById('fLogoDataUrl').value = company?.logoDataUrl || '';
   document.getElementById('fTicker').value = company?.ticker || '';
   document.getElementById('fUrl').value = company?.url || '';
+  document.getElementById('fDirectoryUrl').value = company?.directoryUrl || '';
   document.getElementById('fLogoUpload').value = '';
   setType(company?.type || 'Member');
   setVisibility(company?.visibility || derivedVisibility(company?.ticker || ''));
@@ -814,6 +823,7 @@ document.getElementById('companyForm').addEventListener('submit', (e) => {
     logoDataUrl: document.getElementById('fLogoDataUrl').value || '',
     ticker: document.getElementById('fTicker').value.trim().toUpperCase(),
     url: document.getElementById('fUrl').value.trim(),
+    directoryUrl: document.getElementById('fDirectoryUrl').value.trim(),
     type: document.getElementById('fType').value,
     visibility: document.getElementById('fVisibility').value,
   };
@@ -994,14 +1004,17 @@ function generateEmbed(t = 'dark') {
 .bfc-dir .bfc-modal-meta{display:flex;flex-direction:column;gap:12px;margin:20px 0 24px;padding:20px 8px;border-top:1px solid ${line};border-bottom:1px solid ${line}}
 .bfc-dir .bfc-modal-row{display:flex;align-items:center;gap:10px;justify-content:flex-start;font-size:13px;color:${text}}
 .bfc-dir .bfc-modal-row svg{width:18px;height:18px;flex:none}
-/* Link — explicit for every pseudo-state so browser :visited and WP theme don't turn it purple/pink */
-.bfc-dir .bfc-modal-link,
-.bfc-dir .bfc-modal-link:link,
-.bfc-dir .bfc-modal-link:visited,
-.bfc-dir .bfc-modal-link:hover,
-.bfc-dir .bfc-modal-link:active,
-.bfc-dir .bfc-modal-link:focus{display:inline-flex;align-items:center;gap:6px;background:${orange};color:#fff;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;transition:filter .15s;box-shadow:none;border:0}
-.bfc-dir .bfc-modal-link:hover{filter:brightness(1.1)}
+/* Action buttons — explicit for every pseudo-state so browser :visited and WP theme can't override */
+.bfc-dir .bfc-modal-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.bfc-dir .bfc-modal-btn,
+.bfc-dir .bfc-modal-btn:link,
+.bfc-dir .bfc-modal-btn:visited,
+.bfc-dir .bfc-modal-btn:hover,
+.bfc-dir .bfc-modal-btn:active,
+.bfc-dir .bfc-modal-btn:focus{display:inline-flex;align-items:center;gap:6px;color:#fff;padding:11px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;transition:filter .15s;box-shadow:none;border:0}
+.bfc-dir .bfc-modal-btn:hover{filter:brightness(1.12)}
+.bfc-dir .bfc-modal-btn-primary{background:${orange}}
+.bfc-dir .bfc-modal-btn-secondary{background:${isDark ? '#4B5563' : '#6B7280'}}
 @media(max-width:640px){.bfc-dir{padding:30px 20px 110px}.bfc-dir .bfc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.bfc-dir .bfc-toolbar{flex-wrap:wrap}.bfc-dir .bfc-search{flex:1 1 100%}.bfc-dir .bfc-select{flex:1 1 calc(50% - 4px)}}
 `.trim();
 
@@ -1031,6 +1044,7 @@ function generateEmbed(t = 'dark') {
         `data-tier-id="${escapeAttr(tier.id)}"`,
         `data-tier-name="${escapeAttr(tier.name)}"`,
         `data-url="${escapeAttr(c.url || '')}"`,
+        `data-directory-url="${escapeAttr(c.directoryUrl || '')}"`,
         `data-logo="${escapeAttr(logoUrl)}"`,
       ].join(' ');
       return `<button type="button" class="bfc-card" ${dataAttrs} title="${escapeAttr(titleAttr)}"><div class="bfc-logo">${logoInner}</div></button>`;
@@ -1163,12 +1177,21 @@ function generateEmbed(t = 'dark') {
     var vis = card.getAttribute('data-visibility') || 'Private';
     var tierName = card.getAttribute('data-tier-name') || '';
     var url = card.getAttribute('data-url') || '';
+    var directoryUrl = card.getAttribute('data-directory-url') || '';
     var logoUrl = card.getAttribute('data-logo') || '';
 
     var typeIcon = type === 'Vendor' ? ICONS.Vendor : ICONS.Member;
     var visIcon  = vis === 'Public' ? ICONS.Public : ICONS.Private;
     var typeCls = type === 'Vendor' ? 'bfc-vendor' : 'bfc-member';
     var visCls  = vis === 'Public' ? 'bfc-public' : 'bfc-private';
+
+    var actions = '';
+    if(directoryUrl || url){
+      actions = '<div class="bfc-modal-actions">'+
+        (directoryUrl ? '<a class="bfc-modal-btn bfc-modal-btn-primary" href="'+escapeHtml(directoryUrl)+'" target="_blank" rel="noopener">Directory Listing '+ICONS.External+'</a>' : '')+
+        (url ? '<a class="bfc-modal-btn bfc-modal-btn-secondary" href="'+escapeHtml(url)+'" target="_blank" rel="noopener">Visit website '+ICONS.External+'</a>' : '')+
+      '</div>';
+    }
 
     overlay.innerHTML = ''+
       '<div class="bfc-modal">'+
@@ -1180,7 +1203,7 @@ function generateEmbed(t = 'dark') {
           '<div class="bfc-modal-row"><span class="'+visCls+'" style="display:inline-flex;width:18px;height:18px">'+visIcon+'</span><span>'+escapeHtml(vis)+' company</span></div>'+
           (tierName ? '<div class="bfc-modal-row"><span style="display:inline-flex;width:18px;height:18px;color:var(--bfc-orange)">'+ICONS.Tier+'</span><span>'+escapeHtml(tierName)+'</span></div>' : '')+
         '</div>'+
-        (url ? '<a class="bfc-modal-link" href="'+escapeHtml(url)+'" target="_blank" rel="noopener">Visit website '+ICONS.External+'</a>' : '')+
+        actions+
       '</div>';
     overlay.classList.add('bfc-open');
     var closeBtn = overlay.querySelector('.bfc-modal-close');
