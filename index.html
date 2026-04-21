@@ -299,14 +299,14 @@ const SEED_COMPANIES = {
     { id: 'c_fold',      name: 'Fold',                ticker: 'FLD',   type: 'Member', logoSlug: 'fold',                 url: 'https://foldapp.com' },
     { id: 'c_giga',      name: 'GIGA',                ticker: '',      type: 'Member', logoSlug: 'giga',                 url: 'https://www.giga.us/' },
     { id: 'c_kraken',    name: 'Kraken Institutional',ticker: '',      type: 'Vendor', logoSlug: 'kraken-institutional', url: 'https://www.kraken.com/institutional' },
-    { id: 'c_kulr',      name: 'KULR',                ticker: 'KULR',  type: 'Member', logoSlug: 'kulr',                 url: 'https://www.kulrtechnology.com' },
-    { id: 'c_london',    name: 'The London Bitcoin Co.', ticker: '',   type: 'Member', logoSlug: 'london-bitcoin-co',    url: 'https://thelondonbitcoinco.com' },
+    { id: 'c_kulr',      name: 'KULR',                ticker: 'KULR',  type: 'Member', logoSlug: 'kulr',                 url: 'https://kulr.ai/' },
+    { id: 'c_london',    name: 'The London Bitcoin Co.', ticker: '',   type: 'Member', logoSlug: 'london-bitcoin-co',    url: 'https://ldnbtc.com/' },
     { id: 'c_lqwd',      name: 'LQWD',                ticker: 'LQWD',  type: 'Member', logoSlug: 'lqwd',                 url: 'https://lqwdfintech.com' },
-    { id: 'c_mangrove',  name: 'Mangrove',            ticker: '',      type: 'Member', logoSlug: 'mangrove',             url: '' },
+    { id: 'c_mangrove',  name: 'Mangrove',            ticker: '',      type: 'Member', logoSlug: 'mangrove',             url: 'https://mangrove.ai/' },
     { id: 'c_meliuz',    name: 'Méliuz',              ticker: 'MLIU3', type: 'Member', logoSlug: 'meliuz',               url: 'https://meliuz.com.br' },
     { id: 'c_mnav',      name: 'mNAV.com',            ticker: '',      type: 'Member', logoSlug: 'mnav',                 url: 'https://mnav.com' },
     { id: 'c_1723hk',    name: 'Moon Inc',            ticker: '1723.HK', type: 'Member', logoSlug: 'moon-inc',           url: 'https://www.1723.hk/' },
-    { id: 'c_naas',      name: 'NaaS',                ticker: 'NAAS',  type: 'Member', logoSlug: 'naas',                 url: 'https://naas.io' },
+    { id: 'c_naas',      name: 'NaaS',                ticker: 'NAAS',  type: 'Member', logoSlug: 'naas',                 url: '#' },
     { id: 'c_nakamoto',  name: 'Nakamoto',            ticker: '',      type: 'Member', logoSlug: 'nakamoto',             url: 'https://nakamoto.com', visibility: 'Public' },
     { id: 'c_oranje',    name: 'Oranje BTC',          ticker: '',      type: 'Member', logoSlug: 'oranje',               url: 'https://oranjebtc.com' },
     { id: 'c_prenetics', name: 'Prenetics',           ticker: 'PRE',   type: 'Member', logoSlug: 'prenetics',            url: 'https://prenetics.com' },
@@ -326,11 +326,11 @@ const SEED_COMPANIES = {
     { id: 'c_utxo',        name: 'UTXO',              ticker: '',      type: 'Member', logoSlug: 'utxo',                 url: 'https://www.utxo.management/' },
   ],
   industry: [
-    { id: 'c_arch',     name: 'ARCH',                 ticker: '',      type: 'Vendor', logoSlug: 'arch',                 url: 'https://archpublic.com' },
+    { id: 'c_arch',     name: 'ARCH',                 ticker: '',      type: 'Vendor', logoSlug: 'arch',                 url: 'https://archlending.com/' },
     { id: 'c_locate',   name: 'Locate Technologies',  ticker: '',      type: 'Vendor', logoSlug: 'locate-technologies',  url: 'https://locatetech.com' },
     { id: 'c_matador',  name: 'Matador',              ticker: '',      type: 'Member', logoSlug: 'matador',              url: 'https://matadortechnologies.com' },
     { id: 'c_oranje2',  name: 'OranjeBTC',            ticker: '',      type: 'Vendor', logoSlug: 'oranje',               url: 'https://oranjebtc.com' },
-    { id: 'c_uproot',   name: 'Uproot Company',       ticker: '',      type: 'Vendor', logoSlug: 'uproot-company',       url: 'https://uprootcompany.com' },
+    { id: 'c_uproot',   name: 'Uproot Company',       ticker: '',      type: 'Vendor', logoSlug: 'uproot-company',       url: 'https://bitsaving.kr/' },
     { id: 'c_xce',      name: 'XCE',                  ticker: '',      type: 'Vendor', logoSlug: 'xce',                  url: 'https://xce.io/' },
   ],
 };
@@ -367,8 +367,18 @@ const URL_MIGRATIONS = {
   c_xce:       'https://xce.io/',
   c_capitalb:  'https://cptlb.com/',
   c_giga:      'https://www.giga.us/',
+  c_uproot:    'https://bitsaving.kr/',
+  c_arch:      'https://archlending.com/',
+  c_naas:      '#',
+  c_mangrove:  'https://mangrove.ai/',
+  c_london:    'https://ldnbtc.com/',
+  c_kulr:      'https://kulr.ai/',
 };
-const LEGACY_URLS = new Set(['', 'https://treasury.b', 'https://thecapitalb.com', 'https://gigaenergy.com']);
+const LEGACY_URLS = new Set([
+  '', 'https://treasury.b', 'https://thecapitalb.com', 'https://gigaenergy.com',
+  'https://uprootcompany.com', 'https://archpublic.com', 'https://naas.io',
+  'https://thelondonbitcoinco.com', 'https://www.kulrtechnology.com',
+]);
 
 // Companies to remove from any existing state.
 const REMOVE_COMPANY_IDS = new Set(['c_semler']);
