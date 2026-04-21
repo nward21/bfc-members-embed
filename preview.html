@@ -32,69 +32,85 @@
   .wrap { max-width: 1200px; margin: 0 auto; padding: 24px; }
   .stamp { font-size: 11px; opacity: .6; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .1em; }
 
-  /* ====== The actual embed styling (kept in sync with generateEmbed() in index.html) ====== */
+  /* ====== Embed styling (kept in sync with generateEmbed() in index.html) ====== */
   .bfc-dir { font-family: Inter, system-ui, sans-serif; padding: 28px; border-radius: 14px; }
   .bfc-dir *{ box-sizing: border-box; }
   .theme-dark .bfc-dir { background: #000; color: #fff; }
   .theme-light .bfc-dir { background: #F7F7F7; color: #111; }
 
-  .bfc-toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid; }
+  /* Toolbar — 3 columns: Search / Filter / Sort */
+  .bfc-toolbar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: start; margin-bottom: 16px; padding-bottom: 20px; border-bottom: 1px solid; }
   .theme-dark .bfc-toolbar { border-color: #2A2A2A; }
   .theme-light .bfc-toolbar { border-color: #E5E5E5; }
-  .bfc-search { flex: 1; min-width: 200px; position: relative; }
-  .bfc-search input { width: 100%; font: inherit; font-size: 13px; padding: 9px 12px 9px 34px; border-radius: 8px; outline: none; transition: border-color .15s; border: 1px solid; }
+  .bfc-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .bfc-col-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+  .theme-dark .bfc-col-label { color: #D4D3D3; }
+  .theme-light .bfc-col-label { color: #6B7280; }
+
+  .bfc-search { position: relative; }
+  .bfc-search .bfc-ico { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); opacity: .55; pointer-events: none; }
+  .bfc-search input { width: 100%; font: inherit; font-size: 13px; padding: 9px 32px 9px 34px; border-radius: 8px; outline: none; transition: border-color .15s; border: 1px solid; }
   .theme-dark .bfc-search input { background: #0A0A0A; color: #fff; border-color: #2A2A2A; }
   .theme-light .bfc-search input { background: #fff; color: #111; border-color: #E5E5E5; }
   .bfc-search input:focus { border-color: var(--bfc-orange); }
-  .bfc-search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; opacity: .55; }
-  .bfc-chips { display: inline-flex; border-radius: 8px; padding: 3px; gap: 2px; border: 1px solid; }
+  .bfc-search-clear { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); background: none; border: 0; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 16px; line-height: 1; display: none; }
+  .theme-dark .bfc-search-clear { color: #D4D3D3; }
+  .theme-light .bfc-search-clear { color: #6B7280; }
+  .bfc-search-clear.show { display: block; }
+
+  .bfc-chips { display: inline-flex; border-radius: 8px; padding: 3px; gap: 2px; border: 1px solid; align-self: stretch; width: 100%; justify-content: stretch; }
   .theme-dark .bfc-chips { background: #0A0A0A; border-color: #2A2A2A; }
   .theme-light .bfc-chips { background: #fff; border-color: #E5E5E5; }
-  .bfc-chip { border: 0; background: transparent; font: inherit; font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: background .15s, color .15s; }
+  .bfc-chip { flex: 1; border: 0; background: transparent; font: inherit; font-size: 12px; font-weight: 500; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background .15s, color .15s; white-space: nowrap; }
   .theme-dark .bfc-chip { color: #D4D3D3; }
   .theme-light .bfc-chip { color: #6B7280; }
   .bfc-chip.active { background: var(--bfc-orange); color: #000; font-weight: 600; }
-  .bfc-sort { font: inherit; font-size: 12px; padding: 8px 10px; border-radius: 8px; cursor: pointer; outline: none; border: 1px solid; }
-  .theme-dark .bfc-sort { background: #0A0A0A; color: #fff; border-color: #2A2A2A; }
-  .theme-light .bfc-sort { background: #fff; color: #111; border-color: #E5E5E5; }
-  .bfc-sort:focus { border-color: var(--bfc-orange); }
-  .bfc-count { font-size: 11px; letter-spacing: .04em; }
-  .theme-dark .bfc-count { color: #D4D3D3; }
-  .theme-light .bfc-count { color: #6B7280; }
+
+  .bfc-select { width: 100%; font: inherit; font-size: 13px; padding: 9px 32px 9px 12px; border-radius: 8px; cursor: pointer; outline: none; border: 1px solid; appearance: none; -webkit-appearance: none; background-repeat: no-repeat; background-position: right 12px center; }
+  .theme-dark .bfc-select { background-color: #0A0A0A; color: #fff; border-color: #2A2A2A; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23D4D3D3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); }
+  .theme-light .bfc-select { background-color: #fff; color: #111; border-color: #E5E5E5; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); }
+  .bfc-select:focus { border-color: var(--bfc-orange); }
+  .theme-dark .bfc-select option { background: #1D1D1D; color: #fff; }
+  .theme-light .bfc-select option { background: #fff; color: #111; }
+
+  .bfc-meta { font-size: 11px; letter-spacing: .04em; margin: 0 0 16px; text-align: right; }
+  .theme-dark .bfc-meta { color: #D4D3D3; }
+  .theme-light .bfc-meta { color: #6B7280; }
 
   .bfc-dir h2 { color: var(--bfc-orange); font-size: 13px; text-transform: uppercase; letter-spacing: .14em; margin: 28px 0 14px; font-weight: 700; }
   .bfc-dir .bfc-tier:first-child h2 { margin-top: 0; }
   .bfc-tier.bfc-hidden { display: none; }
   .bfc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
-  .bfc-card { border: 1px solid; border-radius: 10px; padding: 16px 12px; text-align: center; text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 10px; min-height: 130px; transition: border-color .2s, transform .2s; }
+  .bfc-card { border: 1px solid; border-radius: 10px; padding: 18px 14px; text-align: center; text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 14px; min-height: 140px; transition: border-color .2s, transform .2s; }
   .bfc-card.bfc-hidden { display: none; }
   .theme-dark .bfc-card { background: #1D1D1D; border-color: #2A2A2A; }
   .theme-light .bfc-card { background: #FFFFFF; border-color: #E5E5E5; }
   .bfc-card:hover { border-color: var(--bfc-orange); transform: translateY(-2px); }
-  .bfc-logo { height: 52px; width: 100%; display: flex; align-items: center; justify-content: center; }
-  .bfc-logo img { max-height: 48px; max-width: 100%; object-fit: contain; }
-  .bfc-name { font-weight: 600; font-size: 12px; line-height: 1.2; }
-  .bfc-ticker { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; font-variant-numeric: tabular-nums; }
-  .theme-dark .bfc-ticker { color: #D4D3D3; }
-  .theme-light .bfc-ticker { color: #6B7280; }
-  .bfc-badge { font-size: 9px; text-transform: uppercase; letter-spacing: .12em; padding: 2px 7px; border-radius: 3px; border: 1px solid; font-weight: 600; }
+  .bfc-logo { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; min-height: 56px; }
+  .bfc-logo img { max-height: 56px; max-width: 100%; object-fit: contain; }
+  .bfc-nologo { font-size: 11px; opacity: .7; font-weight: 500; padding: 0 8px; line-height: 1.2; }
+  .theme-dark .bfc-nologo { color: #D4D3D3; }
+  .theme-light .bfc-nologo { color: #6B7280; }
+
+  .bfc-badges { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; align-items: center; }
+  .bfc-badge { font-size: 9px; text-transform: uppercase; letter-spacing: .1em; padding: 2px 6px; border-radius: 3px; border: 1px solid; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; line-height: 1.4; }
+  .bfc-badge svg { flex: none; }
   .bfc-member { color: var(--bfc-orange); border-color: rgba(250,102,14,.35); background: rgba(250,102,14,.10); }
   .theme-dark .bfc-vendor { color: #93C5FD; border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.10); }
   .theme-light .bfc-vendor { color: #2563EB; border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.10); }
-
-  .missing { display: flex; align-items: center; justify-content: center; height: 48px; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; border: 1px dashed; border-radius: 4px; width: 100%; }
-  .theme-dark .missing { color: rgba(255,255,255,.35); border-color: rgba(255,255,255,.15); }
-  .theme-light .missing { color: rgba(0,0,0,.35); border-color: rgba(0,0,0,.15); }
+  .theme-dark .bfc-public { color: #6EE7B7; border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.10); }
+  .theme-light .bfc-public { color: #059669; border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.10); }
+  .theme-dark .bfc-private { color: #D4D3D3; border-color: #2A2A2A; background: rgba(212,211,211,.06); }
+  .theme-light .bfc-private { color: #6B7280; border-color: #E5E5E5; background: rgba(0,0,0,.04); }
 
   .empty-state { text-align: center; padding: 80px 20px; opacity: .6; }
 
+  @media(max-width:768px){ .bfc-toolbar { grid-template-columns: 1fr; gap: 14px; } }
   @media(max-width:640px){
     .bfc-dir { padding: 20px; }
     .bfc-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
     .chrome { padding: 10px 16px; }
     .chrome .sub { display: none; }
-    .bfc-toolbar { gap: 8px; }
-    .bfc-search { min-width: 100%; }
   }
 </style>
 </head>
@@ -122,7 +138,7 @@
 </div>
 
 <script>
-const STORAGE_KEY = 'bfc_directory_v4';
+const STORAGE_KEY = 'bfc_directory_v5';
 const AVAILABLE_LOGOS = new Set([
   'aifinyo','avalon-labs','bitgo','blockspaces','btc-inc','byte-federal','capital-b',
   'crypto-com','ddc','fold','giga','jetking','kraken-institutional','kulr',
@@ -131,6 +147,9 @@ const AVAILABLE_LOGOS = new Set([
   'public-square','salt','samara','semler-scientific','solar-strategy','strategy',
   'strive','swc','treasury','uproot-company','utxo','vaultz-capital'
 ]);
+
+const ICON_PUBLIC  = '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>';
+const ICON_PRIVATE = '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
 
 const params = new URLSearchParams(location.search);
 let theme = params.get('theme') || localStorage.getItem('bfc_theme') || 'dark';
@@ -173,41 +192,65 @@ function render() {
 
   const state = JSON.parse(raw);
   const total = state.tiers.reduce((n, t) => n + t.companies.length, 0);
+  const tierOptions = state.tiers.map(t => `<option value="${escapeAttr(t.id)}">${escapeHtml(t.name)}</option>`).join('');
 
   const toolbar = `
     <div class="bfc-toolbar">
-      <div class="bfc-search">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        <input type="search" id="bfcSearch" placeholder="Search companies or tickers…" aria-label="Search" />
+      <div class="bfc-col">
+        <label class="bfc-col-label" for="bfcSearch">Search</label>
+        <div class="bfc-search">
+          <svg class="bfc-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="bfcSearch" type="search" placeholder="Name or ticker…" aria-label="Search"/>
+          <button type="button" class="bfc-search-clear" aria-label="Clear search">×</button>
+        </div>
       </div>
-      <div class="bfc-chips" role="tablist">
-        <button class="bfc-chip active" data-filter="all">All</button>
-        <button class="bfc-chip" data-filter="Member">Members</button>
-        <button class="bfc-chip" data-filter="Vendor">Vendors</button>
+      <div class="bfc-col">
+        <span class="bfc-col-label">Filter</span>
+        <div class="bfc-chips" role="tablist" aria-label="Filter by type">
+          <button class="bfc-chip active" data-filter-type="all">All</button>
+          <button class="bfc-chip" data-filter-type="Member">Members</button>
+          <button class="bfc-chip" data-filter-type="Vendor">Vendors</button>
+        </div>
+        <div class="bfc-chips" role="tablist" aria-label="Filter by visibility">
+          <button class="bfc-chip active" data-filter-vis="all">All</button>
+          <button class="bfc-chip" data-filter-vis="Public">Public</button>
+          <button class="bfc-chip" data-filter-vis="Private">Private</button>
+        </div>
+        <select class="bfc-select" data-filter-tier aria-label="Filter by tier">
+          <option value="all">All tiers</option>
+          ${tierOptions}
+        </select>
       </div>
-      <select class="bfc-sort" id="bfcSort" aria-label="Sort">
-        <option value="default">Sort: Tier order</option>
-        <option value="az">Sort: A → Z</option>
-        <option value="za">Sort: Z → A</option>
-      </select>
-      <span class="bfc-count"><span id="bfcVisible">${total}</span> / ${total}</span>
-    </div>`;
+      <div class="bfc-col">
+        <label class="bfc-col-label" for="bfcSort">Sort</label>
+        <select id="bfcSort" class="bfc-select" data-sort>
+          <option value="default">Tier order</option>
+          <option value="name-asc">Name (A → Z)</option>
+          <option value="name-desc">Name (Z → A)</option>
+          <option value="ticker-asc">Ticker (A → Z)</option>
+          <option value="ticker-desc">Ticker (Z → A)</option>
+        </select>
+      </div>
+    </div>
+    <p class="bfc-meta"><span id="bfcVisible">${total}</span> of ${total} visible</p>`;
 
   const tiersHtml = state.tiers.map(tier => {
     const cards = (tier.companies || []).map(c => {
+      const vis = c.visibility || (c.ticker ? 'Public' : 'Private');
       const logoUrl = companyLogoSrc(c, theme);
       const logo = logoUrl
-        ? `<div class="bfc-logo"><img src="${escapeAttr(logoUrl)}" alt="${escapeAttr(c.name)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=&quot;missing&quot;>no logo</div>'"/></div>`
-        : `<div class="bfc-logo"><div class="missing">no logo</div></div>`;
-      const ticker = c.ticker ? `<div class="bfc-ticker">${escapeHtml(c.ticker)}</div>` : '';
-      const badge = `<span class="bfc-badge ${c.type === 'Vendor' ? 'bfc-vendor' : 'bfc-member'}">${escapeHtml(c.type || 'Member')}</span>`;
-      const inner = `${logo}<div><div class="bfc-name">${escapeHtml(c.name)}</div>${ticker}</div>${badge}`;
-      const dataAttrs = `data-name="${escapeAttr((c.name || '').toLowerCase())}" data-ticker="${escapeAttr((c.ticker || '').toLowerCase())}" data-type="${escapeAttr(c.type || 'Member')}"`;
+        ? `<div class="bfc-logo"><img src="${escapeAttr(logoUrl)}" alt="${escapeAttr(c.name)}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=&quot;bfc-nologo&quot;>${escapeAttr(c.name)}</span>'"/></div>`
+        : `<div class="bfc-logo"><span class="bfc-nologo">${escapeHtml(c.name)}</span></div>`;
+      const typeBadge = `<span class="bfc-badge ${c.type === 'Vendor' ? 'bfc-vendor' : 'bfc-member'}">${escapeHtml(c.type || 'Member')}</span>`;
+      const visBadge = `<span class="bfc-badge ${vis === 'Public' ? 'bfc-public' : 'bfc-private'}">${vis === 'Public' ? ICON_PUBLIC : ICON_PRIVATE}${escapeHtml(vis)}</span>`;
+      const titleAttr = c.ticker ? `${c.name} (${c.ticker})` : c.name;
+      const inner = `${logo}<div class="bfc-badges">${typeBadge}${visBadge}</div>`;
+      const dataAttrs = `data-name="${escapeAttr((c.name || '').toLowerCase())}" data-ticker="${escapeAttr((c.ticker || '').toLowerCase())}" data-type="${escapeAttr(c.type || 'Member')}" data-visibility="${escapeAttr(vis)}" data-tier-id="${escapeAttr(tier.id)}" title="${escapeAttr(titleAttr)}"`;
       return c.url
         ? `<a class="bfc-card" ${dataAttrs} href="${escapeAttr(c.url)}" target="_blank" rel="noopener">${inner}</a>`
         : `<div class="bfc-card" ${dataAttrs}>${inner}</div>`;
     }).join('');
-    return `<div class="bfc-tier"><h2>${escapeHtml(tier.name)}</h2><div class="bfc-grid">${cards}</div></div>`;
+    return `<div class="bfc-tier" data-tier-id="${escapeAttr(tier.id)}"><h2>${escapeHtml(tier.name)}</h2><div class="bfc-grid">${cards}</div></div>`;
   }).join('');
 
   root.innerHTML = `<div class="bfc-dir">${toolbar}${tiersHtml}</div>`;
@@ -218,23 +261,36 @@ function wireFilters() {
   const dir = document.querySelector('.bfc-dir');
   if (!dir) return;
   const input = dir.querySelector('#bfcSearch');
-  const chips = dir.querySelectorAll('.bfc-chip');
-  const sort = dir.querySelector('#bfcSort');
+  const clearBtn = dir.querySelector('.bfc-search-clear');
+  const typeChips = dir.querySelectorAll('.bfc-chip[data-filter-type]');
+  const visChips = dir.querySelectorAll('.bfc-chip[data-filter-vis]');
+  const tierSelect = dir.querySelector('[data-filter-tier]');
+  const sortSelect = dir.querySelector('[data-sort]');
   const visibleEl = dir.querySelector('#bfcVisible');
 
-  let filter = 'all', query = '';
+  // Snapshot original order per tier.
+  dir.querySelectorAll('.bfc-tier').forEach(tier => {
+    const grid = tier.querySelector('.bfc-grid');
+    if (grid) grid._orig = [...grid.children];
+  });
+
+  const s = { query: '', type: 'all', vis: 'all', tier: 'all', sort: 'default' };
 
   function apply() {
     let total = 0;
     dir.querySelectorAll('.bfc-tier').forEach(tier => {
+      const tierId = tier.getAttribute('data-tier-id');
+      const tierMatch = s.tier === 'all' || s.tier === tierId;
       let shown = 0;
       tier.querySelectorAll('.bfc-card').forEach(card => {
         const name = card.getAttribute('data-name') || '';
         const ticker = card.getAttribute('data-ticker') || '';
         const type = card.getAttribute('data-type') || '';
-        const matchQ = !query || name.includes(query) || ticker.includes(query);
-        const matchF = filter === 'all' || type === filter;
-        const show = matchQ && matchF;
+        const vis = card.getAttribute('data-visibility') || '';
+        const matchQ = !s.query || name.includes(s.query) || ticker.includes(s.query);
+        const matchType = s.type === 'all' || type === s.type;
+        const matchVis = s.vis === 'all' || vis === s.vis;
+        const show = tierMatch && matchQ && matchType && matchVis;
         card.classList.toggle('bfc-hidden', !show);
         if (show) shown++;
       });
@@ -244,33 +300,48 @@ function wireFilters() {
     if (visibleEl) visibleEl.textContent = total;
   }
 
-  function doSort(mode) {
+  function doSort() {
     dir.querySelectorAll('.bfc-tier').forEach(tier => {
       const grid = tier.querySelector('.bfc-grid');
       if (!grid) return;
+      if (s.sort === 'default') { if (grid._orig) grid._orig.forEach(c => grid.appendChild(c)); return; }
+      const [key, dir2] = s.sort.split('-');
       const cards = [...grid.children];
-      if (mode === 'default') {
-        if (tier._orig) tier._orig.forEach(c => grid.appendChild(c));
-        return;
-      }
-      if (!tier._orig) tier._orig = cards.slice();
       cards.sort((a, b) => {
-        const an = a.getAttribute('data-name') || '';
-        const bn = b.getAttribute('data-name') || '';
-        return mode === 'az' ? an.localeCompare(bn) : bn.localeCompare(an);
+        const av = a.getAttribute('data-' + key) || '';
+        const bv = b.getAttribute('data-' + key) || '';
+        if (key === 'ticker') {
+          if (!av && bv) return 1;
+          if (av && !bv) return -1;
+        }
+        return dir2 === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
       });
       cards.forEach(c => grid.appendChild(c));
     });
   }
 
-  input && input.addEventListener('input', e => { query = e.target.value.toLowerCase().trim(); apply(); });
-  chips.forEach(chip => chip.addEventListener('click', () => {
-    chips.forEach(c => c.classList.remove('active'));
+  input && input.addEventListener('input', e => {
+    s.query = e.target.value.toLowerCase().trim();
+    if (clearBtn) clearBtn.classList.toggle('show', !!s.query);
+    apply();
+  });
+  clearBtn && clearBtn.addEventListener('click', () => {
+    input.value = ''; s.query = ''; clearBtn.classList.remove('show'); input.focus(); apply();
+  });
+  typeChips.forEach(chip => chip.addEventListener('click', () => {
+    typeChips.forEach(c => c.classList.remove('active'));
     chip.classList.add('active');
-    filter = chip.getAttribute('data-filter');
+    s.type = chip.getAttribute('data-filter-type');
     apply();
   }));
-  sort && sort.addEventListener('change', e => { doSort(e.target.value); apply(); });
+  visChips.forEach(chip => chip.addEventListener('click', () => {
+    visChips.forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    s.vis = chip.getAttribute('data-filter-vis');
+    apply();
+  }));
+  tierSelect && tierSelect.addEventListener('change', e => { s.tier = e.target.value; apply(); });
+  sortSelect && sortSelect.addEventListener('change', e => { s.sort = e.target.value; doSort(); apply(); });
 }
 </script>
 

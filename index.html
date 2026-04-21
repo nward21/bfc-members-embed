@@ -145,11 +145,11 @@
           <button type="button" id="logoClearBtn" class="text-xs text-neutral-500 hover:text-red-400">Clear</button>
         </div>
       </div>
+      <div>
+        <label class="block text-xs font-medium text-neutral-400 mb-1">Stock ticker</label>
+        <input id="fTicker" placeholder="e.g. MSTR (leave blank for private companies)" class="w-full bg-bfc-dark border border-bfc-line rounded-lg px-3 py-2 text-sm uppercase focus:outline-none focus:border-bfc-orange" />
+      </div>
       <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-medium text-neutral-400 mb-1">Stock ticker</label>
-          <input id="fTicker" placeholder="e.g. MSTR" class="w-full bg-bfc-dark border border-bfc-line rounded-lg px-3 py-2 text-sm uppercase focus:outline-none focus:border-bfc-orange" />
-        </div>
         <div>
           <label class="block text-xs font-medium text-neutral-400 mb-1">Type</label>
           <div class="grid grid-cols-2 gap-1 bg-bfc-dark border border-bfc-line rounded-lg p-1">
@@ -157,6 +157,14 @@
             <button type="button" data-type="Vendor" class="type-toggle py-1.5 rounded text-xs font-medium">Vendor</button>
           </div>
           <input type="hidden" id="fType" value="Member" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-neutral-400 mb-1">Visibility</label>
+          <div class="grid grid-cols-2 gap-1 bg-bfc-dark border border-bfc-line rounded-lg p-1">
+            <button type="button" data-vis="Public"  class="vis-toggle py-1.5 rounded text-xs font-medium">Public</button>
+            <button type="button" data-vis="Private" class="vis-toggle py-1.5 rounded text-xs font-medium">Private</button>
+          </div>
+          <input type="hidden" id="fVisibility" value="Private" />
         </div>
       </div>
       <div>
@@ -236,7 +244,7 @@ const AVAILABLE_LOGOS = [
 let theme = localStorage.getItem('bfc_theme') || 'dark';
 
 // ---------- State ----------
-const STORAGE_KEY = 'bfc_directory_v4';
+const STORAGE_KEY = 'bfc_directory_v5';
 const WP_CDN = 'https://bfc-members-embed.vercel.app/logos/';
 
 // Logo resolution:
@@ -258,58 +266,71 @@ function logoPathFromSlug(slug, t = theme) {
   return `logos/${slug}-logo-${t === 'light' ? 'dark' : 'light'}.png`;
 }
 
+// Derive Public/Private from ticker presence at seed time (users can override).
+function derivedVisibility(ticker) { return ticker ? 'Public' : 'Private'; }
+
+const SEED_COMPANIES = {
+  founding: [
+    { id: 'c_strategy', name: 'Strategy', ticker: 'MSTR', type: 'Member', logoSlug: 'strategy', url: 'https://www.strategy.com' },
+    { id: 'c_btcinc',   name: 'BTC Inc',  ticker: '',     type: 'Member', logoSlug: 'btc-inc',  url: 'https://btcinc.com' },
+  ],
+  chairman: [
+    { id: 'c_treasury', name: 'Treasury', ticker: '', type: 'Member', logoSlug: 'treasury', url: 'https://treasury.b' },
+  ],
+  executive: [
+    { id: 'c_aifinyo',   name: 'aifinyo',             ticker: '',      type: 'Member', logoSlug: 'aifinyo',              url: 'https://aifinyo.com' },
+    { id: 'c_avalon',    name: 'Avalon Labs',         ticker: '',      type: 'Member', logoSlug: 'avalon-labs',          url: 'https://avalonlabs.io' },
+    { id: 'c_bitgo',     name: 'BitGo',               ticker: '',      type: 'Vendor', logoSlug: 'bitgo',                url: 'https://www.bitgo.com' },
+    { id: 'c_bytefed',   name: 'Byte Federal',        ticker: '',      type: 'Vendor', logoSlug: 'byte-federal',         url: 'https://bytefederal.com' },
+    { id: 'c_cryptocom', name: 'crypto.com',          ticker: '',      type: 'Vendor', logoSlug: 'crypto-com',           url: 'https://crypto.com' },
+    { id: 'c_ddc',       name: 'DDC Enterprise',      ticker: 'DDC',   type: 'Member', logoSlug: 'ddc',                  url: 'https://ddcenterprise.com' },
+    { id: 'c_fold',      name: 'Fold',                ticker: 'FLD',   type: 'Member', logoSlug: 'fold',                 url: 'https://foldapp.com' },
+    { id: 'c_giga',      name: 'GIGA',                ticker: '',      type: 'Member', logoSlug: 'giga',                 url: 'https://gigaenergy.com' },
+    { id: 'c_kraken',    name: 'Kraken Institutional',ticker: '',      type: 'Vendor', logoSlug: 'kraken-institutional', url: 'https://www.kraken.com/institutional' },
+    { id: 'c_kulr',      name: 'KULR',                ticker: 'KULR',  type: 'Member', logoSlug: 'kulr',                 url: 'https://www.kulrtechnology.com' },
+    { id: 'c_london',    name: 'The London Bitcoin Co.', ticker: '',   type: 'Member', logoSlug: 'london-bitcoin-co',    url: 'https://thelondonbitcoinco.com' },
+    { id: 'c_lqwd',      name: 'LQWD',                ticker: 'LQWD',  type: 'Member', logoSlug: 'lqwd',                 url: 'https://lqwdfintech.com' },
+    { id: 'c_meliuz',    name: 'Méliuz',              ticker: 'MLIU3', type: 'Member', logoSlug: 'meliuz',               url: 'https://meliuz.com.br' },
+    { id: 'c_mnav',      name: 'mNAV.com',            ticker: '',      type: 'Member', logoSlug: 'mnav',                 url: 'https://mnav.com' },
+    { id: 'c_1723hk',    name: '1723.HK',             ticker: '1723',  type: 'Member', logoSlug: '',                     url: '' },
+    { id: 'c_naas',      name: 'NaaS',                ticker: 'NAAS',  type: 'Member', logoSlug: 'naas',                 url: 'https://naas.io' },
+    { id: 'c_nakamoto',  name: 'Nakamoto',            ticker: '',      type: 'Member', logoSlug: 'nakamoto',             url: 'https://nakamoto.com' },
+    { id: 'c_oranje',    name: 'Oranje BTC',          ticker: '',      type: 'Member', logoSlug: '',                     url: 'https://oranjebtc.com' },
+    { id: 'c_prenetics', name: 'Prenetics',           ticker: 'PRE',   type: 'Member', logoSlug: 'prenetics',            url: 'https://prenetics.com' },
+    { id: 'c_publicsq',  name: 'PublicSquare',        ticker: 'PSQH',  type: 'Member', logoSlug: 'public-square',        url: 'https://publicsq.com' },
+    { id: 'c_salt',      name: 'SALT',                ticker: '',      type: 'Vendor', logoSlug: 'salt',                 url: 'https://saltlending.com' },
+    { id: 'c_samara',    name: 'SAMARA Asset Group',  ticker: '',      type: 'Member', logoSlug: 'samara',               url: 'https://samara-ag.com' },
+    { id: 'c_solar',     name: 'Solar Strategy',      ticker: '',      type: 'Member', logoSlug: 'solar-strategy',       url: '' },
+    { id: 'c_strive',    name: 'Strive',              ticker: 'ASST',  type: 'Member', logoSlug: 'strive',               url: 'https://strive.com' },
+  ],
+  premier: [
+    { id: 'c_blockspaces', name: 'BlockSpaces',       ticker: '',      type: 'Vendor', logoSlug: 'blockspaces',          url: 'https://blockspaces.com' },
+    { id: 'c_capitalb',    name: 'Capital B',         ticker: 'ALCPB', type: 'Member', logoSlug: 'capital-b',            url: 'https://thecapitalb.com' },
+    { id: 'c_jetking',     name: 'Jetking',           ticker: '',      type: 'Member', logoSlug: 'jetking',              url: 'https://jetking.com' },
+    { id: 'c_metaplanet',  name: 'Metaplanet',        ticker: '3350',  type: 'Member', logoSlug: 'meteplanet',           url: 'https://metaplanet.jp' },
+    { id: 'c_nextlayer',   name: 'Next Layer Capital',ticker: '',      type: 'Member', logoSlug: 'next-layer-capital',   url: '' },
+    { id: 'c_semler',      name: 'Semler Scientific', ticker: 'SMLR',  type: 'Member', logoSlug: 'semler-scientific',    url: 'https://semlerscientific.com' },
+    { id: 'c_utxo',        name: 'UTXO',              ticker: '',      type: 'Member', logoSlug: 'utxo',                 url: '' },
+  ],
+  industry: [
+    { id: 'c_arch',     name: 'ARCH',                 ticker: '',      type: 'Vendor', logoSlug: '',                     url: 'https://archpublic.com' },
+    { id: 'c_locate',   name: 'Locate Technologies',  ticker: '',      type: 'Vendor', logoSlug: 'locate-technologies',  url: 'https://locatetech.com' },
+    { id: 'c_matador',  name: 'Matador',              ticker: '',      type: 'Member', logoSlug: 'matador',              url: 'https://matadortechnologies.com' },
+    { id: 'c_oranje2',  name: 'OranjeBTC',            ticker: '',      type: 'Vendor', logoSlug: '',                     url: 'https://oranjebtc.com' },
+    { id: 'c_uproot',   name: 'Uproot Company',       ticker: '',      type: 'Vendor', logoSlug: 'uproot-company',       url: 'https://uprootcompany.com' },
+    { id: 'c_xce',      name: 'XCE',                  ticker: '',      type: 'Vendor', logoSlug: '',                     url: '' },
+  ],
+};
+// Inject visibility on every seed entry.
+Object.values(SEED_COMPANIES).forEach(list => list.forEach(c => { c.visibility = derivedVisibility(c.ticker); }));
+
 const DEFAULT_STATE = {
   tiers: [
-    { id: 't_founding', name: 'Founding Members', companies: [
-      { id: 'c_strategy', name: 'Strategy', ticker: 'MSTR', type: 'Member', logoSlug: 'strategy', url: 'https://www.strategy.com' },
-      { id: 'c_btcinc',   name: 'BTC Inc',  ticker: '',     type: 'Member', logoSlug: 'btc-inc',  url: 'https://btcinc.com' },
-    ]},
-    { id: 't_chairman', name: "Chairman's Circle", companies: [
-      { id: 'c_treasury', name: 'Treasury', ticker: '', type: 'Member', logoSlug: 'treasury', url: 'https://treasury.b' },
-    ]},
-    { id: 't_executive', name: 'Executive Members', companies: [
-      { id: 'c_aifinyo',   name: 'aifinyo',             ticker: '',      type: 'Member', logoSlug: 'aifinyo',              url: 'https://aifinyo.com' },
-      { id: 'c_avalon',    name: 'Avalon Labs',         ticker: '',      type: 'Member', logoSlug: 'avalon-labs',          url: 'https://avalonlabs.io' },
-      { id: 'c_bitgo',     name: 'BitGo',               ticker: '',      type: 'Vendor', logoSlug: 'bitgo',                url: 'https://www.bitgo.com' },
-      { id: 'c_bytefed',   name: 'Byte Federal',        ticker: '',      type: 'Vendor', logoSlug: 'byte-federal',         url: 'https://bytefederal.com' },
-      { id: 'c_cryptocom', name: 'crypto.com',          ticker: '',      type: 'Vendor', logoSlug: 'crypto-com',           url: 'https://crypto.com' },
-      { id: 'c_ddc',       name: 'DDC Enterprise',      ticker: 'DDC',   type: 'Member', logoSlug: 'ddc',                  url: 'https://ddcenterprise.com' },
-      { id: 'c_fold',      name: 'Fold',                ticker: 'FLD',   type: 'Member', logoSlug: 'fold',                 url: 'https://foldapp.com' },
-      { id: 'c_giga',      name: 'GIGA',                ticker: '',      type: 'Member', logoSlug: 'giga',                 url: 'https://gigaenergy.com' },
-      { id: 'c_kraken',    name: 'Kraken Institutional',ticker: '',      type: 'Vendor', logoSlug: 'kraken-institutional', url: 'https://www.kraken.com/institutional' },
-      { id: 'c_kulr',      name: 'KULR',                ticker: 'KULR',  type: 'Member', logoSlug: 'kulr',                 url: 'https://www.kulrtechnology.com' },
-      { id: 'c_london',    name: 'The London Bitcoin Co.', ticker: '',   type: 'Member', logoSlug: 'london-bitcoin-co',    url: 'https://thelondonbitcoinco.com' },
-      { id: 'c_lqwd',      name: 'LQWD',                ticker: 'LQWD',  type: 'Member', logoSlug: 'lqwd',                 url: 'https://lqwdfintech.com' },
-      { id: 'c_meliuz',    name: 'Méliuz',              ticker: 'MLIU3', type: 'Member', logoSlug: 'meliuz',               url: 'https://meliuz.com.br' },
-      { id: 'c_mnav',      name: 'mNAV.com',            ticker: '',      type: 'Member', logoSlug: 'mnav',                 url: 'https://mnav.com' },
-      { id: 'c_1723hk',    name: '1723.HK',             ticker: '1723',  type: 'Member', logoSlug: '',                     url: '' },
-      { id: 'c_naas',      name: 'NaaS',                ticker: 'NAAS',  type: 'Member', logoSlug: 'naas',                 url: 'https://naas.io' },
-      { id: 'c_nakamoto',  name: 'Nakamoto',            ticker: '',      type: 'Member', logoSlug: 'nakamoto',             url: 'https://nakamoto.com' },
-      { id: 'c_oranje',    name: 'Oranje BTC',          ticker: '',      type: 'Member', logoSlug: '',                     url: 'https://oranjebtc.com' },
-      { id: 'c_prenetics', name: 'Prenetics',           ticker: 'PRE',   type: 'Member', logoSlug: 'prenetics',            url: 'https://prenetics.com' },
-      { id: 'c_publicsq',  name: 'PublicSquare',        ticker: 'PSQH',  type: 'Member', logoSlug: 'public-square',        url: 'https://publicsq.com' },
-      { id: 'c_salt',      name: 'SALT',                ticker: '',      type: 'Vendor', logoSlug: 'salt',                 url: 'https://saltlending.com' },
-      { id: 'c_samara',    name: 'SAMARA Asset Group',  ticker: '',      type: 'Member', logoSlug: 'samara',               url: 'https://samara-ag.com' },
-      { id: 'c_solar',     name: 'Solar Strategy',      ticker: '',      type: 'Member', logoSlug: 'solar-strategy',       url: '' },
-      { id: 'c_strive',    name: 'Strive',              ticker: 'ASST',  type: 'Member', logoSlug: 'strive',               url: 'https://strive.com' },
-    ]},
-    { id: 't_premier', name: 'Premier Members', companies: [
-      { id: 'c_blockspaces', name: 'BlockSpaces',       ticker: '',      type: 'Vendor', logoSlug: 'blockspaces',          url: 'https://blockspaces.com' },
-      { id: 'c_capitalb',    name: 'Capital B',         ticker: 'ALCPB', type: 'Member', logoSlug: 'capital-b',            url: 'https://thecapitalb.com' },
-      { id: 'c_jetking',     name: 'Jetking',           ticker: '',      type: 'Member', logoSlug: 'jetking',              url: 'https://jetking.com' },
-      { id: 'c_metaplanet',  name: 'Metaplanet',        ticker: '3350',  type: 'Member', logoSlug: 'meteplanet',           url: 'https://metaplanet.jp' },
-      { id: 'c_nextlayer',   name: 'Next Layer Capital',ticker: '',      type: 'Member', logoSlug: 'next-layer-capital',   url: '' },
-      { id: 'c_semler',      name: 'Semler Scientific', ticker: 'SMLR',  type: 'Member', logoSlug: 'semler-scientific',    url: 'https://semlerscientific.com' },
-      { id: 'c_utxo',        name: 'UTXO',              ticker: '',      type: 'Member', logoSlug: 'utxo',                 url: '' },
-    ]},
-    { id: 't_industry', name: 'Industry Members', companies: [
-      { id: 'c_arch',     name: 'ARCH',                 ticker: '',      type: 'Vendor', logoSlug: '',                     url: 'https://archpublic.com' },
-      { id: 'c_locate',   name: 'Locate Technologies',  ticker: '',      type: 'Vendor', logoSlug: 'locate-technologies',  url: 'https://locatetech.com' },
-      { id: 'c_matador',  name: 'Matador',              ticker: '',      type: 'Member', logoSlug: 'matador',              url: 'https://matadortechnologies.com' },
-      { id: 'c_oranje2',  name: 'OranjeBTC',            ticker: '',      type: 'Vendor', logoSlug: '',                     url: 'https://oranjebtc.com' },
-      { id: 'c_uproot',   name: 'Uproot Company',       ticker: '',      type: 'Vendor', logoSlug: 'uproot-company',       url: 'https://uprootcompany.com' },
-      { id: 'c_xce',      name: 'XCE',                  ticker: '',      type: 'Vendor', logoSlug: '',                     url: '' },
-    ]},
+    { id: 't_founding', name: 'Founding Members',   companies: SEED_COMPANIES.founding },
+    { id: 't_chairman', name: "Chairman's Circle",  companies: SEED_COMPANIES.chairman },
+    { id: 't_executive', name: 'Executive Members', companies: SEED_COMPANIES.executive },
+    { id: 't_premier', name: 'Premier Members',     companies: SEED_COMPANIES.premier },
+    { id: 't_industry', name: 'Industry Members',   companies: SEED_COMPANIES.industry },
   ],
 };
 
@@ -449,31 +470,38 @@ function render() {
 }
 
 function renderCard(c, opts) {
-  const { cardBg, cardBorder, nameColor, subColor } = opts;
+  const { cardBg, cardBorder } = opts;
   const el = document.createElement('div');
-  el.className = `group card-grab relative ${cardBg} border ${cardBorder} hover:border-bfc-orange/60 rounded-xl p-3 flex flex-col items-center gap-2 transition`;
+  el.className = `group card-grab relative ${cardBg} border ${cardBorder} hover:border-bfc-orange/60 rounded-xl p-3 flex flex-col items-center justify-between gap-3 transition min-h-[140px]`;
   el.dataset.companyId = c.id;
+  el.title = c.name + (c.ticker ? ` (${c.ticker})` : '');
 
   const typeColor = c.type === 'Vendor'
     ? 'bg-blue-500/15 text-blue-400 border-blue-500/30'
     : 'bg-bfc-orange/15 text-bfc-orange border-bfc-orange/30';
+  const vis = c.visibility || derivedVisibility(c.ticker || '');
+  const visColor = vis === 'Public'
+    ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+    : 'bg-neutral-600/20 text-neutral-300 border-neutral-500/30';
+  const visIcon = vis === 'Public' ? 'trending-up' : 'lock';
 
   const logoSrc = companyLogoSrc(c);
   const logoHtml = logoSrc
-    ? `<img src="${escapeAttr(logoSrc)}" alt="${escapeAttr(c.name)}" class="max-h-12 max-w-full object-contain" onerror="this.outerHTML='<div class=&quot;text-neutral-500 text-[10px]&quot;>no logo</div>'" />`
-    : `<div class="text-neutral-500 text-[10px]">no logo</div>`;
+    ? `<img src="${escapeAttr(logoSrc)}" alt="${escapeAttr(c.name)}" class="max-h-14 max-w-full object-contain" onerror="this.outerHTML='<div class=&quot;text-neutral-500 text-[10px]&quot;>no logo</div>'" />`
+    : `<div class="text-neutral-500 text-[10px] text-center px-2">${escapeHtml(c.name)}</div>`;
 
   el.innerHTML = `
     <div class="absolute top-1.5 right-1.5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
       <button class="edit-btn p-1 rounded bg-black/60 text-white hover:bg-neutral-700" title="Edit"><i data-lucide="pencil" class="w-3 h-3"></i></button>
       <button class="delete-btn p-1 rounded bg-black/60 text-white hover:bg-red-900/60 hover:text-red-400" title="Delete"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
     </div>
-    <div class="h-14 w-full flex items-center justify-center overflow-hidden">${logoHtml}</div>
-    <div class="text-center w-full">
-      <div class="font-semibold text-xs ${nameColor} truncate">${escapeHtml(c.name)}</div>
-      ${c.ticker ? `<div class="ticker-pill text-[10px] ${subColor} uppercase">${escapeHtml(c.ticker)}</div>` : ''}
+    <div class="flex-1 w-full flex items-center justify-center overflow-hidden py-2">${logoHtml}</div>
+    <div class="flex items-center justify-center gap-1 flex-wrap">
+      <span class="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded border ${typeColor}">${escapeHtml(c.type || 'Member')}</span>
+      <span class="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded border ${visColor} inline-flex items-center gap-0.5">
+        <i data-lucide="${visIcon}" class="w-2.5 h-2.5"></i> ${escapeHtml(vis)}
+      </span>
     </div>
-    <span class="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded border ${typeColor}">${escapeHtml(c.type || 'Member')}</span>
   `;
 
   el.querySelector('.edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openModal({ company: c }); });
@@ -559,6 +587,7 @@ function openModal({ company = null, tierId = null } = {}) {
   document.getElementById('fUrl').value = company?.url || '';
   document.getElementById('fLogoUpload').value = '';
   setType(company?.type || 'Member');
+  setVisibility(company?.visibility || derivedVisibility(company?.ticker || ''));
 
   const sel = document.getElementById('fTierSelect');
   sel.innerHTML = state.tiers.map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
@@ -584,6 +613,16 @@ function setType(type) {
   });
 }
 document.querySelectorAll('.type-toggle').forEach(b => b.addEventListener('click', () => setType(b.dataset.type)));
+
+function setVisibility(vis) {
+  document.getElementById('fVisibility').value = vis;
+  document.querySelectorAll('.vis-toggle').forEach(b => {
+    const active = b.dataset.vis === vis;
+    b.className = 'vis-toggle py-1.5 rounded text-xs font-medium ' +
+      (active ? 'bg-bfc-orange text-black' : 'text-neutral-400 hover:text-white');
+  });
+}
+document.querySelectorAll('.vis-toggle').forEach(b => b.addEventListener('click', () => setVisibility(b.dataset.vis)));
 
 document.getElementById('fLogoSlug').addEventListener('input', () => {
   // Typing a slug clears the uploaded data URL so slug wins
@@ -654,6 +693,7 @@ document.getElementById('companyForm').addEventListener('submit', (e) => {
     ticker: document.getElementById('fTicker').value.trim().toUpperCase(),
     url: document.getElementById('fUrl').value.trim(),
     type: document.getElementById('fType').value,
+    visibility: document.getElementById('fVisibility').value,
   };
   const targetTierId = document.getElementById('fTierSelect').value;
 
@@ -751,76 +791,118 @@ function generateEmbed(t = 'dark') {
   const sub = isDark ? '#D4D3D3' : '#6B7280';
   const chipBg = isDark ? '#0A0A0A' : '#FFFFFF';
 
+  const chevron = isDark
+    ? "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23D4D3D3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")"
+    : "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")";
+
   const css = `
 .bfc-dir{--bfc-orange:#FA660E;background:${bg};color:${text};font-family:Inter,system-ui,sans-serif;padding:28px;border-radius:14px}
 .bfc-dir *{box-sizing:border-box}
-.bfc-toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid ${line}}
-.bfc-search{flex:1;min-width:200px;position:relative}
-.bfc-search input{width:100%;background:${chipBg};border:1px solid ${line};color:${text};font:inherit;font-size:13px;padding:9px 12px 9px 34px;border-radius:8px;outline:none;transition:border-color .15s}
+.bfc-toolbar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;align-items:start;margin-bottom:16px;padding-bottom:20px;border-bottom:1px solid ${line}}
+.bfc-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.bfc-col-label{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:${sub};margin:0}
+.bfc-search{position:relative}
+.bfc-search .bfc-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:${sub};opacity:.6;pointer-events:none}
+.bfc-search input{width:100%;background:${chipBg};border:1px solid ${line};color:${text};font:inherit;font-size:13px;padding:9px 32px 9px 34px;border-radius:8px;outline:none;transition:border-color .15s}
 .bfc-search input::placeholder{color:${sub};opacity:.6}
 .bfc-search input:focus{border-color:var(--bfc-orange)}
-.bfc-search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:${sub};pointer-events:none}
-.bfc-chips{display:inline-flex;background:${chipBg};border:1px solid ${line};border-radius:8px;padding:3px;gap:2px}
-.bfc-chip{border:0;background:transparent;color:${sub};font:inherit;font-size:12px;font-weight:500;padding:6px 12px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s}
+.bfc-search-clear{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:0;color:${sub};cursor:pointer;padding:4px 8px;border-radius:4px;font-size:16px;line-height:1;display:none}
+.bfc-search-clear.show{display:block}
+.bfc-search-clear:hover{background:${line};color:${text}}
+.bfc-chips{display:inline-flex;background:${chipBg};border:1px solid ${line};border-radius:8px;padding:3px;gap:2px;align-self:stretch;width:100%;justify-content:stretch}
+.bfc-chip{flex:1;border:0;background:transparent;color:${sub};font:inherit;font-size:12px;font-weight:500;padding:6px 8px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
 .bfc-chip:hover{color:${text}}
 .bfc-chip.active{background:var(--bfc-orange);color:#000;font-weight:600}
-.bfc-sort{background:${chipBg};border:1px solid ${line};color:${text};font:inherit;font-size:12px;padding:8px 10px;border-radius:8px;cursor:pointer;outline:none}
-.bfc-sort:focus{border-color:var(--bfc-orange)}
-.bfc-count{font-size:11px;color:${sub};letter-spacing:.04em}
+.bfc-select{width:100%;background:${chipBg} ${chevron} no-repeat right 12px center;border:1px solid ${line};color:${text};font:inherit;font-size:13px;padding:9px 32px 9px 12px;border-radius:8px;cursor:pointer;outline:none;transition:border-color .15s;appearance:none;-webkit-appearance:none}
+.bfc-select:focus{border-color:var(--bfc-orange)}
+.bfc-select option{background:${card};color:${text}}
+.bfc-meta{font-size:11px;color:${sub};letter-spacing:.04em;margin:0 0 16px;text-align:right}
 .bfc-dir h2{color:var(--bfc-orange);font-size:13px;text-transform:uppercase;letter-spacing:.14em;margin:28px 0 14px;font-weight:700}
 .bfc-dir .bfc-tier:first-child h2{margin-top:0}
 .bfc-tier.bfc-hidden{display:none}
 .bfc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
-.bfc-card{background:${card};border:1px solid ${line};border-radius:10px;padding:16px 12px;text-align:center;text-decoration:none;color:inherit;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:10px;min-height:130px;transition:border-color .2s,transform .2s}
+.bfc-card{background:${card};border:1px solid ${line};border-radius:10px;padding:18px 14px;text-align:center;text-decoration:none;color:inherit;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:14px;min-height:140px;transition:border-color .2s,transform .2s}
 .bfc-card.bfc-hidden{display:none}
 .bfc-card:hover{border-color:var(--bfc-orange);transform:translateY(-2px)}
-.bfc-logo{height:52px;width:100%;display:flex;align-items:center;justify-content:center}
-.bfc-logo img{max-height:48px;max-width:100%;object-fit:contain}
-.bfc-name{font-weight:600;font-size:12px;color:${text};line-height:1.2}
-.bfc-ticker{font-size:10px;color:${sub};text-transform:uppercase;letter-spacing:.06em;margin-top:2px;font-variant-numeric:tabular-nums}
-.bfc-badge{font-size:9px;text-transform:uppercase;letter-spacing:.12em;padding:2px 7px;border-radius:3px;border:1px solid;font-weight:600}
+.bfc-logo{flex:1;width:100%;display:flex;align-items:center;justify-content:center;min-height:56px}
+.bfc-logo img{max-height:56px;max-width:100%;object-fit:contain}
+.bfc-nologo{font-size:11px;color:${sub};opacity:.7;font-weight:500;padding:0 8px;line-height:1.2}
+.bfc-badges{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;align-items:center}
+.bfc-badge{font-size:9px;text-transform:uppercase;letter-spacing:.1em;padding:2px 6px;border-radius:3px;border:1px solid;font-weight:600;display:inline-flex;align-items:center;gap:3px;line-height:1.4}
+.bfc-badge svg{flex:none}
 .bfc-member{color:var(--bfc-orange);border-color:rgba(250,102,14,.35);background:rgba(250,102,14,.10)}
 .bfc-vendor{color:${isDark ? '#93C5FD' : '#2563EB'};border-color:rgba(59,130,246,.35);background:rgba(59,130,246,.10)}
+.bfc-public{color:${isDark ? '#6EE7B7' : '#059669'};border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.10)}
+.bfc-private{color:${sub};border-color:${line};background:${isDark ? 'rgba(212,211,211,.06)' : 'rgba(0,0,0,.04)'}}
 .bfc-empty{text-align:center;padding:40px 20px;color:${sub};font-size:13px}
-@media(max-width:640px){.bfc-dir{padding:20px}.bfc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.bfc-toolbar{gap:8px}.bfc-search{min-width:100%}}
+@media(max-width:768px){.bfc-toolbar{grid-template-columns:1fr;gap:14px}}
+@media(max-width:640px){.bfc-dir{padding:20px}.bfc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}}
 `.trim();
 
   const totalCount = state.tiers.reduce((n, t) => n + t.companies.length, 0);
+  // Inline SVGs so no external icon lib is needed in the embed.
+  const ICON_PUBLIC  = '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>';
+  const ICON_PRIVATE = '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+
   const tiersHtml = state.tiers.map(tier => {
     const cards = tier.companies.map(c => {
+      const vis = c.visibility || (c.ticker ? 'Public' : 'Private');
       const logoUrl = companyEmbedLogoSrc(c, t);
       const logo = logoUrl
         ? `<div class="bfc-logo"><img src="${escapeAttr(logoUrl)}" alt="${escapeAttr(c.name)}" loading="lazy"/></div>`
-        : `<div class="bfc-logo"></div>`;
-      const ticker = c.ticker ? `<div class="bfc-ticker">${escapeHtml(c.ticker)}</div>` : '';
-      const badge = `<span class="bfc-badge ${c.type === 'Vendor' ? 'bfc-vendor' : 'bfc-member'}">${escapeHtml(c.type || 'Member')}</span>`;
-      const inner = `${logo}<div><div class="bfc-name">${escapeHtml(c.name)}</div>${ticker}</div>${badge}`;
-      const dataAttrs = `data-name="${escapeAttr((c.name || '').toLowerCase())}" data-ticker="${escapeAttr((c.ticker || '').toLowerCase())}" data-type="${escapeAttr(c.type || 'Member')}"`;
+        : `<div class="bfc-logo"><span class="bfc-nologo">${escapeHtml(c.name)}</span></div>`;
+      const typeBadge = `<span class="bfc-badge ${c.type === 'Vendor' ? 'bfc-vendor' : 'bfc-member'}">${escapeHtml(c.type || 'Member')}</span>`;
+      const visBadge = `<span class="bfc-badge ${vis === 'Public' ? 'bfc-public' : 'bfc-private'}">${vis === 'Public' ? ICON_PUBLIC : ICON_PRIVATE}${escapeHtml(vis)}</span>`;
+      const inner = `${logo}<div class="bfc-badges">${typeBadge}${visBadge}</div>`;
+      const titleAttr = c.ticker ? `${c.name} (${c.ticker})` : c.name;
+      const dataAttrs = `data-name="${escapeAttr((c.name || '').toLowerCase())}" data-ticker="${escapeAttr((c.ticker || '').toLowerCase())}" data-type="${escapeAttr(c.type || 'Member')}" data-visibility="${escapeAttr(vis)}" data-tier-id="${escapeAttr(tier.id)}" title="${escapeAttr(titleAttr)}"`;
       return c.url
         ? `<a class="bfc-card" ${dataAttrs} href="${escapeAttr(c.url)}" target="_blank" rel="noopener">${inner}</a>`
         : `<div class="bfc-card" ${dataAttrs}>${inner}</div>`;
     }).join('');
-    return `<div class="bfc-tier"><h2>${escapeHtml(tier.name)}</h2><div class="bfc-grid">${cards}</div></div>`;
+    return `<div class="bfc-tier" data-tier-id="${escapeAttr(tier.id)}"><h2>${escapeHtml(tier.name)}</h2><div class="bfc-grid">${cards}</div></div>`;
   }).join('');
 
+  const tierOptions = state.tiers.map(t => `<option value="${escapeAttr(t.id)}">${escapeHtml(t.name)}</option>`).join('');
   const toolbar = `
 <div class="bfc-toolbar">
-  <div class="bfc-search">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-    <input type="search" placeholder="Search companies or tickers…" aria-label="Search"/>
+  <div class="bfc-col">
+    <label class="bfc-col-label" for="bfcSearch">Search</label>
+    <div class="bfc-search">
+      <svg class="bfc-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="bfcSearch" type="search" placeholder="Name or ticker…" aria-label="Search"/>
+      <button type="button" class="bfc-search-clear" aria-label="Clear search">×</button>
+    </div>
   </div>
-  <div class="bfc-chips" role="tablist">
-    <button class="bfc-chip active" data-filter="all">All</button>
-    <button class="bfc-chip" data-filter="Member">Members</button>
-    <button class="bfc-chip" data-filter="Vendor">Vendors</button>
+  <div class="bfc-col">
+    <span class="bfc-col-label">Filter</span>
+    <div class="bfc-chips" role="tablist" aria-label="Filter by type">
+      <button class="bfc-chip active" data-filter-type="all">All</button>
+      <button class="bfc-chip" data-filter-type="Member">Members</button>
+      <button class="bfc-chip" data-filter-type="Vendor">Vendors</button>
+    </div>
+    <div class="bfc-chips" role="tablist" aria-label="Filter by visibility">
+      <button class="bfc-chip active" data-filter-vis="all">All</button>
+      <button class="bfc-chip" data-filter-vis="Public">Public</button>
+      <button class="bfc-chip" data-filter-vis="Private">Private</button>
+    </div>
+    <select class="bfc-select" data-filter-tier aria-label="Filter by tier">
+      <option value="all">All tiers</option>
+      ${tierOptions}
+    </select>
   </div>
-  <select class="bfc-sort" aria-label="Sort">
-    <option value="default">Sort: Tier order</option>
-    <option value="az">Sort: A → Z</option>
-    <option value="za">Sort: Z → A</option>
-  </select>
-  <span class="bfc-count"><span class="bfc-visible">${totalCount}</span> / ${totalCount}</span>
-</div>`.trim();
+  <div class="bfc-col">
+    <label class="bfc-col-label" for="bfcSort">Sort</label>
+    <select id="bfcSort" class="bfc-select" data-sort>
+      <option value="default">Tier order</option>
+      <option value="name-asc">Name (A → Z)</option>
+      <option value="name-desc">Name (Z → A)</option>
+      <option value="ticker-asc">Ticker (A → Z)</option>
+      <option value="ticker-desc">Ticker (Z → A)</option>
+    </select>
+  </div>
+</div>
+<p class="bfc-meta"><span class="bfc-visible">${totalCount}</span> of ${totalCount} visible</p>`.trim();
 
   // Self-contained filter/sort JS. IIFE-scoped to avoid globals.
   const js = `
@@ -831,24 +913,38 @@ function generateEmbed(t = 'dark') {
     root = dirs[dirs.length-1];
   }
   if(!root) return;
+
   var input = root.querySelector('.bfc-search input');
-  var chips = root.querySelectorAll('.bfc-chip');
-  var sort = root.querySelector('.bfc-sort');
+  var clearBtn = root.querySelector('.bfc-search-clear');
+  var typeChips = root.querySelectorAll('.bfc-chip[data-filter-type]');
+  var visChips  = root.querySelectorAll('.bfc-chip[data-filter-vis]');
+  var tierSelect = root.querySelector('[data-filter-tier]');
+  var sortSelect = root.querySelector('[data-sort]');
   var visibleEl = root.querySelector('.bfc-visible');
-  var currentFilter = 'all';
-  var currentQuery = '';
+
+  var state = { query: '', type: 'all', vis: 'all', tier: 'all', sort: 'default' };
+
+  // Cache original order per tier grid so we can restore it.
+  root.querySelectorAll('.bfc-tier').forEach(function(tier){
+    var grid = tier.querySelector('.bfc-grid');
+    if(grid) grid._orig = Array.prototype.slice.call(grid.children);
+  });
 
   function apply(){
     var total = 0;
     root.querySelectorAll('.bfc-tier').forEach(function(tier){
+      var tierId = tier.getAttribute('data-tier-id');
+      var tierMatch = state.tier === 'all' || state.tier === tierId;
       var shown = 0;
       tier.querySelectorAll('.bfc-card').forEach(function(card){
         var name = card.getAttribute('data-name') || '';
         var ticker = card.getAttribute('data-ticker') || '';
         var type = card.getAttribute('data-type') || '';
-        var matchQ = !currentQuery || name.indexOf(currentQuery) !== -1 || ticker.indexOf(currentQuery) !== -1;
-        var matchF = currentFilter === 'all' || type === currentFilter;
-        var show = matchQ && matchF;
+        var vis = card.getAttribute('data-visibility') || '';
+        var matchQ = !state.query || name.indexOf(state.query) !== -1 || ticker.indexOf(state.query) !== -1;
+        var matchType = state.type === 'all' || type === state.type;
+        var matchVis = state.vis === 'all' || vis === state.vis;
+        var show = tierMatch && matchQ && matchType && matchVis;
         card.classList.toggle('bfc-hidden', !show);
         if(show) shown++;
       });
@@ -858,37 +954,69 @@ function generateEmbed(t = 'dark') {
     if(visibleEl) visibleEl.textContent = total;
   }
 
-  function doSort(mode){
+  function doSort(){
+    var mode = state.sort;
     root.querySelectorAll('.bfc-tier').forEach(function(tier){
       var grid = tier.querySelector('.bfc-grid');
       if(!grid) return;
-      var cards = Array.prototype.slice.call(grid.children);
       if(mode === 'default'){
-        if(tier._origOrder){
-          tier._origOrder.forEach(function(c){ grid.appendChild(c); });
-        }
+        if(grid._orig) grid._orig.forEach(function(c){ grid.appendChild(c); });
         return;
       }
-      if(!tier._origOrder) tier._origOrder = cards.slice();
+      var parts = mode.split('-'); // name-asc, name-desc, ticker-asc, ticker-desc
+      var key = parts[0], dir = parts[1];
+      var cards = Array.prototype.slice.call(grid.children);
       cards.sort(function(a,b){
-        var an = a.getAttribute('data-name') || '';
-        var bn = b.getAttribute('data-name') || '';
-        return mode === 'az' ? an.localeCompare(bn) : bn.localeCompare(an);
+        var av = a.getAttribute('data-' + key) || '';
+        var bv = b.getAttribute('data-' + key) || '';
+        // Empty tickers sort last always
+        if(key === 'ticker'){
+          if(!av && bv) return 1;
+          if(av && !bv) return -1;
+        }
+        return dir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
       });
       cards.forEach(function(c){ grid.appendChild(c); });
     });
   }
 
-  input && input.addEventListener('input', function(e){ currentQuery = e.target.value.toLowerCase().trim(); apply(); });
-  chips.forEach(function(chip){
+  input && input.addEventListener('input', function(e){
+    state.query = e.target.value.toLowerCase().trim();
+    if(clearBtn) clearBtn.classList.toggle('show', !!state.query);
+    apply();
+  });
+  clearBtn && clearBtn.addEventListener('click', function(){
+    input.value = '';
+    state.query = '';
+    clearBtn.classList.remove('show');
+    input.focus();
+    apply();
+  });
+  typeChips.forEach(function(chip){
     chip.addEventListener('click', function(){
-      chips.forEach(function(c){ c.classList.remove('active'); });
+      typeChips.forEach(function(c){ c.classList.remove('active'); });
       chip.classList.add('active');
-      currentFilter = chip.getAttribute('data-filter');
+      state.type = chip.getAttribute('data-filter-type');
       apply();
     });
   });
-  sort && sort.addEventListener('change', function(e){ doSort(e.target.value); apply(); });
+  visChips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      visChips.forEach(function(c){ c.classList.remove('active'); });
+      chip.classList.add('active');
+      state.vis = chip.getAttribute('data-filter-vis');
+      apply();
+    });
+  });
+  tierSelect && tierSelect.addEventListener('change', function(e){
+    state.tier = e.target.value;
+    apply();
+  });
+  sortSelect && sortSelect.addEventListener('change', function(e){
+    state.sort = e.target.value;
+    doSort();
+    apply();
+  });
 })();`;
 
   return `<style>${css}<\/style>
