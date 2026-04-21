@@ -806,7 +806,8 @@ function generateEmbed(t = 'dark') {
 .bfc-select:hover{border-color:${isDark ? '#3A3A3A' : '#CCCCCC'}}
 .bfc-select:focus{border-color:var(--bfc-orange)}
 .bfc-select option{background:${card};color:${text}}
-.bfc-dir h2{color:var(--bfc-orange);font-size:13px;text-transform:uppercase;letter-spacing:.14em;margin:28px 0 14px;font-weight:700}
+.bfc-dir h2{color:var(--bfc-orange);font-size:13px;text-transform:uppercase;letter-spacing:.14em;margin:28px 0 16px;font-weight:700;display:flex;align-items:center;gap:14px}
+.bfc-dir h2::after{content:'';flex:1;height:1px;background:rgba(250,102,14,.25)}
 .bfc-dir .bfc-tier:first-child h2{margin-top:0}
 .bfc-tier.bfc-hidden{display:none}
 .bfc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
