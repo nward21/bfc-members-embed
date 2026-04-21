@@ -33,7 +33,7 @@
   .stamp { font-size: 11px; opacity: .6; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .1em; }
 
   /* ====== Embed styling (kept in sync with generateEmbed() in index.html) ====== */
-  .bfc-dir { font-family: Inter, system-ui, sans-serif; padding: 28px; border-radius: 14px; }
+  .bfc-dir { font-family: Inter, system-ui, sans-serif; padding: 30px 28px 60px; border-radius: 14px; }
   .bfc-dir *{ box-sizing: border-box; }
   .theme-dark .bfc-dir { background: #000; color: #fff; }
   .theme-light .bfc-dir { background: #F7F7F7; color: #111; }
@@ -136,7 +136,7 @@
   #btnCopyEmbedConfirm:hover { filter: brightness(1.1); }
 
   @media(max-width:640px){
-    .bfc-dir { padding: 20px; }
+    .bfc-dir { padding: 30px 20px 60px; }
     .bfc-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
     .bfc-toolbar { flex-wrap: wrap; }
     .bfc-search { flex: 1 1 100%; }
@@ -280,7 +280,7 @@ function generateEmbed(state, t = 'dark') {
     : "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")";
 
   const css = `
-.bfc-dir{--bfc-orange:#FA660E;background:${bg};color:${text};font-family:Inter,system-ui,sans-serif;padding:28px;border-radius:14px}
+.bfc-dir{--bfc-orange:#FA660E;background:${bg};color:${text};font-family:Inter,system-ui,sans-serif;padding:30px 28px 60px;border-radius:14px}
 .bfc-dir *{box-sizing:border-box}
 .bfc-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:20px}
 .bfc-search{flex:2 1 0;min-width:0;position:relative}
@@ -331,7 +331,7 @@ function generateEmbed(state, t = 'dark') {
 .bfc-modal-row svg{width:18px;height:18px;flex:none}
 .bfc-modal-link{display:inline-flex;align-items:center;gap:6px;background:var(--bfc-orange);color:#000;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;transition:filter .15s}
 .bfc-modal-link:hover{filter:brightness(1.1)}
-@media(max-width:640px){.bfc-dir{padding:20px}.bfc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.bfc-toolbar{flex-wrap:wrap}.bfc-search{flex:1 1 100%}.bfc-select{flex:1 1 calc(50% - 4px)}}
+@media(max-width:640px){.bfc-dir{padding:30px 20px 60px}.bfc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.bfc-toolbar{flex-wrap:wrap}.bfc-search{flex:1 1 100%}.bfc-select{flex:1 1 calc(50% - 4px)}}
 `.trim();
 
   const I_M  = ICON_MEMBER, I_V = ICON_VENDOR, I_Pu = ICON_PUBLIC, I_Pr = ICON_PRIVATE, I_T = ICON_TIER, I_E = ICON_EXTERNAL;
