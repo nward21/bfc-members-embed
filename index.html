@@ -62,6 +62,12 @@
     </div>
 
     <div class="flex items-center gap-2">
+      <!-- Saved indicator -->
+      <div id="savedIndicator" class="inline-flex items-center gap-1.5 text-xs text-neutral-400 px-2">
+        <span id="savedDot" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <span>Saved <span id="savedTime">just now</span></span>
+      </div>
+
       <!-- Theme toggle -->
       <div class="inline-flex bg-bfc-panel border border-bfc-line rounded-lg p-1 text-xs">
         <button id="themeDark" class="px-2.5 py-1 rounded font-medium inline-flex items-center gap-1"><i data-lucide="moon" class="w-3.5 h-3.5"></i> Dark</button>
@@ -354,7 +360,42 @@ function loadState() {
 }
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const now = new Date();
+  localStorage.setItem(STORAGE_KEY + '_saved_at', now.toISOString());
+  flashSaved(now);
 }
+
+// Visible save confirmation
+function flashSaved(now = new Date()) {
+  const dot = document.getElementById('savedDot');
+  const time = document.getElementById('savedTime');
+  if (!dot || !time) return;
+  dot.classList.remove('bg-emerald-400');
+  dot.classList.add('bg-bfc-orange');
+  time.textContent = 'just now';
+  clearTimeout(flashSaved._t);
+  flashSaved._t = setTimeout(() => {
+    dot.classList.remove('bg-bfc-orange');
+    dot.classList.add('bg-emerald-400');
+  }, 900);
+  flashSaved._ts = now.getTime();
+}
+
+// Refresh the "Saved X ago" label
+function tickSaved() {
+  const time = document.getElementById('savedTime');
+  const raw = localStorage.getItem(STORAGE_KEY + '_saved_at');
+  if (!time || !raw) return;
+  const diff = Math.max(0, Date.now() - new Date(raw).getTime());
+  const s = Math.floor(diff / 1000);
+  let label;
+  if (s < 5) label = 'just now';
+  else if (s < 60) label = `${s}s ago`;
+  else if (s < 3600) label = `${Math.floor(s/60)}m ago`;
+  else label = `${Math.floor(s/3600)}h ago`;
+  time.textContent = label;
+}
+setInterval(tickSaved, 10000);
 function uid(prefix='c') {
   return prefix + '_' + Math.random().toString(36).slice(2, 9);
 }
@@ -1083,6 +1124,7 @@ function toast(msg) {
 // ---------- Init ----------
 populateSlugList();
 applyTheme(theme);
+tickSaved();
 lucide.createIcons();
 </script>
 </body>

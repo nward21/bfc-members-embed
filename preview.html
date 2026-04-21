@@ -180,6 +180,11 @@ applyTheme(theme);
 document.getElementById('btnDark').addEventListener('click', () => applyTheme('dark'));
 document.getElementById('btnLight').addEventListener('click', () => applyTheme('light'));
 
+// Cross-tab auto-refresh: if the admin saves in another tab, re-render.
+window.addEventListener('storage', (e) => {
+  if (e.key === STORAGE_KEY) render();
+});
+
 function applyTheme(t) {
   theme = t;
   document.body.className = 'theme-' + t;
