@@ -314,6 +314,9 @@ const DEFAULT_STATE = {
 };
 
 let state = loadState();
+// Persist seed data immediately so the preview page (same origin, different HTML)
+// can render without requiring the user to edit something first.
+if (!localStorage.getItem(STORAGE_KEY)) saveState();
 
 function loadState() {
   try {
