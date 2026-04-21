@@ -793,8 +793,8 @@ function generateEmbed(t = 'dark') {
   const css = `
 .bfc-dir{--bfc-orange:#FA660E;background:${bg};color:${text};font-family:Inter,system-ui,sans-serif;padding:28px;border-radius:14px}
 .bfc-dir *{box-sizing:border-box}
-.bfc-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
-.bfc-search{flex:1 1 240px;min-width:200px;position:relative}
+.bfc-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:20px}
+.bfc-search{flex:2 1 0;min-width:0;position:relative}
 .bfc-search .bfc-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:${sub};opacity:.55;pointer-events:none}
 .bfc-search input{width:100%;background:${chipBg};border:1px solid ${line};color:${text};font:inherit;font-size:13px;padding:8px 32px 8px 36px;border-radius:8px;outline:none;transition:border-color .15s;height:36px}
 .bfc-search input::placeholder{color:${sub};opacity:.55}
@@ -802,7 +802,7 @@ function generateEmbed(t = 'dark') {
 .bfc-search-clear{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:0;color:${sub};cursor:pointer;padding:4px 8px;border-radius:4px;font-size:16px;line-height:1;display:none}
 .bfc-search-clear.show{display:block}
 .bfc-search-clear:hover{background:${line};color:${text}}
-.bfc-select{background:${chipBg} ${chevron} no-repeat right 10px center;border:1px solid ${line};color:${text};font:inherit;font-size:13px;padding:0 28px 0 12px;border-radius:8px;cursor:pointer;outline:none;transition:border-color .15s;appearance:none;-webkit-appearance:none;height:36px;min-width:0}
+.bfc-select{flex:1 1 0;min-width:0;background:${chipBg} ${chevron} no-repeat right 10px center;border:1px solid ${line};color:${text};font:inherit;font-size:13px;padding:0 28px 0 10px;border-radius:8px;cursor:pointer;outline:none;transition:border-color .15s;appearance:none;-webkit-appearance:none;height:36px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
 .bfc-select:hover{border-color:${isDark ? '#3A3A3A' : '#CCCCCC'}}
 .bfc-select:focus{border-color:var(--bfc-orange)}
 .bfc-select option{background:${card};color:${text}}
@@ -841,7 +841,7 @@ function generateEmbed(t = 'dark') {
 .bfc-modal-link{display:inline-flex;align-items:center;gap:6px;background:var(--bfc-orange);color:#000;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;transition:filter .15s}
 .bfc-modal-link:hover{filter:brightness(1.1)}
 .bfc-empty{text-align:center;padding:40px 20px;color:${sub};font-size:13px}
-@media(max-width:640px){.bfc-dir{padding:20px}.bfc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.bfc-search{flex-basis:100%}.bfc-select{flex:1}}
+@media(max-width:640px){.bfc-dir{padding:20px}.bfc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.bfc-toolbar{flex-wrap:wrap}.bfc-search{flex:1 1 100%}.bfc-select{flex:1 1 calc(50% - 4px)}}
 `.trim();
 
   const totalCount = state.tiers.reduce((n, t) => n + t.companies.length, 0);
