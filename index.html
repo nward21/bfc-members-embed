@@ -831,65 +831,79 @@ function generateEmbed(t = 'dark') {
     ? "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23D4D3D3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")"
     : "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")";
 
+  const orange = '#FA660E';
   const css = `
-.bfc-dir{--bfc-orange:#FA660E;background:${bg};color:${text};font-family:Inter,system-ui,sans-serif;padding:30px 28px 60px;border-radius:14px}
-.bfc-dir *{box-sizing:border-box}
-.bfc-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:20px}
-.bfc-search{flex:2 1 0;min-width:0;position:relative}
-.bfc-search .bfc-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:${sub};opacity:.55;pointer-events:none}
-.bfc-search input{width:100%;background:${chipBg};border:1px solid ${line};color:${text};font:inherit;font-size:13px;padding:8px 32px 8px 36px;border-radius:8px;outline:none;transition:border-color .15s;height:36px}
-.bfc-search input::placeholder{color:${sub};opacity:.55}
-.bfc-search input:focus{border-color:var(--bfc-orange)}
-.bfc-search-clear{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:0;color:${sub};cursor:pointer;padding:4px 8px;border-radius:4px;font-size:16px;line-height:1;display:none}
-.bfc-search-clear.show{display:block}
-.bfc-search-clear:hover{background:${line};color:${text}}
-.bfc-select{flex:1 1 0;min-width:0;background:${chipBg} ${chevron} no-repeat right 10px center;border:1px solid ${line};color:${text};font:inherit;font-size:13px;padding:0 28px 0 10px;border-radius:8px;cursor:pointer;outline:none;transition:border-color .15s;appearance:none;-webkit-appearance:none;height:36px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
-.bfc-select:hover{border-color:${isDark ? '#3A3A3A' : '#CCCCCC'}}
-.bfc-select:focus{border-color:var(--bfc-orange)}
-.bfc-select option{background:${card};color:${text}}
-.bfc-dir h2{color:var(--bfc-orange);font-size:13px;text-transform:uppercase;letter-spacing:.14em;margin:28px 0 16px;font-weight:700;display:flex;align-items:center;gap:14px}
+.bfc-dir{--bfc-orange:${orange};background:${bg};color:${text};font-family:Inter,system-ui,sans-serif;padding:30px 28px 60px;border-radius:14px}
+.bfc-dir,.bfc-dir *{box-sizing:border-box}
+.bfc-dir button,.bfc-dir a{font-family:inherit}
+.bfc-dir .bfc-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:20px}
+.bfc-dir .bfc-search{flex:2 1 0;min-width:0;position:relative}
+.bfc-dir .bfc-search .bfc-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:${sub};opacity:.55;pointer-events:none}
+.bfc-dir .bfc-search input{width:100%;background:${chipBg};border:1px solid ${line};color:${text};font:inherit;font-size:13px;padding:8px 32px 8px 36px;border-radius:8px;outline:none;transition:border-color .15s;height:36px;box-shadow:none}
+.bfc-dir .bfc-search input::placeholder{color:${sub};opacity:.55}
+.bfc-dir .bfc-search input:focus{border-color:${orange}}
+.bfc-dir .bfc-search-clear{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:0;color:${sub};cursor:pointer;padding:4px 8px;border-radius:4px;font-size:16px;line-height:1;display:none;box-shadow:none}
+.bfc-dir .bfc-search-clear.show{display:block}
+.bfc-dir .bfc-search-clear:hover{background:${line};color:${text}}
+.bfc-dir .bfc-select{flex:1 1 0;min-width:0;background:${chipBg} ${chevron} no-repeat right 10px center;border:1px solid ${line};color:${text};font:inherit;font-size:13px;padding:0 28px 0 10px;border-radius:8px;cursor:pointer;outline:none;transition:border-color .15s;appearance:none;-webkit-appearance:none;height:36px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;box-shadow:none}
+.bfc-dir .bfc-select:hover{border-color:${isDark ? '#3A3A3A' : '#CCCCCC'}}
+.bfc-dir .bfc-select:focus{border-color:${orange}}
+.bfc-dir .bfc-select option{background:${card};color:${text}}
+.bfc-dir h2{color:${orange};font-size:13px;text-transform:uppercase;letter-spacing:.14em;margin:28px 0 16px;font-weight:700;display:flex;align-items:center;gap:14px}
 .bfc-dir h2::after{content:'';flex:1;height:1px;background:rgba(250,102,14,.25)}
 .bfc-dir .bfc-tier:first-child h2{margin-top:0}
-.bfc-tier.bfc-hidden{display:none}
-.bfc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--grid-min,160px),1fr));gap:var(--grid-gap,14px)}
-/* Tier size hierarchy — first rendered tier = largest. Override via CSS vars. */
-.bfc-tier{--card-min-h:110px;--card-pad-y:20px;--card-pad-x:16px;--logo-max-h:64px;--grid-min:160px;--grid-gap:14px}
-.bfc-tier[data-tier-rank="0"]{--card-min-h:150px;--card-pad-y:28px;--card-pad-x:22px;--logo-max-h:92px;--grid-min:230px;--grid-gap:16px}
-.bfc-tier[data-tier-rank="1"]{--card-min-h:130px;--card-pad-y:24px;--card-pad-x:18px;--logo-max-h:78px;--grid-min:200px;--grid-gap:15px}
-/* rank 2 uses defaults */
-.bfc-tier[data-tier-rank="3"]{--card-min-h:95px;--card-pad-y:16px;--card-pad-x:14px;--logo-max-h:54px;--grid-min:145px;--grid-gap:12px}
-.bfc-tier[data-tier-rank="4"]{--card-min-h:82px;--card-pad-y:12px;--card-pad-x:12px;--logo-max-h:44px;--grid-min:125px;--grid-gap:10px}
-.bfc-card{background:${card};border:1px solid ${line};border-radius:10px;padding:var(--card-pad-y) var(--card-pad-x);text-align:center;color:inherit;display:flex;align-items:center;justify-content:center;min-height:var(--card-min-h);cursor:pointer;transition:border-color .2s,transform .2s;font:inherit;width:100%}
-.bfc-card.bfc-hidden{display:none}
-.bfc-card:hover{border-color:var(--bfc-orange);transform:translateY(-2px)}
-.bfc-card:focus-visible{outline:2px solid var(--bfc-orange);outline-offset:2px}
-.bfc-logo{width:100%;display:flex;align-items:center;justify-content:center}
-.bfc-logo img{max-height:var(--logo-max-h);max-width:100%;object-fit:contain}
-.bfc-nologo{font-size:11px;color:${sub};opacity:.7;font-weight:500;padding:0 8px;line-height:1.2}
-/* Member/Vendor/Public/Private color classes still used inside the detail modal */
-.bfc-member{color:var(--bfc-orange)}
-.bfc-vendor{color:${isDark ? '#93C5FD' : '#2563EB'}}
-.bfc-public{color:${isDark ? '#34D399' : '#059669'}}
-.bfc-private{color:${sub}}
-/* Detail modal */
-.bfc-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px;z-index:999999;animation:bfc-fade .15s ease}
-.bfc-modal-overlay.bfc-open{display:flex}
+.bfc-dir .bfc-tier.bfc-hidden{display:none}
+.bfc-dir .bfc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--grid-min,160px),1fr));gap:var(--grid-gap,14px)}
+.bfc-dir .bfc-tier{--card-min-h:110px;--card-pad-y:20px;--card-pad-x:16px;--logo-max-h:64px;--grid-min:160px;--grid-gap:14px}
+.bfc-dir .bfc-tier[data-tier-rank="0"]{--card-min-h:150px;--card-pad-y:28px;--card-pad-x:22px;--logo-max-h:92px;--grid-min:230px;--grid-gap:16px}
+.bfc-dir .bfc-tier[data-tier-rank="1"]{--card-min-h:130px;--card-pad-y:24px;--card-pad-x:18px;--logo-max-h:78px;--grid-min:200px;--grid-gap:15px}
+.bfc-dir .bfc-tier[data-tier-rank="3"]{--card-min-h:95px;--card-pad-y:16px;--card-pad-x:14px;--logo-max-h:54px;--grid-min:145px;--grid-gap:12px}
+.bfc-dir .bfc-tier[data-tier-rank="4"]{--card-min-h:82px;--card-pad-y:12px;--card-pad-x:12px;--logo-max-h:44px;--grid-min:125px;--grid-gap:10px}
+/* Hard reset for .bfc-card so WP theme button styles cannot bleed in */
+.bfc-dir .bfc-card,
+.bfc-dir .bfc-card:link,
+.bfc-dir .bfc-card:visited,
+.bfc-dir .bfc-card:hover,
+.bfc-dir .bfc-card:active,
+.bfc-dir .bfc-card:focus{background:${card};border:1px solid ${line};border-radius:10px;padding:var(--card-pad-y) var(--card-pad-x);text-align:center;color:${text};text-decoration:none;display:flex;align-items:center;justify-content:center;min-height:var(--card-min-h);cursor:pointer;transition:border-color .2s,transform .2s;font:inherit;width:100%;box-shadow:none;outline:none}
+.bfc-dir .bfc-card.bfc-hidden{display:none}
+.bfc-dir .bfc-card:hover{border-color:${orange};transform:translateY(-2px)}
+.bfc-dir .bfc-card:focus-visible{outline:2px solid ${orange};outline-offset:2px}
+.bfc-dir .bfc-logo{width:100%;display:flex;align-items:center;justify-content:center}
+.bfc-dir .bfc-logo img{max-height:var(--logo-max-h);max-width:100%;object-fit:contain}
+.bfc-dir .bfc-nologo{font-size:11px;color:${sub};opacity:.7;font-weight:500;padding:0 8px;line-height:1.2}
+.bfc-dir .bfc-member{color:${orange}}
+.bfc-dir .bfc-vendor{color:${isDark ? '#93C5FD' : '#2563EB'}}
+.bfc-dir .bfc-public{color:${isDark ? '#34D399' : '#059669'}}
+.bfc-dir .bfc-private{color:${sub}}
+/* Detail modal — mounted INSIDE .bfc-dir so styles inherit and WP theme can't hijack */
+.bfc-dir .bfc-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px;z-index:999999;animation:bfc-fade .15s ease}
+.bfc-dir .bfc-modal-overlay.bfc-open{display:flex}
 @keyframes bfc-fade{from{opacity:0}to{opacity:1}}
-.bfc-modal{background:${card};border:1px solid ${line};border-radius:16px;padding:40px 32px 32px;max-width:400px;width:100%;position:relative;text-align:center;font-family:Inter,system-ui,sans-serif;color:${text};box-shadow:0 24px 48px rgba(0,0,0,.45)}
-.bfc-modal-close{position:absolute;top:10px;right:10px;background:none;border:0;color:${sub};cursor:pointer;padding:0;border-radius:8px;font-size:24px;line-height:1;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
-.bfc-modal-close:hover{background:${line};color:${text}}
-.bfc-modal-logo{height:84px;display:flex;align-items:center;justify-content:center;margin-bottom:18px}
-.bfc-modal-logo img{max-height:84px;max-width:80%;object-fit:contain}
-.bfc-modal-name{font-size:20px;font-weight:700;margin:0 0 2px;color:${text};line-height:1.2}
-.bfc-modal-ticker{font-size:12px;color:${sub};letter-spacing:.08em;font-variant-numeric:tabular-nums;margin:0 0 16px;text-transform:uppercase}
-.bfc-modal-meta{display:flex;flex-direction:column;gap:12px;margin:20px 0 24px;padding:20px 8px;border-top:1px solid ${line};border-bottom:1px solid ${line}}
-.bfc-modal-row{display:flex;align-items:center;gap:10px;justify-content:flex-start;font-size:13px;color:${text}}
-.bfc-modal-row svg{width:18px;height:18px;flex:none}
-.bfc-modal-row-k{color:${sub};font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-left:auto;font-weight:500}
-.bfc-modal-link{display:inline-flex;align-items:center;gap:6px;background:var(--bfc-orange);color:#000;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;transition:filter .15s}
-.bfc-modal-link:hover{filter:brightness(1.1)}
-.bfc-empty{text-align:center;padding:40px 20px;color:${sub};font-size:13px}
-@media(max-width:640px){.bfc-dir{padding:30px 20px 60px}.bfc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.bfc-toolbar{flex-wrap:wrap}.bfc-search{flex:1 1 100%}.bfc-select{flex:1 1 calc(50% - 4px)}}
+.bfc-dir .bfc-modal{background:${card};border:1px solid ${line};border-radius:16px;padding:40px 32px 32px;max-width:400px;width:100%;position:relative;text-align:center;font-family:Inter,system-ui,sans-serif;color:${text};box-shadow:0 24px 48px rgba(0,0,0,.45)}
+.bfc-dir .bfc-modal-close,
+.bfc-dir .bfc-modal-close:link,
+.bfc-dir .bfc-modal-close:visited,
+.bfc-dir .bfc-modal-close:hover,
+.bfc-dir .bfc-modal-close:active,
+.bfc-dir .bfc-modal-close:focus{position:absolute;top:10px;right:10px;background:transparent;border:0;color:${sub};cursor:pointer;padding:0;border-radius:8px;font-size:24px;line-height:1;width:36px;height:36px;display:flex;align-items:center;justify-content:center;box-shadow:none;outline:none;text-decoration:none}
+.bfc-dir .bfc-modal-close:hover{background:${line};color:${text}}
+.bfc-dir .bfc-modal-logo{height:84px;display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+.bfc-dir .bfc-modal-logo img{max-height:84px;max-width:80%;object-fit:contain}
+.bfc-dir .bfc-modal-name{font-size:20px;font-weight:700;margin:0 0 2px;color:${text};line-height:1.2}
+.bfc-dir .bfc-modal-ticker{font-size:12px;color:${sub};letter-spacing:.08em;font-variant-numeric:tabular-nums;margin:0 0 16px;text-transform:uppercase}
+.bfc-dir .bfc-modal-meta{display:flex;flex-direction:column;gap:12px;margin:20px 0 24px;padding:20px 8px;border-top:1px solid ${line};border-bottom:1px solid ${line}}
+.bfc-dir .bfc-modal-row{display:flex;align-items:center;gap:10px;justify-content:flex-start;font-size:13px;color:${text}}
+.bfc-dir .bfc-modal-row svg{width:18px;height:18px;flex:none}
+/* Link — explicit for every pseudo-state so browser :visited and WP theme don't turn it purple/pink */
+.bfc-dir .bfc-modal-link,
+.bfc-dir .bfc-modal-link:link,
+.bfc-dir .bfc-modal-link:visited,
+.bfc-dir .bfc-modal-link:hover,
+.bfc-dir .bfc-modal-link:active,
+.bfc-dir .bfc-modal-link:focus{display:inline-flex;align-items:center;gap:6px;background:${orange};color:#000;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;transition:filter .15s;box-shadow:none;border:0}
+.bfc-dir .bfc-modal-link:hover{filter:brightness(1.1)}
+@media(max-width:640px){.bfc-dir{padding:30px 20px 60px}.bfc-dir .bfc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.bfc-dir .bfc-toolbar{flex-wrap:wrap}.bfc-dir .bfc-search{flex:1 1 100%}.bfc-dir .bfc-select{flex:1 1 calc(50% - 4px)}}
 `.trim();
 
   const totalCount = state.tiers.reduce((n, t) => n + t.companies.length, 0);
@@ -1036,12 +1050,12 @@ function generateEmbed(t = 'dark') {
     });
   }
 
-  // --- Detail modal ---
+  // --- Detail modal (mounted inside root so CSS vars inherit and WP theme can't hijack) ---
   var overlay = document.createElement('div');
   overlay.className = 'bfc-modal-overlay';
   overlay.setAttribute('role', 'dialog');
   overlay.setAttribute('aria-modal', 'true');
-  document.body.appendChild(overlay);
+  root.appendChild(overlay);
 
   function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,function(ch){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch]});}
 
