@@ -338,12 +338,21 @@ Object.values(SEED_COMPANIES).forEach(list => list.forEach(c => { c.visibility =
 
 const DEFAULT_STATE = {
   tiers: [
-    { id: 't_founding', name: 'Founding Members',   companies: SEED_COMPANIES.founding },
-    { id: 't_chairman', name: "Chairman's Circle",  companies: SEED_COMPANIES.chairman },
-    { id: 't_executive', name: 'Executive Members', companies: SEED_COMPANIES.executive },
-    { id: 't_premier', name: 'Premier Members',     companies: SEED_COMPANIES.premier },
-    { id: 't_industry', name: 'Industry Members',   companies: SEED_COMPANIES.industry },
+    { id: 't_founding',  name: 'Founding Tier',   companies: SEED_COMPANIES.founding },
+    { id: 't_chairman',  name: "Chairman's Tier", companies: SEED_COMPANIES.chairman },
+    { id: 't_executive', name: 'Executive Tier',  companies: SEED_COMPANIES.executive },
+    { id: 't_premier',   name: 'Premier Tier',    companies: SEED_COMPANIES.premier },
+    { id: 't_industry',  name: 'Industry Tier',   companies: SEED_COMPANIES.industry },
   ],
+};
+
+// Migration table: rename legacy tier names on load so existing state upgrades silently.
+const TIER_RENAMES = {
+  'Founding Members': 'Founding Tier',
+  "Chairman's Circle": "Chairman's Tier",
+  'Executive Members': 'Executive Tier',
+  'Premier Members':   'Premier Tier',
+  'Industry Members':  'Industry Tier',
 };
 
 let state = loadState();
@@ -354,7 +363,16 @@ if (!localStorage.getItem(STORAGE_KEY)) saveState();
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Auto-migrate legacy tier names to the new "X Tier" wording.
+      let migrated = false;
+      (parsed.tiers || []).forEach(t => {
+        if (TIER_RENAMES[t.name]) { t.name = TIER_RENAMES[t.name]; migrated = true; }
+      });
+      if (migrated) localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+      return parsed;
+    }
   } catch {}
   return structuredClone(DEFAULT_STATE);
 }
