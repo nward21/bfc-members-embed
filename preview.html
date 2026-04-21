@@ -150,7 +150,7 @@
 </div>
 
 <script>
-const STORAGE_KEY = 'bfc_directory_v5';
+const STORAGE_KEY = 'bfc_directory_v6';
 const AVAILABLE_LOGOS = new Set([
   'aifinyo','avalon-labs','bitgo','blockspaces','btc-inc','byte-federal','capital-b',
   'crypto-com','ddc','fold','giga','jetking','kraken-institutional','kulr',
@@ -239,7 +239,7 @@ function render() {
       </select>
     </div>`;
 
-  const tiersHtml = state.tiers.map(tier => {
+  const tiersHtml = state.tiers.filter(tier => (tier.companies || []).length > 0).map(tier => {
     const cards = (tier.companies || []).map(c => {
       const vis = c.visibility || (c.ticker ? 'Public' : 'Private');
       const typeLabel = c.type || 'Member';

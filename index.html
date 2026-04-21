@@ -250,7 +250,7 @@ const AVAILABLE_LOGOS = [
 let theme = localStorage.getItem('bfc_theme') || 'dark';
 
 // ---------- State ----------
-const STORAGE_KEY = 'bfc_directory_v5';
+const STORAGE_KEY = 'bfc_directory_v6';
 const WP_CDN = 'https://bfc-members-embed.vercel.app/logos/';
 
 // Logo resolution:
@@ -298,7 +298,7 @@ const SEED_COMPANIES = {
     { id: 'c_lqwd',      name: 'LQWD',                ticker: 'LQWD',  type: 'Member', logoSlug: 'lqwd',                 url: 'https://lqwdfintech.com' },
     { id: 'c_meliuz',    name: 'Méliuz',              ticker: 'MLIU3', type: 'Member', logoSlug: 'meliuz',               url: 'https://meliuz.com.br' },
     { id: 'c_mnav',      name: 'mNAV.com',            ticker: '',      type: 'Member', logoSlug: 'mnav',                 url: 'https://mnav.com' },
-    { id: 'c_1723hk',    name: '1723.HK',             ticker: '1723',  type: 'Member', logoSlug: '',                     url: '' },
+    { id: 'c_1723hk',    name: 'Moon Inc',            ticker: '1723.HK', type: 'Member', logoSlug: 'moon-inc',           url: '' },
     { id: 'c_naas',      name: 'NaaS',                ticker: 'NAAS',  type: 'Member', logoSlug: 'naas',                 url: 'https://naas.io' },
     { id: 'c_nakamoto',  name: 'Nakamoto',            ticker: '',      type: 'Member', logoSlug: 'nakamoto',             url: 'https://nakamoto.com' },
     { id: 'c_oranje',    name: 'Oranje BTC',          ticker: '',      type: 'Member', logoSlug: '',                     url: 'https://oranjebtc.com' },
@@ -853,7 +853,7 @@ function generateEmbed(t = 'dark') {
   const ICON_TIER    = `<svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M5.25 2.25a3 3 0 00-3 3v4.318a3 3 0 00.879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 005.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 00-2.122-.879H5.25zM6.375 7.5a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z" clip-rule="evenodd"/></svg>`;
   const ICON_EXTERNAL = `<svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path fill-rule="evenodd" d="M15.75 2.25a.75.75 0 01.75-.75h5.25a.75.75 0 01.75.75v5.25a.75.75 0 01-1.5 0V4.06l-6.97 6.97a.75.75 0 11-1.06-1.06l6.97-6.97h-3.44a.75.75 0 01-.75-.75z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M4.5 6.75A2.25 2.25 0 016.75 4.5h3a.75.75 0 010 1.5h-3a.75.75 0 00-.75.75v10.5c0 .414.336.75.75.75h10.5a.75.75 0 00.75-.75v-3a.75.75 0 011.5 0v3a2.25 2.25 0 01-2.25 2.25H6.75a2.25 2.25 0 01-2.25-2.25V6.75z" clip-rule="evenodd"/></svg>`;
 
-  const tiersHtml = state.tiers.map(tier => {
+  const tiersHtml = state.tiers.filter(tier => (tier.companies || []).length > 0).map(tier => {
     const cards = tier.companies.map(c => {
       const vis = c.visibility || (c.ticker ? 'Public' : 'Private');
       const typeLabel = c.type || 'Member';
