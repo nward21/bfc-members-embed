@@ -65,15 +65,21 @@
   .bfc-dir h2::after { content: ''; flex: 1; height: 1px; background: rgba(250, 102, 14, 0.25); }
   .bfc-dir .bfc-tier:first-child h2 { margin-top: 0; }
   .bfc-tier.bfc-hidden { display: none; }
-  .bfc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
-  .bfc-card { border: 1px solid; border-radius: 10px; padding: 20px 16px; text-align: center; color: inherit; display: flex; align-items: center; justify-content: center; min-height: 110px; cursor: pointer; transition: border-color .2s, transform .2s; font: inherit; width: 100%; }
+  /* Tier size hierarchy — first rendered tier = largest. Override via CSS vars. */
+  .bfc-tier { --card-min-h: 110px; --card-pad-y: 20px; --card-pad-x: 16px; --logo-max-h: 64px; --grid-min: 160px; --grid-gap: 14px; }
+  .bfc-tier[data-tier-rank="0"] { --card-min-h: 150px; --card-pad-y: 28px; --card-pad-x: 22px; --logo-max-h: 92px; --grid-min: 230px; --grid-gap: 16px; }
+  .bfc-tier[data-tier-rank="1"] { --card-min-h: 130px; --card-pad-y: 24px; --card-pad-x: 18px; --logo-max-h: 78px; --grid-min: 200px; --grid-gap: 15px; }
+  .bfc-tier[data-tier-rank="3"] { --card-min-h: 95px; --card-pad-y: 16px; --card-pad-x: 14px; --logo-max-h: 54px; --grid-min: 145px; --grid-gap: 12px; }
+  .bfc-tier[data-tier-rank="4"] { --card-min-h: 82px; --card-pad-y: 12px; --card-pad-x: 12px; --logo-max-h: 44px; --grid-min: 125px; --grid-gap: 10px; }
+  .bfc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--grid-min, 160px), 1fr)); gap: var(--grid-gap, 14px); }
+  .bfc-card { border: 1px solid; border-radius: 10px; padding: var(--card-pad-y) var(--card-pad-x); text-align: center; color: inherit; display: flex; align-items: center; justify-content: center; min-height: var(--card-min-h); cursor: pointer; transition: border-color .2s, transform .2s; font: inherit; width: 100%; }
   .bfc-card.bfc-hidden { display: none; }
   .theme-dark .bfc-card { background: #1D1D1D; border-color: #2A2A2A; }
   .theme-light .bfc-card { background: #FFFFFF; border-color: #E5E5E5; }
   .bfc-card:hover { border-color: var(--bfc-orange); transform: translateY(-2px); }
   .bfc-card:focus-visible { outline: 2px solid var(--bfc-orange); outline-offset: 2px; }
   .bfc-logo { width: 100%; display: flex; align-items: center; justify-content: center; }
-  .bfc-logo img { max-height: 64px; max-width: 100%; object-fit: contain; }
+  .bfc-logo img { max-height: var(--logo-max-h, 64px); max-width: 100%; object-fit: contain; }
   .bfc-nologo { font-size: 11px; opacity: .7; font-weight: 500; padding: 0 8px; line-height: 1.2; }
   .theme-dark .bfc-nologo { color: #D4D3D3; }
   .theme-light .bfc-nologo { color: #6B7280; }
@@ -150,14 +156,14 @@
 </div>
 
 <script>
-const STORAGE_KEY = 'bfc_directory_v6';
+const STORAGE_KEY = 'bfc_directory_v7';
 const AVAILABLE_LOGOS = new Set([
-  'aifinyo','avalon-labs','bitgo','blockspaces','btc-inc','byte-federal','capital-b',
+  'aifinyo','arch','avalon-labs','bitgo','blockspaces','btc-inc','byte-federal','capital-b',
   'crypto-com','ddc','fold','giga','jetking','kraken-institutional','kulr',
-  'locate-technologies','london-bitcoin-co','lqwd','luxalgo','matador','meliuz',
-  'meteplanet','mnav','moon-inc','naas','nakamoto','next-layer-capital','prenetics',
-  'public-square','salt','samara','semler-scientific','solar-strategy','strategy',
-  'strive','swc','treasury','uproot-company','utxo','vaultz-capital'
+  'locate-technologies','london-bitcoin-co','lqwd','luxalgo','mangrove','matador','meliuz',
+  'meteplanet','mnav','moon-inc','naas','nakamoto','next-layer-capital','oranje','paystand',
+  'prenetics','public-square','salt','samara','semler-scientific','solar-strategy','strategy',
+  'strive','swc','treasury','uproot-company','utxo','vaultz-capital','xce'
 ]);
 
 const ICON_MEMBER  = `<svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>`;
@@ -239,7 +245,7 @@ function render() {
       </select>
     </div>`;
 
-  const tiersHtml = state.tiers.filter(tier => (tier.companies || []).length > 0).map(tier => {
+  const tiersHtml = state.tiers.filter(tier => (tier.companies || []).length > 0).map((tier, rank) => {
     const cards = (tier.companies || []).map(c => {
       const vis = c.visibility || (c.ticker ? 'Public' : 'Private');
       const typeLabel = c.type || 'Member';
@@ -260,7 +266,7 @@ function render() {
       ].join(' ');
       return `<button type="button" class="bfc-card" ${dataAttrs} title="${escapeAttr(titleAttr)}"><div class="bfc-logo">${logoInner}</div></button>`;
     }).join('');
-    return `<div class="bfc-tier" data-tier-id="${escapeAttr(tier.id)}"><h2>${escapeHtml(tier.name)}</h2><div class="bfc-grid">${cards}</div></div>`;
+    return `<div class="bfc-tier" data-tier-id="${escapeAttr(tier.id)}" data-tier-rank="${rank}"><h2>${escapeHtml(tier.name)}</h2><div class="bfc-grid">${cards}</div></div>`;
   }).join('');
 
   root.innerHTML = `<div class="bfc-dir">${toolbar}${tiersHtml}</div>`;

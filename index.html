@@ -238,19 +238,19 @@ const ADMIN_ICON_PRIVATE = `<svg viewBox="0 0 24 24" fill="currentColor" width="
 
 // ---------- Available logos (from /logos folder) ----------
 const AVAILABLE_LOGOS = [
-  'aifinyo','avalon-labs','bitgo','blockspaces','btc-inc','byte-federal','capital-b',
+  'aifinyo','arch','avalon-labs','bitgo','blockspaces','btc-inc','byte-federal','capital-b',
   'crypto-com','ddc','fold','giga','jetking','kraken-institutional','kulr',
-  'locate-technologies','london-bitcoin-co','lqwd','luxalgo','matador','meliuz',
-  'meteplanet','mnav','moon-inc','naas','nakamoto','next-layer-capital','prenetics',
-  'public-square','salt','samara','semler-scientific','solar-strategy','strategy',
-  'strive','swc','treasury','uproot-company','utxo','vaultz-capital'
+  'locate-technologies','london-bitcoin-co','lqwd','luxalgo','mangrove','matador','meliuz',
+  'meteplanet','mnav','moon-inc','naas','nakamoto','next-layer-capital','oranje','paystand',
+  'prenetics','public-square','salt','samara','semler-scientific','solar-strategy','strategy',
+  'strive','swc','treasury','uproot-company','utxo','vaultz-capital','xce'
 ];
 
 // ---------- Theme ----------
 let theme = localStorage.getItem('bfc_theme') || 'dark';
 
 // ---------- State ----------
-const STORAGE_KEY = 'bfc_directory_v6';
+const STORAGE_KEY = 'bfc_directory_v7';
 const WP_CDN = 'https://bfc-members-embed.vercel.app/logos/';
 
 // Logo resolution:
@@ -301,7 +301,7 @@ const SEED_COMPANIES = {
     { id: 'c_1723hk',    name: 'Moon Inc',            ticker: '1723.HK', type: 'Member', logoSlug: 'moon-inc',           url: '' },
     { id: 'c_naas',      name: 'NaaS',                ticker: 'NAAS',  type: 'Member', logoSlug: 'naas',                 url: 'https://naas.io' },
     { id: 'c_nakamoto',  name: 'Nakamoto',            ticker: '',      type: 'Member', logoSlug: 'nakamoto',             url: 'https://nakamoto.com' },
-    { id: 'c_oranje',    name: 'Oranje BTC',          ticker: '',      type: 'Member', logoSlug: '',                     url: 'https://oranjebtc.com' },
+    { id: 'c_oranje',    name: 'Oranje BTC',          ticker: '',      type: 'Member', logoSlug: 'oranje',               url: 'https://oranjebtc.com' },
     { id: 'c_prenetics', name: 'Prenetics',           ticker: 'PRE',   type: 'Member', logoSlug: 'prenetics',            url: 'https://prenetics.com' },
     { id: 'c_publicsq',  name: 'PublicSquare',        ticker: 'PSQH',  type: 'Member', logoSlug: 'public-square',        url: 'https://publicsq.com' },
     { id: 'c_salt',      name: 'SALT',                ticker: '',      type: 'Vendor', logoSlug: 'salt',                 url: 'https://saltlending.com' },
@@ -319,12 +319,12 @@ const SEED_COMPANIES = {
     { id: 'c_utxo',        name: 'UTXO',              ticker: '',      type: 'Member', logoSlug: 'utxo',                 url: '' },
   ],
   industry: [
-    { id: 'c_arch',     name: 'ARCH',                 ticker: '',      type: 'Vendor', logoSlug: '',                     url: 'https://archpublic.com' },
+    { id: 'c_arch',     name: 'ARCH',                 ticker: '',      type: 'Vendor', logoSlug: 'arch',                 url: 'https://archpublic.com' },
     { id: 'c_locate',   name: 'Locate Technologies',  ticker: '',      type: 'Vendor', logoSlug: 'locate-technologies',  url: 'https://locatetech.com' },
     { id: 'c_matador',  name: 'Matador',              ticker: '',      type: 'Member', logoSlug: 'matador',              url: 'https://matadortechnologies.com' },
-    { id: 'c_oranje2',  name: 'OranjeBTC',            ticker: '',      type: 'Vendor', logoSlug: '',                     url: 'https://oranjebtc.com' },
+    { id: 'c_oranje2',  name: 'OranjeBTC',            ticker: '',      type: 'Vendor', logoSlug: 'oranje',               url: 'https://oranjebtc.com' },
     { id: 'c_uproot',   name: 'Uproot Company',       ticker: '',      type: 'Vendor', logoSlug: 'uproot-company',       url: 'https://uprootcompany.com' },
-    { id: 'c_xce',      name: 'XCE',                  ticker: '',      type: 'Vendor', logoSlug: '',                     url: '' },
+    { id: 'c_xce',      name: 'XCE',                  ticker: '',      type: 'Vendor', logoSlug: 'xce',                  url: '' },
   ],
 };
 // Inject visibility on every seed entry.
@@ -810,13 +810,20 @@ function generateEmbed(t = 'dark') {
 .bfc-dir h2::after{content:'';flex:1;height:1px;background:rgba(250,102,14,.25)}
 .bfc-dir .bfc-tier:first-child h2{margin-top:0}
 .bfc-tier.bfc-hidden{display:none}
-.bfc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
-.bfc-card{background:${card};border:1px solid ${line};border-radius:10px;padding:20px 16px;text-align:center;color:inherit;display:flex;align-items:center;justify-content:center;min-height:110px;cursor:pointer;transition:border-color .2s,transform .2s;font:inherit;width:100%}
+.bfc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--grid-min,160px),1fr));gap:var(--grid-gap,14px)}
+/* Tier size hierarchy — first rendered tier = largest. Override via CSS vars. */
+.bfc-tier{--card-min-h:110px;--card-pad-y:20px;--card-pad-x:16px;--logo-max-h:64px;--grid-min:160px;--grid-gap:14px}
+.bfc-tier[data-tier-rank="0"]{--card-min-h:150px;--card-pad-y:28px;--card-pad-x:22px;--logo-max-h:92px;--grid-min:230px;--grid-gap:16px}
+.bfc-tier[data-tier-rank="1"]{--card-min-h:130px;--card-pad-y:24px;--card-pad-x:18px;--logo-max-h:78px;--grid-min:200px;--grid-gap:15px}
+/* rank 2 uses defaults */
+.bfc-tier[data-tier-rank="3"]{--card-min-h:95px;--card-pad-y:16px;--card-pad-x:14px;--logo-max-h:54px;--grid-min:145px;--grid-gap:12px}
+.bfc-tier[data-tier-rank="4"]{--card-min-h:82px;--card-pad-y:12px;--card-pad-x:12px;--logo-max-h:44px;--grid-min:125px;--grid-gap:10px}
+.bfc-card{background:${card};border:1px solid ${line};border-radius:10px;padding:var(--card-pad-y) var(--card-pad-x);text-align:center;color:inherit;display:flex;align-items:center;justify-content:center;min-height:var(--card-min-h);cursor:pointer;transition:border-color .2s,transform .2s;font:inherit;width:100%}
 .bfc-card.bfc-hidden{display:none}
 .bfc-card:hover{border-color:var(--bfc-orange);transform:translateY(-2px)}
 .bfc-card:focus-visible{outline:2px solid var(--bfc-orange);outline-offset:2px}
 .bfc-logo{width:100%;display:flex;align-items:center;justify-content:center}
-.bfc-logo img{max-height:64px;max-width:100%;object-fit:contain}
+.bfc-logo img{max-height:var(--logo-max-h);max-width:100%;object-fit:contain}
 .bfc-nologo{font-size:11px;color:${sub};opacity:.7;font-weight:500;padding:0 8px;line-height:1.2}
 /* Member/Vendor/Public/Private color classes still used inside the detail modal */
 .bfc-member{color:var(--bfc-orange)}
@@ -853,7 +860,7 @@ function generateEmbed(t = 'dark') {
   const ICON_TIER    = `<svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M5.25 2.25a3 3 0 00-3 3v4.318a3 3 0 00.879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 005.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 00-2.122-.879H5.25zM6.375 7.5a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z" clip-rule="evenodd"/></svg>`;
   const ICON_EXTERNAL = `<svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path fill-rule="evenodd" d="M15.75 2.25a.75.75 0 01.75-.75h5.25a.75.75 0 01.75.75v5.25a.75.75 0 01-1.5 0V4.06l-6.97 6.97a.75.75 0 11-1.06-1.06l6.97-6.97h-3.44a.75.75 0 01-.75-.75z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M4.5 6.75A2.25 2.25 0 016.75 4.5h3a.75.75 0 010 1.5h-3a.75.75 0 00-.75.75v10.5c0 .414.336.75.75.75h10.5a.75.75 0 00.75-.75v-3a.75.75 0 011.5 0v3a2.25 2.25 0 01-2.25 2.25H6.75a2.25 2.25 0 01-2.25-2.25V6.75z" clip-rule="evenodd"/></svg>`;
 
-  const tiersHtml = state.tiers.filter(tier => (tier.companies || []).length > 0).map(tier => {
+  const tiersHtml = state.tiers.filter(tier => (tier.companies || []).length > 0).map((tier, rank) => {
     const cards = tier.companies.map(c => {
       const vis = c.visibility || (c.ticker ? 'Public' : 'Private');
       const typeLabel = c.type || 'Member';
@@ -874,7 +881,7 @@ function generateEmbed(t = 'dark') {
       ].join(' ');
       return `<button type="button" class="bfc-card" ${dataAttrs} title="${escapeAttr(titleAttr)}"><div class="bfc-logo">${logoInner}</div></button>`;
     }).join('');
-    return `<div class="bfc-tier" data-tier-id="${escapeAttr(tier.id)}"><h2>${escapeHtml(tier.name)}</h2><div class="bfc-grid">${cards}</div></div>`;
+    return `<div class="bfc-tier" data-tier-id="${escapeAttr(tier.id)}" data-tier-rank="${rank}"><h2>${escapeHtml(tier.name)}</h2><div class="bfc-grid">${cards}</div></div>`;
   }).join('');
 
   const tierOptions = state.tiers.map(t => `<option value="${escapeAttr(t.id)}">${escapeHtml(t.name)}</option>`).join('');
