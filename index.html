@@ -478,32 +478,25 @@ function render() {
 function renderCard(c, opts) {
   const { cardBg, cardBorder } = opts;
   const el = document.createElement('div');
-  el.className = `group card-grab relative ${cardBg} border ${cardBorder} hover:border-bfc-orange/60 rounded-xl p-3 flex flex-col items-center justify-between gap-3 transition min-h-[140px]`;
+  el.className = `group card-grab relative ${cardBg} border ${cardBorder} hover:border-bfc-orange/60 rounded-xl p-3 flex items-center justify-center transition min-h-[110px]`;
   el.dataset.companyId = c.id;
-  el.title = c.name + (c.ticker ? ` (${c.ticker})` : '');
-
-  const typeLabel = c.type || 'Member';
-  const vis = c.visibility || derivedVisibility(c.ticker || '');
-  const typeColor = typeLabel === 'Vendor' ? 'text-blue-400' : 'text-bfc-orange';
-  const visColor  = vis === 'Public' ? 'text-emerald-400' : 'text-neutral-400';
-  const typeSvg = typeLabel === 'Vendor' ? ADMIN_ICON_VENDOR : ADMIN_ICON_MEMBER;
-  const visSvg  = vis === 'Public' ? ADMIN_ICON_PUBLIC : ADMIN_ICON_PRIVATE;
 
   const logoSrc = companyLogoSrc(c);
   const logoHtml = logoSrc
-    ? `<img src="${escapeAttr(logoSrc)}" alt="${escapeAttr(c.name)}" class="max-h-14 max-w-full object-contain" onerror="this.outerHTML='<div class=&quot;text-neutral-500 text-[10px]&quot;>no logo</div>'" />`
+    ? `<img src="${escapeAttr(logoSrc)}" alt="${escapeAttr(c.name)}" class="max-h-16 max-w-full object-contain" onerror="this.outerHTML='<div class=&quot;text-neutral-500 text-[10px]&quot;>no logo</div>'" />`
     : `<div class="text-neutral-500 text-[10px] text-center px-2">${escapeHtml(c.name)}</div>`;
 
+  // Admin hint on hover: name · ticker · Member/Vendor · Public/Private
+  const hint = [c.name, c.ticker, c.type || 'Member', (c.visibility || derivedVisibility(c.ticker || '')) + ' company']
+    .filter(Boolean).join(' · ');
+  el.title = hint;
+
   el.innerHTML = `
-    <div class="absolute top-1.5 right-1.5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+    <div class="absolute top-1.5 right-1.5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition z-10">
       <button class="edit-btn p-1 rounded bg-black/60 text-white hover:bg-neutral-700" title="Edit"><i data-lucide="pencil" class="w-3 h-3"></i></button>
       <button class="delete-btn p-1 rounded bg-black/60 text-white hover:bg-red-900/60 hover:text-red-400" title="Delete"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
     </div>
-    <div class="flex-1 w-full flex items-center justify-center overflow-hidden py-2">${logoHtml}</div>
-    <div class="flex items-center justify-center gap-2 opacity-85">
-      <span title="${escapeAttr(typeLabel)}" class="${typeColor} inline-flex" style="width:16px;height:16px">${typeSvg}</span>
-      <span title="${escapeAttr(vis + ' company')}" class="${visColor} inline-flex" style="width:16px;height:16px">${visSvg}</span>
-    </div>
+    <div class="w-full flex-1 flex items-center justify-center overflow-hidden py-2">${logoHtml}</div>
   `;
 
   el.querySelector('.edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openModal({ company: c }); });
@@ -817,20 +810,35 @@ function generateEmbed(t = 'dark') {
 .bfc-dir .bfc-tier:first-child h2{margin-top:0}
 .bfc-tier.bfc-hidden{display:none}
 .bfc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
-.bfc-card{background:${card};border:1px solid ${line};border-radius:10px;padding:18px 14px;text-align:center;text-decoration:none;color:inherit;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:14px;min-height:140px;transition:border-color .2s,transform .2s}
+.bfc-card{background:${card};border:1px solid ${line};border-radius:10px;padding:20px 16px;text-align:center;color:inherit;display:flex;align-items:center;justify-content:center;min-height:110px;cursor:pointer;transition:border-color .2s,transform .2s;font:inherit;width:100%}
 .bfc-card.bfc-hidden{display:none}
 .bfc-card:hover{border-color:var(--bfc-orange);transform:translateY(-2px)}
-.bfc-logo{flex:1;width:100%;display:flex;align-items:center;justify-content:center;min-height:56px}
-.bfc-logo img{max-height:56px;max-width:100%;object-fit:contain}
+.bfc-card:focus-visible{outline:2px solid var(--bfc-orange);outline-offset:2px}
+.bfc-logo{width:100%;display:flex;align-items:center;justify-content:center}
+.bfc-logo img{max-height:64px;max-width:100%;object-fit:contain}
 .bfc-nologo{font-size:11px;color:${sub};opacity:.7;font-weight:500;padding:0 8px;line-height:1.2}
-.bfc-badges{display:flex;gap:8px;justify-content:center;align-items:center}
-.bfc-badge{display:inline-flex;align-items:center;justify-content:center;cursor:help;opacity:.85;transition:transform .15s,opacity .15s}
-.bfc-badge:hover{opacity:1;transform:scale(1.15)}
-.bfc-badge svg{width:16px;height:16px;display:block}
+/* Member/Vendor/Public/Private color classes still used inside the detail modal */
 .bfc-member{color:var(--bfc-orange)}
 .bfc-vendor{color:${isDark ? '#93C5FD' : '#2563EB'}}
 .bfc-public{color:${isDark ? '#34D399' : '#059669'}}
 .bfc-private{color:${sub}}
+/* Detail modal */
+.bfc-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px;z-index:999999;animation:bfc-fade .15s ease}
+.bfc-modal-overlay.bfc-open{display:flex}
+@keyframes bfc-fade{from{opacity:0}to{opacity:1}}
+.bfc-modal{background:${card};border:1px solid ${line};border-radius:16px;padding:40px 32px 32px;max-width:400px;width:100%;position:relative;text-align:center;font-family:Inter,system-ui,sans-serif;color:${text};box-shadow:0 24px 48px rgba(0,0,0,.45)}
+.bfc-modal-close{position:absolute;top:10px;right:10px;background:none;border:0;color:${sub};cursor:pointer;padding:0;border-radius:8px;font-size:24px;line-height:1;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+.bfc-modal-close:hover{background:${line};color:${text}}
+.bfc-modal-logo{height:84px;display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+.bfc-modal-logo img{max-height:84px;max-width:80%;object-fit:contain}
+.bfc-modal-name{font-size:20px;font-weight:700;margin:0 0 2px;color:${text};line-height:1.2}
+.bfc-modal-ticker{font-size:12px;color:${sub};letter-spacing:.08em;font-variant-numeric:tabular-nums;margin:0 0 16px;text-transform:uppercase}
+.bfc-modal-meta{display:flex;flex-direction:column;gap:12px;margin:20px 0 24px;padding:20px 8px;border-top:1px solid ${line};border-bottom:1px solid ${line}}
+.bfc-modal-row{display:flex;align-items:center;gap:10px;justify-content:flex-start;font-size:13px;color:${text}}
+.bfc-modal-row svg{width:18px;height:18px;flex:none}
+.bfc-modal-row-k{color:${sub};font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-left:auto;font-weight:500}
+.bfc-modal-link{display:inline-flex;align-items:center;gap:6px;background:var(--bfc-orange);color:#000;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;transition:filter .15s}
+.bfc-modal-link:hover{filter:brightness(1.1)}
 .bfc-empty{text-align:center;padding:40px 20px;color:${sub};font-size:13px}
 @media(max-width:640px){.bfc-dir{padding:20px}.bfc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.bfc-search{flex-basis:100%}.bfc-select{flex:1}}
 `.trim();
@@ -841,23 +849,29 @@ function generateEmbed(t = 'dark') {
   const ICON_VENDOR  = `<svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M7.5 5.25a3 3 0 013-3h3a3 3 0 013 3v.205c.933.085 1.857.197 2.774.334 1.454.218 2.476 1.483 2.476 2.917v3.033c0 1.211-.734 2.352-1.936 2.752A24.726 24.726 0 0112 15.75c-2.73 0-5.357-.442-7.814-1.259-1.202-.4-1.936-1.541-1.936-2.752V8.706c0-1.434 1.022-2.699 2.476-2.917A48.814 48.814 0 017.5 5.455V5.25zm7.5 0v.09a49.488 49.488 0 00-6 0v-.09a1.5 1.5 0 011.5-1.5h3a1.5 1.5 0 011.5 1.5zm-3 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/><path d="M3 18.4v-2.796a4.3 4.3 0 00.713.31A26.226 26.226 0 0012 17.25c2.892 0 5.68-.468 8.287-1.335.252-.084.49-.189.713-.311V18.4c0 1.452-1.047 2.728-2.523 2.923-2.12.282-4.282.427-6.477.427a49.19 49.19 0 01-6.477-.427C4.047 21.128 3 19.852 3 18.4z"/></svg>`;
   const ICON_PUBLIC  = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.584 2.376a.75.75 0 01.832 0l9 6a.75.75 0 11-.832 1.248L12 3.901 3.416 9.624a.75.75 0 01-.832-1.248l9-6z"/><path fill-rule="evenodd" d="M20.25 10.332v9.918H21a.75.75 0 010 1.5H3a.75.75 0 010-1.5h.75v-9.918a.75.75 0 01.634-.74A49.109 49.109 0 0112 9c2.59 0 5.134.202 7.616.592a.75.75 0 01.634.74zm-7.5 2.418a.75.75 0 00-1.5 0v6.75a.75.75 0 001.5 0v-6.75zm3-.75a.75.75 0 01.75.75v6.75a.75.75 0 01-1.5 0v-6.75a.75.75 0 01.75-.75zM9 12.75a.75.75 0 00-1.5 0v6.75a.75.75 0 001.5 0v-6.75z" clip-rule="evenodd"/><path d="M12 7.875a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z"/></svg>`;
   const ICON_PRIVATE = `<svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clip-rule="evenodd"/></svg>`;
+  const ICON_TIER    = `<svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M5.25 2.25a3 3 0 00-3 3v4.318a3 3 0 00.879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 005.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 00-2.122-.879H5.25zM6.375 7.5a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z" clip-rule="evenodd"/></svg>`;
+  const ICON_EXTERNAL = `<svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path fill-rule="evenodd" d="M15.75 2.25a.75.75 0 01.75-.75h5.25a.75.75 0 01.75.75v5.25a.75.75 0 01-1.5 0V4.06l-6.97 6.97a.75.75 0 11-1.06-1.06l6.97-6.97h-3.44a.75.75 0 01-.75-.75z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M4.5 6.75A2.25 2.25 0 016.75 4.5h3a.75.75 0 010 1.5h-3a.75.75 0 00-.75.75v10.5c0 .414.336.75.75.75h10.5a.75.75 0 00.75-.75v-3a.75.75 0 011.5 0v3a2.25 2.25 0 01-2.25 2.25H6.75a2.25 2.25 0 01-2.25-2.25V6.75z" clip-rule="evenodd"/></svg>`;
 
   const tiersHtml = state.tiers.map(tier => {
     const cards = tier.companies.map(c => {
       const vis = c.visibility || (c.ticker ? 'Public' : 'Private');
       const typeLabel = c.type || 'Member';
       const logoUrl = companyEmbedLogoSrc(c, t);
-      const logo = logoUrl
-        ? `<div class="bfc-logo"><img src="${escapeAttr(logoUrl)}" alt="${escapeAttr(c.name)}" loading="lazy"/></div>`
-        : `<div class="bfc-logo"><span class="bfc-nologo">${escapeHtml(c.name)}</span></div>`;
-      const typeBadge = `<span class="bfc-badge ${typeLabel === 'Vendor' ? 'bfc-vendor' : 'bfc-member'}" title="${escapeAttr(typeLabel)}" aria-label="${escapeAttr(typeLabel)}">${typeLabel === 'Vendor' ? ICON_VENDOR : ICON_MEMBER}</span>`;
-      const visBadge = `<span class="bfc-badge ${vis === 'Public' ? 'bfc-public' : 'bfc-private'}" title="${escapeAttr(vis + ' company')}" aria-label="${escapeAttr(vis + ' company')}">${vis === 'Public' ? ICON_PUBLIC : ICON_PRIVATE}</span>`;
-      const inner = `${logo}<div class="bfc-badges">${typeBadge}${visBadge}</div>`;
-      const titleAttr = c.ticker ? `${c.name} (${c.ticker})` : c.name;
-      const dataAttrs = `data-name="${escapeAttr((c.name || '').toLowerCase())}" data-ticker="${escapeAttr((c.ticker || '').toLowerCase())}" data-type="${escapeAttr(typeLabel)}" data-visibility="${escapeAttr(vis)}" data-tier-id="${escapeAttr(tier.id)}" title="${escapeAttr(titleAttr)}"`;
-      return c.url
-        ? `<a class="bfc-card" ${dataAttrs} href="${escapeAttr(c.url)}" target="_blank" rel="noopener">${inner}</a>`
-        : `<div class="bfc-card" ${dataAttrs}>${inner}</div>`;
+      const logoInner = logoUrl
+        ? `<img src="${escapeAttr(logoUrl)}" alt="${escapeAttr(c.name)}" loading="lazy"/>`
+        : `<span class="bfc-nologo">${escapeHtml(c.name)}</span>`;
+      const titleAttr = c.ticker ? `${c.name} (${c.ticker}) — click for details` : `${c.name} — click for details`;
+      const dataAttrs = [
+        `data-name="${escapeAttr(c.name || '')}"`,
+        `data-ticker="${escapeAttr((c.ticker || '').toUpperCase())}"`,
+        `data-type="${escapeAttr(typeLabel)}"`,
+        `data-visibility="${escapeAttr(vis)}"`,
+        `data-tier-id="${escapeAttr(tier.id)}"`,
+        `data-tier-name="${escapeAttr(tier.name)}"`,
+        `data-url="${escapeAttr(c.url || '')}"`,
+        `data-logo="${escapeAttr(logoUrl)}"`,
+      ].join(' ');
+      return `<button type="button" class="bfc-card" ${dataAttrs} title="${escapeAttr(titleAttr)}"><div class="bfc-logo">${logoInner}</div></button>`;
     }).join('');
     return `<div class="bfc-tier" data-tier-id="${escapeAttr(tier.id)}"><h2>${escapeHtml(tier.name)}</h2><div class="bfc-grid">${cards}</div></div>`;
   }).join('');
@@ -893,7 +907,7 @@ function generateEmbed(t = 'dark') {
   </select>
 </div>`.trim();
 
-  // Self-contained filter/sort JS. IIFE-scoped to avoid globals.
+  // Self-contained filter/sort + modal JS. IIFE-scoped.
   const js = `
 (function(){
   var root = document.currentScript && document.currentScript.previousElementSibling;
@@ -902,6 +916,15 @@ function generateEmbed(t = 'dark') {
     root = dirs[dirs.length-1];
   }
   if(!root) return;
+
+  var ICONS = {
+    Member: ${JSON.stringify(ICON_MEMBER)},
+    Vendor: ${JSON.stringify(ICON_VENDOR)},
+    Public: ${JSON.stringify(ICON_PUBLIC)},
+    Private: ${JSON.stringify(ICON_PRIVATE)},
+    Tier: ${JSON.stringify(ICON_TIER)},
+    External: ${JSON.stringify(ICON_EXTERNAL)},
+  };
 
   var input = root.querySelector('.bfc-search input');
   var clearBtn = root.querySelector('.bfc-search-clear');
@@ -919,14 +942,13 @@ function generateEmbed(t = 'dark') {
   });
 
   function apply(){
-    var total = 0;
     root.querySelectorAll('.bfc-tier').forEach(function(tier){
       var tierId = tier.getAttribute('data-tier-id');
       var tierMatch = state.tier === 'all' || state.tier === tierId;
       var shown = 0;
       tier.querySelectorAll('.bfc-card').forEach(function(card){
-        var name = card.getAttribute('data-name') || '';
-        var ticker = card.getAttribute('data-ticker') || '';
+        var name = (card.getAttribute('data-name') || '').toLowerCase();
+        var ticker = (card.getAttribute('data-ticker') || '').toLowerCase();
         var type = card.getAttribute('data-type') || '';
         var vis = card.getAttribute('data-visibility') || '';
         var matchQ = !state.query || name.indexOf(state.query) !== -1 || ticker.indexOf(state.query) !== -1;
@@ -937,7 +959,6 @@ function generateEmbed(t = 'dark') {
         if(show) shown++;
       });
       tier.classList.toggle('bfc-hidden', shown === 0);
-      total += shown;
     });
   }
 
@@ -950,13 +971,12 @@ function generateEmbed(t = 'dark') {
         if(grid._orig) grid._orig.forEach(function(c){ grid.appendChild(c); });
         return;
       }
-      var parts = mode.split('-'); // name-asc, name-desc, ticker-asc, ticker-desc
+      var parts = mode.split('-');
       var key = parts[0], dir = parts[1];
       var cards = Array.prototype.slice.call(grid.children);
       cards.sort(function(a,b){
-        var av = a.getAttribute('data-' + key) || '';
-        var bv = b.getAttribute('data-' + key) || '';
-        // Empty tickers sort last always
+        var av = (a.getAttribute('data-' + key) || '').toLowerCase();
+        var bv = (b.getAttribute('data-' + key) || '').toLowerCase();
         if(key === 'ticker'){
           if(!av && bv) return 1;
           if(av && !bv) return -1;
@@ -967,26 +987,70 @@ function generateEmbed(t = 'dark') {
     });
   }
 
+  // --- Detail modal ---
+  var overlay = document.createElement('div');
+  overlay.className = 'bfc-modal-overlay';
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-modal', 'true');
+  document.body.appendChild(overlay);
+
+  function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,function(ch){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch]});}
+
+  function openModal(card){
+    var name = card.getAttribute('data-name') || '';
+    var ticker = card.getAttribute('data-ticker') || '';
+    var type = card.getAttribute('data-type') || 'Member';
+    var vis = card.getAttribute('data-visibility') || 'Private';
+    var tierName = card.getAttribute('data-tier-name') || '';
+    var url = card.getAttribute('data-url') || '';
+    var logoUrl = card.getAttribute('data-logo') || '';
+
+    var typeIcon = type === 'Vendor' ? ICONS.Vendor : ICONS.Member;
+    var visIcon  = vis === 'Public' ? ICONS.Public : ICONS.Private;
+    var typeCls = type === 'Vendor' ? 'bfc-vendor' : 'bfc-member';
+    var visCls  = vis === 'Public' ? 'bfc-public' : 'bfc-private';
+
+    overlay.innerHTML = ''+
+      '<div class="bfc-modal">'+
+        '<button type="button" class="bfc-modal-close" aria-label="Close">&times;</button>'+
+        (logoUrl ? '<div class="bfc-modal-logo"><img src="'+escapeHtml(logoUrl)+'" alt="'+escapeHtml(name)+'"/></div>' : '')+
+        '<h3 class="bfc-modal-name">'+escapeHtml(name)+'</h3>'+
+        (ticker ? '<div class="bfc-modal-ticker">'+escapeHtml(ticker)+'</div>' : '')+
+        '<div class="bfc-modal-meta">'+
+          '<div class="bfc-modal-row"><span class="'+typeCls+'" style="display:inline-flex;width:18px;height:18px">'+typeIcon+'</span><span>'+escapeHtml(type)+'</span></div>'+
+          '<div class="bfc-modal-row"><span class="'+visCls+'" style="display:inline-flex;width:18px;height:18px">'+visIcon+'</span><span>'+escapeHtml(vis)+' company</span></div>'+
+          (tierName ? '<div class="bfc-modal-row"><span style="display:inline-flex;width:18px;height:18px;color:var(--bfc-orange)">'+ICONS.Tier+'</span><span>'+escapeHtml(tierName)+'</span></div>' : '')+
+        '</div>'+
+        (url ? '<a class="bfc-modal-link" href="'+escapeHtml(url)+'" target="_blank" rel="noopener">Visit website '+ICONS.External+'</a>' : '')+
+      '</div>';
+    overlay.classList.add('bfc-open');
+    var closeBtn = overlay.querySelector('.bfc-modal-close');
+    if(closeBtn) closeBtn.focus();
+  }
+  function closeModal(){ overlay.classList.remove('bfc-open'); overlay.innerHTML = ''; }
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay || e.target.classList.contains('bfc-modal-close') || (e.target.closest && e.target.closest('.bfc-modal-close'))) closeModal();
+  });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+
+  root.addEventListener('click', function(e){
+    var card = e.target.closest && e.target.closest('.bfc-card');
+    if(card && root.contains(card)){ e.preventDefault(); openModal(card); }
+  });
+
+  // --- Filter/sort wiring ---
   input && input.addEventListener('input', function(e){
     state.query = e.target.value.toLowerCase().trim();
     if(clearBtn) clearBtn.classList.toggle('show', !!state.query);
     apply();
   });
   clearBtn && clearBtn.addEventListener('click', function(){
-    input.value = '';
-    state.query = '';
-    clearBtn.classList.remove('show');
-    input.focus();
-    apply();
+    input.value = ''; state.query = ''; clearBtn.classList.remove('show'); input.focus(); apply();
   });
   typeSelect && typeSelect.addEventListener('change', function(e){ state.type = e.target.value; apply(); });
   visSelect  && visSelect.addEventListener('change',  function(e){ state.vis  = e.target.value; apply(); });
   tierSelect && tierSelect.addEventListener('change', function(e){ state.tier = e.target.value; apply(); });
-  sortSelect && sortSelect.addEventListener('change', function(e){
-    state.sort = e.target.value;
-    doSort();
-    apply();
-  });
+  sortSelect && sortSelect.addEventListener('change', function(e){ state.sort = e.target.value; doSort(); apply(); });
 })();`;
 
   return `<style>${css}<\/style>
