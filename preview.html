@@ -33,7 +33,7 @@
   .stamp { font-size: 11px; opacity: .6; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .1em; }
 
   /* ====== Embed styling (kept in sync with generateEmbed() in index.html) ====== */
-  .bfc-dir { font-family: Inter, system-ui, sans-serif; padding: 30px 28px 60px; border-radius: 14px; }
+  .bfc-dir { font-family: Inter, system-ui, sans-serif; padding: 30px 28px 110px; border-radius: 14px; }
   .bfc-dir *{ box-sizing: border-box; }
   .theme-dark .bfc-dir { background: #000; color: #fff; }
   .theme-light .bfc-dir { background: #F7F7F7; color: #111; }
@@ -136,7 +136,7 @@
   #btnCopyEmbedConfirm:hover { filter: brightness(1.1); }
 
   @media(max-width:640px){
-    .bfc-dir { padding: 30px 20px 60px; }
+    .bfc-dir { padding: 30px 20px 110px; }
     .bfc-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
     .bfc-toolbar { flex-wrap: wrap; }
     .bfc-search { flex: 1 1 100%; }
@@ -281,7 +281,7 @@ function generateEmbed(state, t = 'dark') {
 
   const orange = '#FA660E';
   const css = `
-.bfc-dir{--bfc-orange:${orange};background:${bg};color:${text};font-family:Inter,system-ui,sans-serif;padding:30px 28px 60px;border-radius:14px}
+.bfc-dir{--bfc-orange:${orange};background:${bg};color:${text};font-family:Inter,system-ui,sans-serif;padding:30px 28px 110px;border-radius:14px}
 .bfc-dir,.bfc-dir *{box-sizing:border-box}
 .bfc-dir button,.bfc-dir a{font-family:inherit}
 .bfc-dir .bfc-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:20px}

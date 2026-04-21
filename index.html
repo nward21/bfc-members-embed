@@ -932,7 +932,7 @@ function generateEmbed(t = 'dark') {
 
   const orange = '#FA660E';
   const css = `
-.bfc-dir{--bfc-orange:${orange};background:${bg};color:${text};font-family:Inter,system-ui,sans-serif;padding:30px 28px 60px;border-radius:14px}
+.bfc-dir{--bfc-orange:${orange};background:${bg};color:${text};font-family:Inter,system-ui,sans-serif;padding:30px 28px 110px;border-radius:14px}
 .bfc-dir,.bfc-dir *{box-sizing:border-box}
 .bfc-dir button,.bfc-dir a{font-family:inherit}
 .bfc-dir .bfc-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:20px}
@@ -1002,7 +1002,7 @@ function generateEmbed(t = 'dark') {
 .bfc-dir .bfc-modal-link:active,
 .bfc-dir .bfc-modal-link:focus{display:inline-flex;align-items:center;gap:6px;background:${orange};color:#fff;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;transition:filter .15s;box-shadow:none;border:0}
 .bfc-dir .bfc-modal-link:hover{filter:brightness(1.1)}
-@media(max-width:640px){.bfc-dir{padding:30px 20px 60px}.bfc-dir .bfc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.bfc-dir .bfc-toolbar{flex-wrap:wrap}.bfc-dir .bfc-search{flex:1 1 100%}.bfc-dir .bfc-select{flex:1 1 calc(50% - 4px)}}
+@media(max-width:640px){.bfc-dir{padding:30px 20px 110px}.bfc-dir .bfc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.bfc-dir .bfc-toolbar{flex-wrap:wrap}.bfc-dir .bfc-search{flex:1 1 100%}.bfc-dir .bfc-select{flex:1 1 calc(50% - 4px)}}
 `.trim();
 
   const totalCount = state.tiers.reduce((n, t) => n + t.companies.length, 0);
