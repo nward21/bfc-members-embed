@@ -120,8 +120,8 @@
   .bfc-modal-btn, .bfc-modal-btn:link, .bfc-modal-btn:visited, .bfc-modal-btn:hover, .bfc-modal-btn:active, .bfc-modal-btn:focus { display: inline-flex; align-items: center; gap: 6px; color: #fff; padding: 11px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 13px; transition: filter .15s; border: 0; }
   .bfc-modal-btn:hover { filter: brightness(1.12); }
   .bfc-modal-btn-primary { background: var(--bfc-orange); }
-  .theme-dark .bfc-modal-btn-secondary { background: #4B5563; }
-  .theme-light .bfc-modal-btn-secondary { background: #6B7280; }
+  .theme-dark .bfc-modal-btn-secondary { background: #333333; }
+  .theme-light .bfc-modal-btn-secondary { background: #374151; }
 
   .empty-state { text-align: center; padding: 80px 20px; opacity: .6; }
 
@@ -219,6 +219,8 @@ const ICON_PUBLIC  = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.
 const ICON_PRIVATE = `<svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clip-rule="evenodd"/></svg>`;
 const ICON_TIER    = `<svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M5.25 2.25a3 3 0 00-3 3v4.318a3 3 0 00.879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 005.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 00-2.122-.879H5.25zM6.375 7.5a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z" clip-rule="evenodd"/></svg>`;
 const ICON_EXTERNAL = `<svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path fill-rule="evenodd" d="M15.75 2.25a.75.75 0 01.75-.75h5.25a.75.75 0 01.75.75v5.25a.75.75 0 01-1.5 0V4.06l-6.97 6.97a.75.75 0 11-1.06-1.06l6.97-6.97h-3.44a.75.75 0 01-.75-.75z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M4.5 6.75A2.25 2.25 0 016.75 4.5h3a.75.75 0 010 1.5h-3a.75.75 0 00-.75.75v10.5c0 .414.336.75.75.75h10.5a.75.75 0 00.75-.75v-3a.75.75 0 011.5 0v3a2.25 2.25 0 01-2.25 2.25H6.75a2.25 2.25 0 01-2.25-2.25V6.75z" clip-rule="evenodd"/></svg>`;
+const ICON_DIRECTORY = `<svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path fill-rule="evenodd" d="M1.5 6.375c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 011.5 17.625v-11.25zM13.5 9a.75.75 0 01.75-.75h5.25a.75.75 0 010 1.5h-5.25a.75.75 0 01-.75-.75zm.75 2.25a.75.75 0 000 1.5H19.5a.75.75 0 000-1.5h-5.25zm0 3a.75.75 0 000 1.5h5.25a.75.75 0 000-1.5h-5.25zM9 9.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm.375 2.625a2.625 2.625 0 10-5.25 0 2.625 2.625 0 005.25 0z" clip-rule="evenodd"/></svg>`;
+const ICON_GLOBE     = `<svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM6.262 6.072a8.25 8.25 0 1010.562-.766 4.5 4.5 0 01-1.318 1.357L14.25 7.5l.165.33a.809.809 0 01-1.086 1.085l-.604-.302a1.125 1.125 0 00-1.298.21l-.132.131c-.439.44-.439 1.152 0 1.591l.296.296c.256.257.622.374.98.314l1.17-.195c.323-.054.654.036.905.245l1.33 1.108c.32.267.46.694.358 1.1a8.7 8.7 0 01-2.288 4.04l-.723.724a1.125 1.125 0 01-1.298.21l-.153-.076a1.125 1.125 0 01-.622-1.006v-1.089c0-.298-.119-.585-.33-.796l-1.347-1.347a1.125 1.125 0 01-.21-1.298L9.75 12l-1.64-1.64a6 6 0 01-1.676-3.257l-.172-1.03z" clip-rule="evenodd"/></svg>`;
 
 const params = new URLSearchParams(location.search);
 let theme = params.get('theme') || localStorage.getItem('bfc_theme') || 'dark';
@@ -354,7 +356,7 @@ function generateEmbed(state, t = 'dark') {
 .bfc-dir .bfc-modal-btn:focus{display:inline-flex;align-items:center;gap:6px;color:#fff;padding:11px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;transition:filter .15s;box-shadow:none;border:0}
 .bfc-dir .bfc-modal-btn:hover{filter:brightness(1.12)}
 .bfc-dir .bfc-modal-btn-primary{background:${orange}}
-.bfc-dir .bfc-modal-btn-secondary{background:${isDark ? '#4B5563' : '#6B7280'}}
+.bfc-dir .bfc-modal-btn-secondary{background:${isDark ? '#333333' : '#374151'}}
 @media(max-width:640px){.bfc-dir{padding:30px 20px 60px}.bfc-dir .bfc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.bfc-dir .bfc-toolbar{flex-wrap:wrap}.bfc-dir .bfc-search{flex:1 1 100%}.bfc-dir .bfc-select{flex:1 1 calc(50% - 4px)}}
 `.trim();
 
@@ -417,7 +419,7 @@ function generateEmbed(state, t = 'dark') {
     root = dirs[dirs.length-1];
   }
   if(!root) return;
-  var ICONS = { Member: ${JSON.stringify(I_M)}, Vendor: ${JSON.stringify(I_V)}, Public: ${JSON.stringify(I_Pu)}, Private: ${JSON.stringify(I_Pr)}, Tier: ${JSON.stringify(I_T)}, External: ${JSON.stringify(I_E)} };
+  var ICONS = { Member: ${JSON.stringify(I_M)}, Vendor: ${JSON.stringify(I_V)}, Public: ${JSON.stringify(I_Pu)}, Private: ${JSON.stringify(I_Pr)}, Tier: ${JSON.stringify(I_T)}, External: ${JSON.stringify(I_E)}, Directory: ${JSON.stringify(ICON_DIRECTORY)}, Globe: ${JSON.stringify(ICON_GLOBE)} };
   var input = root.querySelector('.bfc-search input');
   var clearBtn = root.querySelector('.bfc-search-clear');
   var typeSelect = root.querySelector('[data-filter-type]');
@@ -486,8 +488,8 @@ function generateEmbed(state, t = 'dark') {
     var actions = '';
     if(directoryUrl || url){
       actions = '<div class="bfc-modal-actions">'+
-        (directoryUrl ? '<a class="bfc-modal-btn bfc-modal-btn-primary" href="'+eH(directoryUrl)+'" target="_blank" rel="noopener">Directory Listing '+ICONS.External+'</a>' : '')+
-        (url ? '<a class="bfc-modal-btn bfc-modal-btn-secondary" href="'+eH(url)+'" target="_blank" rel="noopener">Visit website '+ICONS.External+'</a>' : '')+
+        (url ? '<a class="bfc-modal-btn bfc-modal-btn-secondary" href="'+eH(url)+'" target="_blank" rel="noopener">'+ICONS.Globe+' Website</a>' : '')+
+        (directoryUrl ? '<a class="bfc-modal-btn bfc-modal-btn-primary" href="'+eH(directoryUrl)+'" target="_blank" rel="noopener">'+ICONS.Directory+' Directory</a>' : '')+
       '</div>';
     }
     overlay.innerHTML = ''+
@@ -722,8 +724,8 @@ function wireFilters() {
     const visCls   = vis === 'Public' ? 'bfc-public' : 'bfc-private';
     const actions = (directoryUrl || url) ? `
       <div class="bfc-modal-actions">
-        ${directoryUrl ? `<a class="bfc-modal-btn bfc-modal-btn-primary" href="${escapeAttr(directoryUrl)}" target="_blank" rel="noopener">Directory Listing ${ICON_EXTERNAL}</a>` : ''}
-        ${url ? `<a class="bfc-modal-btn bfc-modal-btn-secondary" href="${escapeAttr(url)}" target="_blank" rel="noopener">Visit website ${ICON_EXTERNAL}</a>` : ''}
+        ${url ? `<a class="bfc-modal-btn bfc-modal-btn-secondary" href="${escapeAttr(url)}" target="_blank" rel="noopener">${ICON_GLOBE} Website</a>` : ''}
+        ${directoryUrl ? `<a class="bfc-modal-btn bfc-modal-btn-primary" href="${escapeAttr(directoryUrl)}" target="_blank" rel="noopener">${ICON_DIRECTORY} Directory</a>` : ''}
       </div>` : '';
     overlay.innerHTML = `
       <div class="bfc-modal">
