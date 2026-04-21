@@ -398,8 +398,6 @@ function generateEmbed(state, t = 'dark') {
     <option value="default">Tier order</option>
     <option value="name-asc">Name A → Z</option>
     <option value="name-desc">Name Z → A</option>
-    <option value="ticker-asc">Ticker A → Z</option>
-    <option value="ticker-desc">Ticker Z → A</option>
   </select>
 </div>`.trim();
 
@@ -481,7 +479,6 @@ function generateEmbed(state, t = 'dark') {
         '<button type="button" class="bfc-modal-close" aria-label="Close">&times;</button>'+
         (logoUrl ? '<div class="bfc-modal-logo"><img src="'+eH(logoUrl)+'" alt="'+eH(name)+'"/></div>' : '')+
         '<h3 class="bfc-modal-name">'+eH(name)+'</h3>'+
-        (ticker ? '<div class="bfc-modal-ticker">'+eH(ticker)+'</div>' : '')+
         '<div class="bfc-modal-meta">'+
           '<div class="bfc-modal-row"><span class="'+typeCls+'" style="display:inline-flex;width:18px;height:18px">'+typeIcon+'</span><span>'+eH(type)+'</span></div>'+
           '<div class="bfc-modal-row"><span class="'+visCls+'" style="display:inline-flex;width:18px;height:18px">'+visIcon+'</span><span>'+eH(vis)+' company</span></div>'+
@@ -591,8 +588,6 @@ function render() {
         <option value="default">Tier order</option>
         <option value="name-asc">Name A → Z</option>
         <option value="name-desc">Name Z → A</option>
-        <option value="ticker-asc">Ticker A → Z</option>
-        <option value="ticker-desc">Ticker Z → A</option>
       </select>
     </div>`;
 

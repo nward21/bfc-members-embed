@@ -302,11 +302,12 @@ const SEED_COMPANIES = {
     { id: 'c_kulr',      name: 'KULR',                ticker: 'KULR',  type: 'Member', logoSlug: 'kulr',                 url: 'https://www.kulrtechnology.com' },
     { id: 'c_london',    name: 'The London Bitcoin Co.', ticker: '',   type: 'Member', logoSlug: 'london-bitcoin-co',    url: 'https://thelondonbitcoinco.com' },
     { id: 'c_lqwd',      name: 'LQWD',                ticker: 'LQWD',  type: 'Member', logoSlug: 'lqwd',                 url: 'https://lqwdfintech.com' },
+    { id: 'c_mangrove',  name: 'Mangrove',            ticker: '',      type: 'Member', logoSlug: 'mangrove',             url: '' },
     { id: 'c_meliuz',    name: 'Méliuz',              ticker: 'MLIU3', type: 'Member', logoSlug: 'meliuz',               url: 'https://meliuz.com.br' },
     { id: 'c_mnav',      name: 'mNAV.com',            ticker: '',      type: 'Member', logoSlug: 'mnav',                 url: 'https://mnav.com' },
     { id: 'c_1723hk',    name: 'Moon Inc',            ticker: '1723.HK', type: 'Member', logoSlug: 'moon-inc',           url: 'https://www.1723.hk/' },
     { id: 'c_naas',      name: 'NaaS',                ticker: 'NAAS',  type: 'Member', logoSlug: 'naas',                 url: 'https://naas.io' },
-    { id: 'c_nakamoto',  name: 'Nakamoto',            ticker: '',      type: 'Member', logoSlug: 'nakamoto',             url: 'https://nakamoto.com' },
+    { id: 'c_nakamoto',  name: 'Nakamoto',            ticker: '',      type: 'Member', logoSlug: 'nakamoto',             url: 'https://nakamoto.com', visibility: 'Public' },
     { id: 'c_oranje',    name: 'Oranje BTC',          ticker: '',      type: 'Member', logoSlug: 'oranje',               url: 'https://oranjebtc.com' },
     { id: 'c_prenetics', name: 'Prenetics',           ticker: 'PRE',   type: 'Member', logoSlug: 'prenetics',            url: 'https://prenetics.com' },
     { id: 'c_publicsq',  name: 'PublicSquare',        ticker: 'PSQH',  type: 'Member', logoSlug: 'public-square',        url: 'https://publicsq.com' },
@@ -321,7 +322,7 @@ const SEED_COMPANIES = {
     { id: 'c_jetking',     name: 'Jetking',           ticker: '',      type: 'Member', logoSlug: 'jetking',              url: 'https://jetking.com' },
     { id: 'c_metaplanet',  name: 'Metaplanet',        ticker: '3350',  type: 'Member', logoSlug: 'meteplanet',           url: 'https://metaplanet.jp' },
     { id: 'c_nextlayer',   name: 'Next Layer Capital',ticker: '',      type: 'Member', logoSlug: 'next-layer-capital',   url: 'https://www.nextlayer.capital/' },
-    { id: 'c_semler',      name: 'Semler Scientific', ticker: 'SMLR',  type: 'Member', logoSlug: 'semler-scientific',    url: 'https://semlerscientific.com' },
+    { id: 'c_paystand',    name: 'Paystand',          ticker: '',      type: 'Vendor', logoSlug: 'paystand',             url: 'https://www.paystand.com/' },
     { id: 'c_utxo',        name: 'UTXO',              ticker: '',      type: 'Member', logoSlug: 'utxo',                 url: 'https://www.utxo.management/' },
   ],
   industry: [
@@ -369,6 +370,22 @@ const URL_MIGRATIONS = {
 };
 const LEGACY_URLS = new Set(['', 'https://treasury.b', 'https://thecapitalb.com', 'https://gigaenergy.com']);
 
+// Companies to remove from any existing state.
+const REMOVE_COMPANY_IDS = new Set(['c_semler']);
+
+// Explicit visibility overrides — applied to the matching company ID on load.
+const VISIBILITY_OVERRIDES = { c_nakamoto: 'Public' };
+
+// New companies to insert on load if missing (keyed by target tier id).
+const ADD_COMPANIES = {
+  t_premier: [
+    { id: 'c_paystand', name: 'Paystand', ticker: '', type: 'Vendor', logoSlug: 'paystand', url: 'https://www.paystand.com/', visibility: 'Private' },
+  ],
+  t_executive: [
+    { id: 'c_mangrove', name: 'Mangrove', ticker: '', type: 'Member', logoSlug: 'mangrove', url: '', visibility: 'Private' },
+  ],
+};
+
 let state = loadState();
 // Persist seed data immediately so the preview page (same origin, different HTML)
 // can render without requiring the user to edit something first.
@@ -379,13 +396,34 @@ function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      // Auto-migrate legacy tier names to the new "X Tier" wording + fix empty/legacy URLs.
       let migrated = false;
       (parsed.tiers || []).forEach(t => {
+        // Rename legacy tier labels
         if (TIER_RENAMES[t.name]) { t.name = TIER_RENAMES[t.name]; migrated = true; }
-        (t.companies || []).forEach(c => {
+        // Remove any companies that should be purged
+        const before = t.companies ? t.companies.length : 0;
+        t.companies = (t.companies || []).filter(c => !REMOVE_COMPANY_IDS.has(c.id));
+        if (t.companies.length !== before) migrated = true;
+        // URL + visibility patches for existing companies
+        t.companies.forEach(c => {
           if (URL_MIGRATIONS[c.id] && LEGACY_URLS.has(c.url || '')) {
-            c.url = URL_MIGRATIONS[c.id];
+            c.url = URL_MIGRATIONS[c.id]; migrated = true;
+          }
+          if (VISIBILITY_OVERRIDES[c.id] && c.visibility !== VISIBILITY_OVERRIDES[c.id]) {
+            c.visibility = VISIBILITY_OVERRIDES[c.id]; migrated = true;
+          }
+        });
+      });
+      // Add any new seed companies that don't already exist anywhere
+      const existingIds = new Set();
+      (parsed.tiers || []).forEach(t => (t.companies || []).forEach(c => existingIds.add(c.id)));
+      Object.entries(ADD_COMPANIES).forEach(([tierId, adds]) => {
+        const tier = (parsed.tiers || []).find(t => t.id === tierId);
+        if (!tier) return;
+        adds.forEach(c => {
+          if (!existingIds.has(c.id)) {
+            tier.companies.push(c);
+            existingIds.add(c.id);
             migrated = true;
           }
         });
@@ -1016,8 +1054,6 @@ function generateEmbed(t = 'dark') {
     <option value="default">Tier order</option>
     <option value="name-asc">Name A → Z</option>
     <option value="name-desc">Name Z → A</option>
-    <option value="ticker-asc">Ticker A → Z</option>
-    <option value="ticker-desc">Ticker Z → A</option>
   </select>
 </div>`.trim();
 
@@ -1129,7 +1165,6 @@ function generateEmbed(t = 'dark') {
         '<button type="button" class="bfc-modal-close" aria-label="Close">&times;</button>'+
         (logoUrl ? '<div class="bfc-modal-logo"><img src="'+escapeHtml(logoUrl)+'" alt="'+escapeHtml(name)+'"/></div>' : '')+
         '<h3 class="bfc-modal-name">'+escapeHtml(name)+'</h3>'+
-        (ticker ? '<div class="bfc-modal-ticker">'+escapeHtml(ticker)+'</div>' : '')+
         '<div class="bfc-modal-meta">'+
           '<div class="bfc-modal-row"><span class="'+typeCls+'" style="display:inline-flex;width:18px;height:18px">'+typeIcon+'</span><span>'+escapeHtml(type)+'</span></div>'+
           '<div class="bfc-modal-row"><span class="'+visCls+'" style="display:inline-flex;width:18px;height:18px">'+visIcon+'</span><span>'+escapeHtml(vis)+' company</span></div>'+
