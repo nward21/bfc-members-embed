@@ -336,10 +336,56 @@ const SEED_COMPANIES = {
     { id: 'c_xce',      name: 'XCE',                  ticker: '',      type: 'Member', logoSlug: 'xce',                  url: 'https://xce.io/' },
   ],
 };
-// Inject visibility + default directoryUrl placeholder on every seed entry.
+// Directory page base + per-company slug on bfcvip.com
+const DIR_BASE = 'https://bfcvip.com/business/';
+const DIR_SLUGS = {
+  c_strategy:    'strategy-software',
+  c_btcinc:      'btc-inc',
+  c_treasury:    'treasury',
+  c_aifinyo:     'aifinyo',
+  c_avalon:      'avalon-labs',
+  c_bitgo:       'bitgo',
+  c_bytefed:     'byte-federal-llc',
+  c_cryptocom:   'cryptocom',
+  c_ddc:         'ddc',
+  c_fold:        'fold-inc',
+  c_giga:        'giga-inc',
+  c_kulr:        'kulr-technology-group-nyse-kulr',
+  c_london:      'the-london-btc-company',
+  c_mangrove:    'mangrove',
+  c_mnav:        'mnav',
+  c_1723hk:      'moon-inc-prev-hk-asia-holdings',
+  c_naas:        'naas',
+  c_nakamoto:    'nakamoto',
+  c_oranje:      'oranje-btc',
+  c_prenetics:   'prenetics',
+  c_publicsq:    'publicsquare',
+  c_salt:        'salt-lending',
+  c_samara:      'samara-asset-group',
+  c_solar:       'solarstrategy',
+  c_strive:      'strive-asset-management',
+  c_blockspaces: 'blockspaces',
+  c_jetking:     'jetking-infotrain-ltd',
+  c_metaplanet:  'metaplanet',
+  c_nextlayer:   'next-layer-capital',
+  c_paystand:    'paystand',
+  c_utxo:        'utxo-management',
+  c_arch:        'arch-lending',
+  c_locate:      'locate-technologies',
+  c_oranje2:     'oranje-btc',
+  c_uproot:      'uproot-bitsaving',
+  c_xce:         'xce',
+  // Unknown (no directory page found) — remain '#' placeholder:
+  // c_kraken, c_lqwd, c_meliuz, c_capitalb, c_matador
+};
+function directoryUrlFor(id) {
+  return DIR_SLUGS[id] ? DIR_BASE + DIR_SLUGS[id] : '#';
+}
+
+// Inject visibility + directoryUrl on every seed entry.
 Object.values(SEED_COMPANIES).forEach(list => list.forEach(c => {
   c.visibility = derivedVisibility(c.ticker);
-  if (c.directoryUrl == null) c.directoryUrl = '#';
+  if (!c.directoryUrl) c.directoryUrl = directoryUrlFor(c.id);
 }));
 
 const DEFAULT_STATE = {
@@ -443,7 +489,11 @@ function loadState() {
           if (TYPE_OVERRIDES[c.id] && c.type !== TYPE_OVERRIDES[c.id]) {
             c.type = TYPE_OVERRIDES[c.id]; migrated = true;
           }
-          if (c.directoryUrl == null) { c.directoryUrl = '#'; migrated = true; }
+          // Fill directoryUrl from the DIR_SLUGS table if still missing/placeholder.
+          if (!c.directoryUrl || c.directoryUrl === '#') {
+            const next = directoryUrlFor(c.id);
+            if (next !== c.directoryUrl) { c.directoryUrl = next; migrated = true; }
+          }
           if (c.ticker) { c.ticker = ''; migrated = true; } // ticker deprecated
         });
       });

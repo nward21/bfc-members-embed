@@ -1,42 +1,42 @@
 Tier,Company,Type,Visibility,Logo Slug,Website,Directory
-Founding Tier,Strategy,Member,Public,strategy,https://www.strategy.com,#
-Founding Tier,BTC Inc,Member,Private,btc-inc,https://btcinc.com,#
-Executive Tier,Treasury,Member,Private,treasury,https://www.treasury-btc.com/,#
-Executive Tier,aifinyo,Member,Private,aifinyo,https://aifinyo.com,#
-Executive Tier,Avalon Labs,Member,Private,avalon-labs,https://avalonlabs.io,#
-Executive Tier,BitGo,Vendor,Private,bitgo,https://www.bitgo.com,#
-Executive Tier,Byte Federal,Member,Private,byte-federal,https://bytefederal.com,#
-Executive Tier,crypto.com,Vendor,Private,crypto-com,https://crypto.com,#
-Executive Tier,DDC Enterprise,Member,Public,ddc,https://ddcenterprise.com,#
-Executive Tier,Fold,Member,Public,fold,https://foldapp.com,#
-Executive Tier,GIGA,Member,Private,giga,https://www.giga.us/,#
+Founding Tier,Strategy,Member,Public,strategy,https://www.strategy.com,https://bfcvip.com/business/strategy-software
+Founding Tier,BTC Inc,Member,Private,btc-inc,https://btcinc.com,https://bfcvip.com/business/btc-inc
+Executive Tier,Treasury,Member,Private,treasury,https://www.treasury-btc.com/,https://bfcvip.com/business/treasury
+Executive Tier,aifinyo,Member,Private,aifinyo,https://aifinyo.com,https://bfcvip.com/business/aifinyo
+Executive Tier,Avalon Labs,Member,Private,avalon-labs,https://avalonlabs.io,https://bfcvip.com/business/avalon-labs
+Executive Tier,BitGo,Vendor,Private,bitgo,https://www.bitgo.com,https://bfcvip.com/business/bitgo
+Executive Tier,Byte Federal,Member,Private,byte-federal,https://bytefederal.com,https://bfcvip.com/business/byte-federal-llc
+Executive Tier,crypto.com,Vendor,Private,crypto-com,https://crypto.com,https://bfcvip.com/business/cryptocom
+Executive Tier,DDC Enterprise,Member,Public,ddc,https://ddcenterprise.com,https://bfcvip.com/business/ddc
+Executive Tier,Fold,Member,Public,fold,https://foldapp.com,https://bfcvip.com/business/fold-inc
+Executive Tier,GIGA,Member,Private,giga,https://www.giga.us/,https://bfcvip.com/business/giga-inc
 Executive Tier,Kraken Institutional,Vendor,Private,kraken-institutional,https://www.kraken.com/institutional,#
-Executive Tier,KULR,Member,Public,kulr,https://kulr.ai/,#
-Executive Tier,The London Bitcoin Co.,Member,Private,london-bitcoin-co,https://ldnbtc.com/,#
+Executive Tier,KULR,Member,Public,kulr,https://kulr.ai/,https://bfcvip.com/business/kulr-technology-group-nyse-kulr
+Executive Tier,The London Bitcoin Co.,Member,Private,london-bitcoin-co,https://ldnbtc.com/,https://bfcvip.com/business/the-london-btc-company
 Executive Tier,LQWD,Member,Public,lqwd,https://lqwdfintech.com,#
-Executive Tier,Mangrove,Member,Private,mangrove,https://mangrove.ai/,#
+Executive Tier,Mangrove,Member,Private,mangrove,https://mangrove.ai/,https://bfcvip.com/business/mangrove
 Executive Tier,Méliuz,Member,Public,meliuz,https://meliuz.com.br,#
-Executive Tier,mNAV.com,Vendor,Private,mnav,https://mnav.com,#
-Executive Tier,Moon Inc,Member,Public,moon-inc,https://www.1723.hk/,#
-Executive Tier,NaaS,Member,Public,naas,#,#
-Executive Tier,Nakamoto,Member,Public,nakamoto,https://nakamoto.com,#
-Executive Tier,Oranje BTC,Member,Private,oranje,https://oranjebtc.com,#
-Executive Tier,Prenetics,Member,Public,prenetics,https://prenetics.com,#
-Executive Tier,PublicSquare,Member,Public,public-square,https://publicsq.com,#
-Executive Tier,SALT,Vendor,Private,salt,https://saltlending.com,#
-Executive Tier,SAMARA Asset Group,Member,Private,samara,https://samara-ag.com,#
-Executive Tier,Solar Strategy,Member,Private,solar-strategy,#,#
-Executive Tier,Strive,Member,Public,strive,https://strive.com,#
-Premier Tier,BlockSpaces,Vendor,Private,blockspaces,https://blockspaces.com,#
+Executive Tier,mNAV.com,Vendor,Private,mnav,https://mnav.com,https://bfcvip.com/business/mnav
+Executive Tier,Moon Inc,Member,Public,moon-inc,https://www.1723.hk/,https://bfcvip.com/business/moon-inc-prev-hk-asia-holdings
+Executive Tier,NaaS,Member,Public,naas,#,https://bfcvip.com/business/naas
+Executive Tier,Nakamoto,Member,Public,nakamoto,https://nakamoto.com,https://bfcvip.com/business/nakamoto
+Executive Tier,Oranje BTC,Member,Private,oranje,https://oranjebtc.com,https://bfcvip.com/business/oranje-btc
+Executive Tier,Prenetics,Member,Public,prenetics,https://prenetics.com,https://bfcvip.com/business/prenetics
+Executive Tier,PublicSquare,Member,Public,public-square,https://publicsq.com,https://bfcvip.com/business/publicsquare
+Executive Tier,SALT,Vendor,Private,salt,https://saltlending.com,https://bfcvip.com/business/salt-lending
+Executive Tier,SAMARA Asset Group,Member,Private,samara,https://samara-ag.com,https://bfcvip.com/business/samara-asset-group
+Executive Tier,Solar Strategy,Member,Private,solar-strategy,#,https://bfcvip.com/business/solarstrategy
+Executive Tier,Strive,Member,Public,strive,https://strive.com,https://bfcvip.com/business/strive-asset-management
+Premier Tier,BlockSpaces,Vendor,Private,blockspaces,https://blockspaces.com,https://bfcvip.com/business/blockspaces
 Premier Tier,Capital B,Member,Public,capital-b,https://cptlb.com/,#
-Premier Tier,Jetking,Member,Private,jetking,https://jetking.com,#
-Premier Tier,Metaplanet,Member,Public,meteplanet,https://metaplanet.jp,#
-Premier Tier,Next Layer Capital,Member,Private,next-layer-capital,https://www.nextlayer.capital/,#
-Premier Tier,Paystand,Vendor,Private,paystand,https://www.paystand.com/,#
-Premier Tier,UTXO,Member,Private,utxo,https://www.utxo.management/,#
-Industry Tier,ARCH,Vendor,Private,arch,https://archlending.com/,#
-Industry Tier,Locate Technologies,Member,Private,locate-technologies,https://locatetech.com,#
+Premier Tier,Jetking,Member,Private,jetking,https://jetking.com,https://bfcvip.com/business/jetking-infotrain-ltd
+Premier Tier,Metaplanet,Member,Public,meteplanet,https://metaplanet.jp,https://bfcvip.com/business/metaplanet
+Premier Tier,Next Layer Capital,Member,Private,next-layer-capital,https://www.nextlayer.capital/,https://bfcvip.com/business/next-layer-capital
+Premier Tier,Paystand,Vendor,Private,paystand,https://www.paystand.com/,https://bfcvip.com/business/paystand
+Premier Tier,UTXO,Member,Private,utxo,https://www.utxo.management/,https://bfcvip.com/business/utxo-management
+Industry Tier,ARCH,Vendor,Private,arch,https://archlending.com/,https://bfcvip.com/business/arch-lending
+Industry Tier,Locate Technologies,Member,Private,locate-technologies,https://locatetech.com,https://bfcvip.com/business/locate-technologies
 Industry Tier,Matador,Member,Private,matador,https://matadortechnologies.com,#
-Industry Tier,OranjeBTC,Member,Private,oranje,https://oranjebtc.com,#
-Industry Tier,Uproot Company,Member,Private,uproot-company,https://bitsaving.kr/,#
-Industry Tier,XCE,Member,Private,xce,https://xce.io/,#
+Industry Tier,OranjeBTC,Member,Private,oranje,https://oranjebtc.com,https://bfcvip.com/business/oranje-btc
+Industry Tier,Uproot Company,Member,Private,uproot-company,https://bitsaving.kr/,https://bfcvip.com/business/uproot-bitsaving
+Industry Tier,XCE,Member,Private,xce,https://xce.io/,https://bfcvip.com/business/xce
