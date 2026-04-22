@@ -4,16 +4,17 @@
 Single-file admin tool + public-facing embed for the Bitcoin For Corporations member directory. No backend. State lives in browser localStorage. Embed code is copy-pasted into a WordPress Custom HTML block on bitcoinforcorporations.com.
 
 ## Stack
-- HTML + vanilla JS + Tailwind (admin only, via CDN) + Lucide (admin only, via CDN) + SortableJS (admin only, via CDN)
-- Embed output is fully self-contained: inline `<style>` + plain HTML + inline `<script>` IIFE
-- Hosted on Vercel (static). GitHub: `nward21/bfc-members-embed`. Production: `https://bfc-members-embed.vercel.app/`
+- HTML + vanilla JS + Tailwind (admin only, CDN) + Lucide (admin only, CDN) + SortableJS (admin only, CDN)
+- Embed output is self-contained: inline `<style>` + plain HTML + inline `<script>` IIFE — no runtime deps
+- Hosted on Vercel (static). GitHub: `nward21/bfc-members-embed`. Prod: `https://bfc-members-embed.vercel.app/`
 
 ## File Layout
 ```
-index.html        Admin UI (CRUD, drag-drop, import/export, embed generator)
-preview.html      Full-page preview + own Copy-embed button; reads from localStorage
+index.html        Admin UI (CRUD, drag-drop, import/export JSON+CSV, embed generator, Copy embed)
+preview.html      Full-page preview + own Copy-embed button; reads localStorage
+members.csv       Committed CSV snapshot of current seed (Tier,Company,Type,Visibility,Logo Slug,Website,Directory)
 logos/            95 PNG files, {slug}-logo-{light|dark}.png convention
-vercel.json       Static hosting + /logos/* cache-immutable + CORS
+vercel.json       Static hosting + /logos/* immutable cache + CORS
 README.md         Deploy instructions
 .gitignore        Excludes screenshots/, .DS_Store, .vercel, etc.
 ```
@@ -21,63 +22,82 @@ README.md         Deploy instructions
 ## Current Progress
 
 ### Data model
-- `state.tiers[].companies[]` — each company: `{ id, name, ticker, type: 'Member'|'Vendor', visibility: 'Public'|'Private', logoSlug, logoDataUrl, url }`
-- localStorage key: `bfc_directory_v7` (bump version to force full reseed)
+- `state.tiers[].companies[]` — Company: `{ id, name, ticker (deprecated), type: 'Member'|'Vendor', visibility: 'Public'|'Private', logoSlug, logoDataUrl, url, directoryUrl }`
+- `ticker` still in schema but never surfaced in UI; migration blanks it on load
+- localStorage key: `bfc_directory_v7` (bump to force full reseed)
 - `localStorage['bfc_directory_v7_saved_at']` — ISO timestamp for "Saved X ago" indicator
 
-### Features shipped
-- Drag/drop tier ordering + company reordering via SortableJS (admin only)
-- Logo upload (base64 data URI) OR slug reference (39 known slugs in `AVAILABLE_LOGOS`)
-- Theme toggle (dark/light). Light mode uses `-dark.png` variants; dark uses `-light.png`
-- Tier hierarchy via CSS vars keyed to `data-tier-rank` — first rendered tier is largest
-- Orange tier-divider line (1px rgba(250,102,14,0.25)) after each h2
-- Cards are pure logo tiles; click opens a detail modal
-- Detail modal: logo, name, Member/Vendor badge, Public/Private badge, tier row, "Visit website" button. No ticker displayed (hidden in public, field still exists)
-- End-user toolbar (embed + preview): search, type filter, visibility filter, tier filter, sort (tier order / name A-Z / Z-A). Single row, shrinks-to-fit any container width
-- Copy embed button on both admin and preview, modal with generated code + copy-to-clipboard
-- "Saved X ago" indicator flashes orange then green on every saveState()
-- Cross-tab sync: preview listens to `storage` event and re-renders when admin saves
-- CSS hardened against WP theme bleed: every selector prefixed with `.bfc-dir`, modal appended to root (not document.body), explicit `:link/:visited/:hover/:active/:focus` on all interactive elements, literal `#FA660E` instead of `var(--bfc-orange)` in critical paths
+### Tier roster (live)
+- **Founding Tier (2):** Strategy, BTC Inc
+- **Chairman's Tier (0):** empty — auto-hides in embed
+- **Executive Tier (26):** Treasury + 25 others (aifinyo…Strive)
+- **Premier Tier (7):** BlockSpaces, Capital B, Jetking, Metaplanet, Next Layer Capital, Paystand, UTXO
+- **Industry Tier (6):** ARCH, Locate Technologies, Matador, OranjeBTC, Uproot Company, XCE
 
-### Migration system (in loadState, idempotent)
+Total: **41 companies**. All Directory URLs are `#` placeholder pending real BFC listing pages.
+
+### Features shipped
+- Drag/drop tier + company reordering (admin only, SortableJS)
+- Logo upload (base64 data URI) OR slug reference (44 known slugs in `AVAILABLE_LOGOS`)
+- Theme toggle dark/light (dark = BFC default); logo variants auto-swap
+- Tier hierarchy via CSS vars keyed to `data-tier-rank` — first rendered tier is largest
+- Orange tier-divider line after each h2 heading
+- **Cards are pure logo tiles**; click opens detail modal with:
+  - Big logo, name, Member/Vendor badge, Public/Private badge, Tier row
+  - Two action buttons side-by-side: `[🌐 Website]` (gray `#333333`) + `[📋 Directory]` (orange)
+- End-user toolbar (embed + preview): search, type filter, visibility filter, tier filter, sort (Tier order / Name A-Z / Z-A). Single row, shrinks-to-fit to any container width. Ticker sort options removed.
+- Copy embed button on both admin AND preview. Export JSON, Export CSV also on admin.
+- "Saved X ago" indicator (flashes orange then green on every saveState)
+- Cross-tab sync: preview listens for `storage` event and auto-re-renders on admin save
+- **CSS hardened against WordPress theme bleed**: every selector prefixed with `.bfc-dir`, modal overlay appended to `root` (not `document.body`) so vars inherit, explicit `:link/:visited/:hover/:active/:focus` on all interactive elements, literal `#FA660E` instead of `var(--bfc-orange)` in embed critical paths
+- Embed padding: `30px top / 28px h / 110px bottom` — large bottom breathes from WP footer
+
+### Migration system (in `loadState`, idempotent, preserves user edits)
 - `TIER_RENAMES` — "X Members" → "X Tier"
-- `URL_MIGRATIONS` + `LEGACY_URLS` — replace empty or placeholder URLs with current canonical URLs, only if current value matches a known-legacy string (preserves manual edits)
-- `REMOVE_COMPANY_IDS` — drop companies from state by id (currently: `c_semler`)
-- `ADD_COMPANIES` — insert new seed companies into specific tiers if they don't exist (currently: Paystand → Premier, Mangrove → Executive)
-- `VISIBILITY_OVERRIDES` — explicit Public/Private overrides by id (currently: Nakamoto → Public)
+- `URL_MIGRATIONS` + `LEGACY_URLS` — replace URL only if current matches a known-legacy value
+- `REMOVE_COMPANY_IDS` — drop companies by id (currently: `c_semler`)
+- `ADD_COMPANIES` — insert new seed companies into target tier if missing (Paystand, Mangrove)
+- `VISIBILITY_OVERRIDES` — force visibility by id (Nakamoto → Public)
+- `TYPE_OVERRIDES` — force Member/Vendor by id (6 companies: Byte Federal, mNAV, Locate, OranjeBTC, Uproot, XCE)
+- `MOVE_TO_TIER` — one-time tier move (Treasury → Executive, unshift to top)
+- Ticker cleanup — any non-empty ticker is blanked on load (deprecation)
+- `directoryUrl` default — any missing field defaults to `'#'`
 
 ### Edit semantics
 - Editing a company within the same tier **preserves index**; changing tier appends to the new tier's end
-- Drag/drop triggers `syncFromDOM()` to rebuild state from card order
+- Drag/drop fires `syncFromDOM()` → rebuilds state from DOM order
 
 ## Next Steps
 
-Ordered by user value, not effort.
+Priority order:
 
-1. **Manual reorder fix** — Aifinyo is stuck at the end of Executive Tier in local state due to pre-fix bug; user needs to drag it, or add a "Reset tier order" UI
-2. **Connect Vercel → GitHub** — currently `vercel --prod` runs manually after each push; one-time setup in Vercel dashboard enables auto-deploy on push
-3. **Verify unverified URLs** — BTC Inc (`btcinc.com`), crypto.com, DDC Enterprise, Metaplanet, Samara, Strive were guessed from patterns; never confirmed
-4. **Decide on OranjeBTC duplicate** — Oranje BTC is in both Executive Tier and Industry Tier (matches original tier chart). User was aware but no action taken
-5. **Custom domain** — currently on `*.vercel.app`. Point `members.bfcvip.com` or similar for cleaner embed URLs
-6. **Extract `generateEmbed` into shared JS** — currently duplicated in index.html + preview.html
+1. **Fill in real Directory URLs** — 41 companies all set to `#` placeholder. Bulk-edit via `Export CSV` → Google Sheets → (future) CSV import
+2. **CSV Import feature** — mirror of Export CSV so users can bulk-edit in Sheets and push back
+3. **Aifinyo position one-off** — user-local state has it at end of Executive; needs manual drag or a "Reset tier order" button offered but not built
+4. **Connect Vercel → GitHub for auto-deploy** — currently requires manual `vercel --prod` after every commit
+5. **Verify remaining unverified URLs** — BTC Inc, crypto.com, DDC Enterprise, Metaplanet, Samara, Strive (guessed)
+6. **Decide on OranjeBTC duplicate** — Oranje BTC (Executive) and OranjeBTC (Industry) are the same company with the same logo/URL; duplicated per tier chart
+7. **Custom domain** — `members.bfcvip.com` instead of `*.vercel.app`
+8. **Extract `generateEmbed` → shared JS** — currently duplicated across index.html + preview.html
 
 ## Technical Debt
 
 | Item | Impact | Notes |
 |---|---|---|
-| `generateEmbed()` duplicated across index.html + preview.html | Medium — every embed change requires editing two files | Extract to `embed-generator.js` and `<script src=>` from both |
-| Migration maps (TIER_RENAMES, URL_MIGRATIONS, ADD_COMPANIES, REMOVE_COMPANY_IDS, VISIBILITY_OVERRIDES) live inline in index.html | Low — will grow unwieldy | Consider a `migrations.js` with numbered step array and migration version pointer |
-| Ticker data field still stored but never displayed in public embed | Low — may confuse future maintainers | Keep for now (admin still uses it for Public/Private derivation on Add) |
-| `Solar Strategy` URL is `#` placeholder | Low — cosmetic | Replace once real URL exists |
-| `OranjeBTC` (Industry) duplicates `Oranje BTC` (Executive) — same logo, URL, name sans space | Low | Intentional per tier chart; re-verify with stakeholder |
-| Vercel project not linked to GitHub | Low | Manual `vercel --prod` after each commit. Fix in Vercel dashboard |
-| Embed JS uses `'...'+'...'` string concat in several spots | Very low | Stylistic. Works identically |
-| No validation on uploaded logo file size beyond 500 KB soft check | Low | Browser alert, doesn't block |
-| Storage at v7 — accumulating technical debt in loadState() migration | Low | Consider a `STATE_VERSION` field per tier/company instead of global bump |
+| `generateEmbed()` duplicated in index.html + preview.html | Medium | Every change requires edits in two places. Extract to shared `embed-generator.js` |
+| Migration maps (7 of them) live inline in index.html | Medium | `TIER_RENAMES`, `URL_MIGRATIONS`, `REMOVE_COMPANY_IDS`, `ADD_COMPANIES`, `VISIBILITY_OVERRIDES`, `TYPE_OVERRIDES`, `MOVE_TO_TIER`. Will grow unwieldy. Consider numbered migration array + state version field |
+| `ticker` still in Company schema (empty string) | Low | Ticker UI removed but field still serialized in state/JSON export. Could prune when doing a v8 reseed |
+| `derivedVisibility()` helper still exists | Low | Only used during initial seed and falls back to ticker presence. With tickers gone, all new Adds default to Private. Simplify or rename |
+| All 41 companies have `directoryUrl: '#'` | Medium — user-visible | Placeholder; needs real BFC member-page URLs |
+| No CSV import yet | Medium — user asked for bi-directional | Export CSV shipped, Import CSV not yet. Would close the loop with Google Sheets editing |
+| Vercel not git-linked | Low | Manual `vercel --prod` each time |
+| OranjeBTC (Industry) duplicates Oranje BTC (Executive) | Low | Same logo/URL; was in original tier chart. Unresolved by user |
+| Admin `Reset to default` button | Low | Offered to user; not yet built |
+| Two places in CSS still use legacy 500 KB upload alert without UI feedback | Very low | Works via `alert()`; could be a toast |
 
 ## Security
-No secrets. No API keys. No PII. Static frontend only. All company data is public (already on bfc.com). Logo files are marketing assets meant for public display.
+**No secrets. No API keys. No PII.** Static frontend only. All company data is public (already on bitcoinforcorporations.com). Logo files are public marketing assets. No env vars required or stored.
 
-## Handoff Summary (3 sentences)
+## Handoff Summary (3 sentences, paste-ready)
 
-Single-file BFC member directory tool at `nward21/bfc-members-embed` → live at `bfc-members-embed.vercel.app`. Admin + preview share a state model (`tiers → companies`, keyed `bfc_directory_v7`) with an idempotent migration system in `loadState()` that renames tiers, patches URLs, adds/removes companies, and overrides visibility when legacy state is detected — never overwriting user edits. Embed output is a self-contained `<style>/div/script>` block with a 3-axis filter + sort toolbar, click-to-open detail modal, CSS hardened against WordPress theme bleed via `.bfc-dir` specificity + explicit link pseudo-states.
+> BFC Member Directory WP embed tool at `nward21/bfc-members-embed`, live `https://bfc-members-embed.vercel.app/` (manual deploy via `vercel --prod`); admin (index.html) and public embed share a `state.tiers[].companies[]` schema keyed `bfc_directory_v7` in localStorage, with seven idempotent migration maps in `loadState()` (TIER_RENAMES, URL_MIGRATIONS, REMOVE/ADD_COMPANIES, VISIBILITY/TYPE_OVERRIDES, MOVE_TO_TIER + a ticker deprecation pass) that upgrade existing users non-destructively. Current roster: 41 companies across Founding/Executive/Premier/Industry tiers (Chairman's empty + auto-hidden); every card opens a detail modal with side-by-side `[🌐 Website]` (gray `#333333`) and `[📋 Directory]` (BFC orange `#FA660E`) action buttons, where Directory URLs are all `#` placeholder pending real BFC member-page links. Embed CSS is hardened against WordPress theme bleed via universal `.bfc-dir` prefix + explicit pseudo-state coverage + modal mounted inside `.bfc-dir` root; biggest open tasks are a CSV import (to pair with the just-shipped Export CSV), filling in real Directory URLs, and linking Vercel to GitHub for auto-deploy.
