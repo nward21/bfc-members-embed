@@ -89,6 +89,9 @@
       <button id="btnExport" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
         <i data-lucide="download" class="w-4 h-4"></i> Export JSON
       </button>
+      <button id="btnExportCsv" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
+        <i data-lucide="table" class="w-4 h-4"></i> Export CSV
+      </button>
       <button id="btnEmbed" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
         <i data-lucide="code-2" class="w-4 h-4"></i> Copy embed
       </button>
@@ -882,6 +885,34 @@ document.getElementById('btnExport').addEventListener('click', () => {
   a.click();
   URL.revokeObjectURL(url);
   toast('Exported JSON — also logged to console.');
+});
+
+// ---------- CSV export (Google Sheets friendly) ----------
+document.getElementById('btnExportCsv').addEventListener('click', () => {
+  const esc = (v) => {
+    const s = String(v == null ? '' : v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const headers = ['Tier','Company','Type','Visibility','Ticker','Logo Slug','Website','Directory'];
+  const rows = [headers.join(',')];
+  state.tiers.forEach(tier => {
+    tier.companies.forEach(c => {
+      const vis = c.visibility || (c.ticker ? 'Public' : 'Private');
+      rows.push([
+        tier.name, c.name, c.type || 'Member', vis, c.ticker || '',
+        c.logoSlug || '', c.url || '', c.directoryUrl || ''
+      ].map(esc).join(','));
+    });
+  });
+  const csv = rows.join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const dlUrl = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = dlUrl;
+  a.download = `bfc-directory-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(dlUrl);
+  toast('Exported CSV — open in Google Sheets or Excel.');
 });
 
 document.getElementById('btnImport').addEventListener('click', () => {

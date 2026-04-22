@@ -1,0 +1,42 @@
+Tier,Company,Type,Visibility,Ticker,Logo Slug,Website,Directory
+Founding Tier,Strategy,Member,Public,MSTR,strategy,https://www.strategy.com,#
+Founding Tier,BTC Inc,Member,Private,,btc-inc,https://btcinc.com,#
+Chairman's Tier,Treasury,Member,Private,,treasury,https://www.treasury-btc.com/,#
+Executive Tier,aifinyo,Member,Private,,aifinyo,https://aifinyo.com,#
+Executive Tier,Avalon Labs,Member,Private,,avalon-labs,https://avalonlabs.io,#
+Executive Tier,BitGo,Vendor,Private,,bitgo,https://www.bitgo.com,#
+Executive Tier,Byte Federal,Vendor,Private,,byte-federal,https://bytefederal.com,#
+Executive Tier,crypto.com,Vendor,Private,,crypto-com,https://crypto.com,#
+Executive Tier,DDC Enterprise,Member,Public,DDC,ddc,https://ddcenterprise.com,#
+Executive Tier,Fold,Member,Public,FLD,fold,https://foldapp.com,#
+Executive Tier,GIGA,Member,Private,,giga,https://www.giga.us/,#
+Executive Tier,Kraken Institutional,Vendor,Private,,kraken-institutional,https://www.kraken.com/institutional,#
+Executive Tier,KULR,Member,Public,KULR,kulr,https://kulr.ai/,#
+Executive Tier,The London Bitcoin Co.,Member,Private,,london-bitcoin-co,https://ldnbtc.com/,#
+Executive Tier,LQWD,Member,Public,LQWD,lqwd,https://lqwdfintech.com,#
+Executive Tier,Mangrove,Member,Private,,mangrove,https://mangrove.ai/,#
+Executive Tier,Méliuz,Member,Public,MLIU3,meliuz,https://meliuz.com.br,#
+Executive Tier,mNAV.com,Member,Private,,mnav,https://mnav.com,#
+Executive Tier,Moon Inc,Member,Public,1723.HK,moon-inc,https://www.1723.hk/,#
+Executive Tier,NaaS,Member,Public,NAAS,naas,#,#
+Executive Tier,Nakamoto,Member,Public,,nakamoto,https://nakamoto.com,#
+Executive Tier,Oranje BTC,Member,Private,,oranje,https://oranjebtc.com,#
+Executive Tier,Prenetics,Member,Public,PRE,prenetics,https://prenetics.com,#
+Executive Tier,PublicSquare,Member,Public,PSQH,public-square,https://publicsq.com,#
+Executive Tier,SALT,Vendor,Private,,salt,https://saltlending.com,#
+Executive Tier,SAMARA Asset Group,Member,Private,,samara,https://samara-ag.com,#
+Executive Tier,Solar Strategy,Member,Private,,solar-strategy,#,#
+Executive Tier,Strive,Member,Public,ASST,strive,https://strive.com,#
+Premier Tier,BlockSpaces,Vendor,Private,,blockspaces,https://blockspaces.com,#
+Premier Tier,Capital B,Member,Public,ALCPB,capital-b,https://cptlb.com/,#
+Premier Tier,Jetking,Member,Private,,jetking,https://jetking.com,#
+Premier Tier,Metaplanet,Member,Public,3350,meteplanet,https://metaplanet.jp,#
+Premier Tier,Next Layer Capital,Member,Private,,next-layer-capital,https://www.nextlayer.capital/,#
+Premier Tier,Paystand,Vendor,Private,,paystand,https://www.paystand.com/,#
+Premier Tier,UTXO,Member,Private,,utxo,https://www.utxo.management/,#
+Industry Tier,ARCH,Vendor,Private,,arch,https://archlending.com/,#
+Industry Tier,Locate Technologies,Vendor,Private,,locate-technologies,https://locatetech.com,#
+Industry Tier,Matador,Member,Private,,matador,https://matadortechnologies.com,#
+Industry Tier,OranjeBTC,Vendor,Private,,oranje,https://oranjebtc.com,#
+Industry Tier,Uproot Company,Vendor,Private,,uproot-company,https://bitsaving.kr/,#
+Industry Tier,XCE,Vendor,Private,,xce,https://xce.io/,#
