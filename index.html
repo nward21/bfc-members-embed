@@ -6,6 +6,7 @@
 <title>BFC Member Directory — Admin</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
   tailwind.config = {
@@ -91,6 +92,9 @@
       </button>
       <button id="btnExportCsv" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
         <i data-lucide="table" class="w-4 h-4"></i> Export CSV
+      </button>
+      <button id="btnExportLogos" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
+        <i data-lucide="archive" class="w-4 h-4"></i> Export logos
       </button>
       <button id="btnEmbed" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
         <i data-lucide="code-2" class="w-4 h-4"></i> Copy embed
@@ -993,6 +997,82 @@ document.getElementById('btnExportCsv').addEventListener('click', () => {
   a.click();
   URL.revokeObjectURL(dlUrl);
   toast('Exported CSV — open in Google Sheets or Excel.');
+});
+
+// ---------- Logo ZIP export (both dark + light variants) ----------
+document.getElementById('btnExportLogos').addEventListener('click', async () => {
+  const btn = document.getElementById('btnExportLogos');
+  const originalHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Zipping…';
+  lucide.createIcons();
+
+  try {
+    const zip = new JSZip();
+    const dark = zip.folder('dark');
+    const light = zip.folder('light');
+    const uploaded = zip.folder('uploaded');
+
+    const companies = state.tiers.flatMap(t => t.companies);
+    const slugJobs = [];
+    let uploadedCount = 0;
+
+    for (const c of companies) {
+      if (c.logoDataUrl) {
+        // Uploaded image — no separate dark/light variants. Put in /uploaded.
+        const match = c.logoDataUrl.match(/^data:image\/([^;]+);base64,(.+)$/);
+        if (match) {
+          const [, ext, b64] = match;
+          const safeName = (c.logoSlug || c.id).replace(/[^a-z0-9-]/gi, '-').toLowerCase();
+          uploaded.file(`${safeName}.${ext === 'svg+xml' ? 'svg' : ext}`, b64, { base64: true });
+          uploadedCount++;
+        }
+      } else if (c.logoSlug) {
+        slugJobs.push(
+          { folder: dark,  fname: `${c.logoSlug}-logo-dark.png`,  url: `logos/${c.logoSlug}-logo-dark.png` },
+          { folder: light, fname: `${c.logoSlug}-logo-light.png`, url: `logos/${c.logoSlug}-logo-light.png` },
+        );
+      }
+    }
+
+    const fetched = await Promise.all(slugJobs.map(async (j) => {
+      try {
+        const res = await fetch(j.url);
+        if (!res.ok) return { ...j, missing: true };
+        return { ...j, blob: await res.blob() };
+      } catch {
+        return { ...j, missing: true };
+      }
+    }));
+
+    let okCount = 0, missing = [];
+    fetched.forEach(j => {
+      if (j.blob) { j.folder.file(j.fname, j.blob); okCount++; }
+      else missing.push(j.fname);
+    });
+
+    // Drop empty folders so the zip isn't cluttered
+    if (uploadedCount === 0) zip.remove('uploaded');
+
+    const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `bfc-logos-${new Date().toISOString().slice(0,10)}.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    const total = okCount + uploadedCount;
+    toast(`Exported ${total} logo file${total === 1 ? '' : 's'}${missing.length ? ` · ${missing.length} missing` : ''}`);
+    if (missing.length) console.warn('Missing logo files:', missing);
+  } catch (err) {
+    console.error(err);
+    toast('Logo export failed — see console.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalHtml;
+    lucide.createIcons();
+  }
 });
 
 document.getElementById('btnImport').addEventListener('click', () => {
