@@ -154,10 +154,6 @@
           <button type="button" id="logoClearBtn" class="text-xs text-neutral-500 hover:text-red-400">Clear</button>
         </div>
       </div>
-      <div>
-        <label class="block text-xs font-medium text-neutral-400 mb-1">Stock ticker</label>
-        <input id="fTicker" placeholder="e.g. MSTR (leave blank for private companies)" class="w-full bg-bfc-dark border border-bfc-line rounded-lg px-3 py-2 text-sm uppercase focus:outline-none focus:border-bfc-orange" />
-      </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="block text-xs font-medium text-neutral-400 mb-1">Type</label>
@@ -293,14 +289,13 @@ const SEED_COMPANIES = {
     { id: 'c_strategy', name: 'Strategy', ticker: 'MSTR', type: 'Member', logoSlug: 'strategy', url: 'https://www.strategy.com' },
     { id: 'c_btcinc',   name: 'BTC Inc',  ticker: '',     type: 'Member', logoSlug: 'btc-inc',  url: 'https://btcinc.com' },
   ],
-  chairman: [
-    { id: 'c_treasury', name: 'Treasury', ticker: '', type: 'Member', logoSlug: 'treasury', url: 'https://www.treasury-btc.com/' },
-  ],
+  chairman: [],
   executive: [
+    { id: 'c_treasury',  name: 'Treasury',            ticker: '',      type: 'Member', logoSlug: 'treasury',             url: 'https://www.treasury-btc.com/' },
     { id: 'c_aifinyo',   name: 'aifinyo',             ticker: '',      type: 'Member', logoSlug: 'aifinyo',              url: 'https://aifinyo.com' },
     { id: 'c_avalon',    name: 'Avalon Labs',         ticker: '',      type: 'Member', logoSlug: 'avalon-labs',          url: 'https://avalonlabs.io' },
     { id: 'c_bitgo',     name: 'BitGo',               ticker: '',      type: 'Vendor', logoSlug: 'bitgo',                url: 'https://www.bitgo.com' },
-    { id: 'c_bytefed',   name: 'Byte Federal',        ticker: '',      type: 'Vendor', logoSlug: 'byte-federal',         url: 'https://bytefederal.com' },
+    { id: 'c_bytefed',   name: 'Byte Federal',        ticker: '',      type: 'Member', logoSlug: 'byte-federal',         url: 'https://bytefederal.com' },
     { id: 'c_cryptocom', name: 'crypto.com',          ticker: '',      type: 'Vendor', logoSlug: 'crypto-com',           url: 'https://crypto.com' },
     { id: 'c_ddc',       name: 'DDC Enterprise',      ticker: 'DDC',   type: 'Member', logoSlug: 'ddc',                  url: 'https://ddcenterprise.com' },
     { id: 'c_fold',      name: 'Fold',                ticker: 'FLD',   type: 'Member', logoSlug: 'fold',                 url: 'https://foldapp.com' },
@@ -311,7 +306,7 @@ const SEED_COMPANIES = {
     { id: 'c_lqwd',      name: 'LQWD',                ticker: 'LQWD',  type: 'Member', logoSlug: 'lqwd',                 url: 'https://lqwdfintech.com' },
     { id: 'c_mangrove',  name: 'Mangrove',            ticker: '',      type: 'Member', logoSlug: 'mangrove',             url: 'https://mangrove.ai/' },
     { id: 'c_meliuz',    name: 'Méliuz',              ticker: 'MLIU3', type: 'Member', logoSlug: 'meliuz',               url: 'https://meliuz.com.br' },
-    { id: 'c_mnav',      name: 'mNAV.com',            ticker: '',      type: 'Member', logoSlug: 'mnav',                 url: 'https://mnav.com' },
+    { id: 'c_mnav',      name: 'mNAV.com',            ticker: '',      type: 'Vendor', logoSlug: 'mnav',                 url: 'https://mnav.com' },
     { id: 'c_1723hk',    name: 'Moon Inc',            ticker: '1723.HK', type: 'Member', logoSlug: 'moon-inc',           url: 'https://www.1723.hk/' },
     { id: 'c_naas',      name: 'NaaS',                ticker: 'NAAS',  type: 'Member', logoSlug: 'naas',                 url: '#' },
     { id: 'c_nakamoto',  name: 'Nakamoto',            ticker: '',      type: 'Member', logoSlug: 'nakamoto',             url: 'https://nakamoto.com', visibility: 'Public' },
@@ -334,11 +329,11 @@ const SEED_COMPANIES = {
   ],
   industry: [
     { id: 'c_arch',     name: 'ARCH',                 ticker: '',      type: 'Vendor', logoSlug: 'arch',                 url: 'https://archlending.com/' },
-    { id: 'c_locate',   name: 'Locate Technologies',  ticker: '',      type: 'Vendor', logoSlug: 'locate-technologies',  url: 'https://locatetech.com' },
+    { id: 'c_locate',   name: 'Locate Technologies',  ticker: '',      type: 'Member', logoSlug: 'locate-technologies',  url: 'https://locatetech.com' },
     { id: 'c_matador',  name: 'Matador',              ticker: '',      type: 'Member', logoSlug: 'matador',              url: 'https://matadortechnologies.com' },
-    { id: 'c_oranje2',  name: 'OranjeBTC',            ticker: '',      type: 'Vendor', logoSlug: 'oranje',               url: 'https://oranjebtc.com' },
-    { id: 'c_uproot',   name: 'Uproot Company',       ticker: '',      type: 'Vendor', logoSlug: 'uproot-company',       url: 'https://bitsaving.kr/' },
-    { id: 'c_xce',      name: 'XCE',                  ticker: '',      type: 'Vendor', logoSlug: 'xce',                  url: 'https://xce.io/' },
+    { id: 'c_oranje2',  name: 'OranjeBTC',            ticker: '',      type: 'Member', logoSlug: 'oranje',               url: 'https://oranjebtc.com' },
+    { id: 'c_uproot',   name: 'Uproot Company',       ticker: '',      type: 'Member', logoSlug: 'uproot-company',       url: 'https://bitsaving.kr/' },
+    { id: 'c_xce',      name: 'XCE',                  ticker: '',      type: 'Member', logoSlug: 'xce',                  url: 'https://xce.io/' },
   ],
 };
 // Inject visibility + default directoryUrl placeholder on every seed entry.
@@ -396,6 +391,19 @@ const REMOVE_COMPANY_IDS = new Set(['c_semler']);
 // Explicit visibility overrides — applied to the matching company ID on load.
 const VISIBILITY_OVERRIDES = { c_nakamoto: 'Public' };
 
+// Type corrections (Member <-> Vendor) applied on load.
+const TYPE_OVERRIDES = {
+  c_bytefed: 'Member',
+  c_mnav: 'Vendor',
+  c_locate: 'Member',
+  c_oranje2: 'Member',
+  c_uproot: 'Member',
+  c_xce: 'Member',
+};
+
+// One-time moves — company id -> target tier id. Inserted at top of target tier.
+const MOVE_TO_TIER = { c_treasury: 't_executive' };
+
 // New companies to insert on load if missing (keyed by target tier id).
 const ADD_COMPANIES = {
   t_premier: [
@@ -424,7 +432,7 @@ function loadState() {
         const before = t.companies ? t.companies.length : 0;
         t.companies = (t.companies || []).filter(c => !REMOVE_COMPANY_IDS.has(c.id));
         if (t.companies.length !== before) migrated = true;
-        // URL + visibility + directoryUrl patches for existing companies
+        // URL + visibility + type + directoryUrl patches for existing companies
         t.companies.forEach(c => {
           if (URL_MIGRATIONS[c.id] && LEGACY_URLS.has(c.url || '')) {
             c.url = URL_MIGRATIONS[c.id]; migrated = true;
@@ -432,7 +440,11 @@ function loadState() {
           if (VISIBILITY_OVERRIDES[c.id] && c.visibility !== VISIBILITY_OVERRIDES[c.id]) {
             c.visibility = VISIBILITY_OVERRIDES[c.id]; migrated = true;
           }
+          if (TYPE_OVERRIDES[c.id] && c.type !== TYPE_OVERRIDES[c.id]) {
+            c.type = TYPE_OVERRIDES[c.id]; migrated = true;
+          }
           if (c.directoryUrl == null) { c.directoryUrl = '#'; migrated = true; }
+          if (c.ticker) { c.ticker = ''; migrated = true; } // ticker deprecated
         });
       });
       // Add any new seed companies that don't already exist anywhere
@@ -448,6 +460,22 @@ function loadState() {
             migrated = true;
           }
         });
+      });
+      // One-time moves (e.g., Treasury: Chairman's → Executive)
+      Object.entries(MOVE_TO_TIER).forEach(([companyId, targetTierId]) => {
+        let currentTier = null, currentIdx = -1;
+        (parsed.tiers || []).forEach(t => {
+          const idx = (t.companies || []).findIndex(c => c.id === companyId);
+          if (idx !== -1) { currentTier = t; currentIdx = idx; }
+        });
+        if (currentTier && currentTier.id !== targetTierId) {
+          const target = (parsed.tiers || []).find(t => t.id === targetTierId);
+          if (target) {
+            const [found] = currentTier.companies.splice(currentIdx, 1);
+            target.companies.unshift(found);
+            migrated = true;
+          }
+        }
       });
       if (migrated) localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
       return parsed;
@@ -624,8 +652,8 @@ function renderCard(c, opts) {
     ? `<img src="${escapeAttr(logoSrc)}" alt="${escapeAttr(c.name)}" class="max-h-16 max-w-full object-contain" onerror="this.outerHTML='<div class=&quot;text-neutral-500 text-[10px]&quot;>no logo</div>'" />`
     : `<div class="text-neutral-500 text-[10px] text-center px-2">${escapeHtml(c.name)}</div>`;
 
-  // Admin hint on hover: name · ticker · Member/Vendor · Public/Private
-  const hint = [c.name, c.ticker, c.type || 'Member', (c.visibility || derivedVisibility(c.ticker || '')) + ' company']
+  // Admin hint on hover: name · Member/Vendor · Public/Private
+  const hint = [c.name, c.type || 'Member', (c.visibility || derivedVisibility(c.ticker || '')) + ' company']
     .filter(Boolean).join(' · ');
   el.title = hint;
 
@@ -716,7 +744,6 @@ function openModal({ company = null, tierId = null } = {}) {
   document.getElementById('fName').value = company?.name || '';
   document.getElementById('fLogoSlug').value = company?.logoSlug || '';
   document.getElementById('fLogoDataUrl').value = company?.logoDataUrl || '';
-  document.getElementById('fTicker').value = company?.ticker || '';
   document.getElementById('fUrl').value = company?.url || '';
   document.getElementById('fDirectoryUrl').value = company?.directoryUrl || '';
   document.getElementById('fLogoUpload').value = '';
@@ -824,7 +851,7 @@ document.getElementById('companyForm').addEventListener('submit', (e) => {
     name: document.getElementById('fName').value.trim(),
     logoSlug: document.getElementById('fLogoSlug').value.trim(),
     logoDataUrl: document.getElementById('fLogoDataUrl').value || '',
-    ticker: document.getElementById('fTicker').value.trim().toUpperCase(),
+    ticker: '', // deprecated — always blank
     url: document.getElementById('fUrl').value.trim(),
     directoryUrl: document.getElementById('fDirectoryUrl').value.trim(),
     type: document.getElementById('fType').value,
@@ -893,13 +920,13 @@ document.getElementById('btnExportCsv').addEventListener('click', () => {
     const s = String(v == null ? '' : v);
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
-  const headers = ['Tier','Company','Type','Visibility','Ticker','Logo Slug','Website','Directory'];
+  const headers = ['Tier','Company','Type','Visibility','Logo Slug','Website','Directory'];
   const rows = [headers.join(',')];
   state.tiers.forEach(tier => {
     tier.companies.forEach(c => {
-      const vis = c.visibility || (c.ticker ? 'Public' : 'Private');
+      const vis = c.visibility || 'Private';
       rows.push([
-        tier.name, c.name, c.type || 'Member', vis, c.ticker || '',
+        tier.name, c.name, c.type || 'Member', vis,
         c.logoSlug || '', c.url || '', c.directoryUrl || ''
       ].map(esc).join(','));
     });
