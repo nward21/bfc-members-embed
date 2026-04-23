@@ -99,6 +99,9 @@
       <button id="btnEmbed" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
         <i data-lucide="code-2" class="w-4 h-4"></i> Copy embed
       </button>
+      <button id="btnMarquee" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
+        <i data-lucide="move-horizontal" class="w-4 h-4"></i> Copy marquee
+      </button>
     </div>
   </div>
 </header>
@@ -1125,6 +1128,70 @@ document.getElementById('btnCopyEmbed').addEventListener('click', async () => {
   await navigator.clipboard.writeText(text);
   toast('Embed code copied.');
 });
+
+// ---------- Marquee embed ----------
+document.getElementById('btnMarquee').addEventListener('click', () => {
+  const html = generateMarqueeEmbed();
+  document.getElementById('embedOutput').value = html;
+  document.getElementById('linkPreview').href = 'preview.html?theme=dark';
+  const modal = document.getElementById('embedModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+});
+
+function generateMarqueeEmbed() {
+  // Flatten to list of logo-bearing companies, use light variant for dark bg
+  const companies = state.tiers.flatMap(t => t.companies).filter(c => c.logoSlug);
+  const logos = companies.map(c => ({
+    src: `${WP_CDN}${c.logoSlug}-logo-light.png?v=${LOGO_V}`,
+    alt: c.name,
+  }));
+  // Scale animation duration to logo count for a consistent per-logo speed
+  const durationSec = Math.max(35, Math.round(logos.length * 2.4));
+
+  const css = `
+.bfc-marq{--bfc-orange:#FA660E;background:#000;overflow:hidden;padding:60px 0;font-family:Inter,system-ui,sans-serif}
+.bfc-marq *{box-sizing:border-box}
+.bfc-marq-row{position:relative;width:100%;overflow:hidden;-webkit-mask-image:linear-gradient(to right,transparent,black 10%,black 90%,transparent);mask-image:linear-gradient(to right,transparent,black 10%,black 90%,transparent);margin-bottom:30px}
+.bfc-marq-row:last-of-type{margin-bottom:0}
+.bfc-marq-track{display:flex;gap:60px;align-items:center;width:max-content;animation:bfc-marq-l ${durationSec}s linear infinite}
+.bfc-marq-track.reverse{animation:bfc-marq-r ${durationSec}s linear infinite}
+.bfc-marq-track:hover{animation-play-state:paused}
+@keyframes bfc-marq-l{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes bfc-marq-r{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
+.bfc-marq img{flex-shrink:0;max-height:45px;max-width:220px;width:auto;height:auto;object-fit:contain;opacity:.6;filter:grayscale(100%) brightness(1.5);transition:opacity .3s,filter .3s}
+.bfc-marq img:hover{opacity:1;filter:none}
+@media(max-width:640px){.bfc-marq{padding:40px 0}.bfc-marq-track{gap:40px}.bfc-marq img{max-height:36px;max-width:160px}.bfc-marq-row{margin-bottom:20px}}
+`.trim();
+
+  const js = `
+(function(){
+  var logos = ${JSON.stringify(logos)};
+  // Fisher-Yates shuffle
+  for(var i=logos.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=logos[i];logos[i]=logos[j];logos[j]=tmp;}
+  var per = Math.ceil(logos.length/3);
+  var groups = [logos.slice(0,per), logos.slice(per,per*2), logos.slice(per*2)];
+  var root = document.currentScript && document.currentScript.previousElementSibling;
+  if(!root || !root.classList || !root.classList.contains('bfc-marq')){
+    var els = document.getElementsByClassName('bfc-marq'); root = els[els.length-1];
+  }
+  if(!root) return;
+  root.querySelectorAll('.bfc-marq-track').forEach(function(track,i){
+    var html = (groups[i] || []).map(function(l){
+      return '<img src="'+l.src+'" alt="'+(l.alt||'').replace(/"/g,'&quot;')+'" loading="lazy">';
+    }).join('');
+    track.innerHTML = html + html; // duplicate for seamless loop
+  });
+})();`.trim();
+
+  return `<style>${css}<\/style>
+<section class="bfc-marq">
+  <div class="bfc-marq-row"><div class="bfc-marq-track"></div></div>
+  <div class="bfc-marq-row"><div class="bfc-marq-track reverse"></div></div>
+  <div class="bfc-marq-row"><div class="bfc-marq-track"></div></div>
+</section>
+<script>${js}<\/script>`;
+}
 
 document.getElementById('searchInput').addEventListener('input', () => render());
 
