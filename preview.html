@@ -125,6 +125,29 @@
 
   .empty-state { text-align: center; padding: 80px 20px; opacity: .6; }
 
+  /* Marquee preview — alt view (3 rows, light-logos, black bg) */
+  .bfc-marq { --bfc-orange: #FA660E; background: #000; overflow: hidden; padding: 60px 0; font-family: Inter, system-ui, sans-serif; border-radius: 14px; }
+  .bfc-marq *{ box-sizing: border-box; }
+  .bfc-marq-row { position: relative; width: 100%; overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); margin-bottom: 30px; }
+  .bfc-marq-row:last-of-type { margin-bottom: 0; }
+  .bfc-marq-track { display: flex; gap: 60px; align-items: center; width: max-content; animation: bfc-marq-l var(--bfc-marq-dur, 45s) linear infinite; }
+  .bfc-marq-track.reverse { animation: bfc-marq-r var(--bfc-marq-dur, 45s) linear infinite; }
+  .bfc-marq-track:hover { animation-play-state: paused; }
+  @keyframes bfc-marq-l { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  @keyframes bfc-marq-r { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
+  .bfc-marq img { flex-shrink: 0; max-height: 45px; max-width: 220px; width: auto; height: auto; object-fit: contain; opacity: .6; filter: grayscale(100%) brightness(1.5); transition: opacity .3s, filter .3s; }
+  .bfc-marq img:hover { opacity: 1; filter: none; }
+  @media(max-width:640px){ .bfc-marq { padding: 40px 0; } .bfc-marq-track { gap: 40px; } .bfc-marq img { max-height: 36px; max-width: 160px; } .bfc-marq-row { margin-bottom: 20px; } }
+
+  /* View toggle in chrome */
+  .view-toggle { display: inline-flex; padding: 3px; border-radius: 8px; gap: 2px; margin-right: 10px; }
+  .theme-dark .view-toggle { background: #1D1D1D; border: 1px solid #2A2A2A; }
+  .theme-light .view-toggle { background: #fff; border: 1px solid #E5E5E5; }
+  .view-toggle button { border: 0; padding: 6px 12px; border-radius: 6px; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; background: transparent; }
+  .theme-dark .view-toggle button { color: #999; }
+  .theme-light .view-toggle button { color: #666; }
+  .view-toggle button.active { background: var(--bfc-orange); color: #000; font-weight: 600; }
+
   /* Copy embed modal (theme-aware) */
   .theme-dark #embedModalCard { background: #1D1D1D; color: #fff; }
   .theme-light #embedModalCard { background: #fff; color: #111; }
@@ -163,9 +186,13 @@
     </div>
   </div>
   <div style="display:flex; align-items:center; gap:10px;">
+    <div class="view-toggle">
+      <button id="btnViewGrid">Grid</button>
+      <button id="btnViewMarquee">Marquee</button>
+    </div>
     <button id="btnCopyEmbedChrome" style="background:var(--bfc-orange); color:#000; border:0; padding:8px 14px; border-radius:8px; font:inherit; font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V9.375z" clip-rule="evenodd"/></svg>
-      Copy embed
+      <span id="btnCopyEmbedLabel">Copy embed</span>
     </button>
     <div class="theme-toggle">
       <button id="btnDark">🌙 Dark (website)</button>
@@ -225,10 +252,22 @@ const ICON_GLOBE     = `<svg viewBox="0 0 24 24" fill="currentColor" width="15" 
 
 const params = new URLSearchParams(location.search);
 let theme = params.get('theme') || localStorage.getItem('bfc_theme') || 'dark';
+let view  = params.get('view')  || 'grid'; // 'grid' | 'marquee'
 applyTheme(theme);
+applyView(view);
 
 document.getElementById('btnDark').addEventListener('click', () => applyTheme('dark'));
 document.getElementById('btnLight').addEventListener('click', () => applyTheme('light'));
+document.getElementById('btnViewGrid').addEventListener('click',    () => applyView('grid'));
+document.getElementById('btnViewMarquee').addEventListener('click', () => applyView('marquee'));
+
+function applyView(v) {
+  view = v;
+  document.getElementById('btnViewGrid').classList.toggle('active', v === 'grid');
+  document.getElementById('btnViewMarquee').classList.toggle('active', v === 'marquee');
+  document.getElementById('btnCopyEmbedLabel').textContent = v === 'marquee' ? 'Copy marquee' : 'Copy embed';
+  render();
+}
 
 // Cross-tab auto-refresh: if the admin saves in another tab, re-render.
 window.addEventListener('storage', (e) => {
@@ -240,7 +279,7 @@ document.getElementById('btnCopyEmbedChrome').addEventListener('click', () => {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) { alert('No data to embed yet. Open the admin first.'); return; }
   const state = JSON.parse(raw);
-  const code = generateEmbed(state, theme);
+  const code = view === 'marquee' ? generateMarqueeEmbed(state) : generateEmbed(state, theme);
   document.getElementById('embedOutput').value = code;
   const modal = document.getElementById('embedModal');
   modal.style.display = 'flex';
@@ -580,6 +619,7 @@ function render() {
   }
 
   const state = JSON.parse(raw);
+  if (view === 'marquee') { renderMarquee(state); return; }
   const tierOptions = state.tiers.map(t => `<option value="${escapeAttr(t.id)}">${escapeHtml(t.name)}</option>`).join('');
 
   const toolbar = `
@@ -760,6 +800,84 @@ function wireFilters() {
   visSelect  && visSelect.addEventListener('change',  e => { s.vis  = e.target.value; apply(); });
   tierSelect && tierSelect.addEventListener('change', e => { s.tier = e.target.value; apply(); });
   sortSelect && sortSelect.addEventListener('change', e => { s.sort = e.target.value; doSort(); apply(); });
+}
+
+// --- Marquee preview + embed ---
+function marqueeLogos(state) {
+  return state.tiers
+    .flatMap(t => t.companies)
+    .filter(c => c.logoSlug)
+    .map(c => ({
+      src: `${EMBED_WP_CDN}${c.logoSlug}-logo-light.png?v=${LOGO_V}`,
+      alt: c.name,
+    }));
+}
+
+function renderMarquee(state) {
+  const root = document.getElementById('embedRoot');
+  const logos = marqueeLogos(state);
+  if (!logos.length) {
+    root.innerHTML = `<div class="empty-state"><p>No logos to display.</p></div>`;
+    return;
+  }
+  // Scale duration with logo count (~2.4s per logo, min 35s)
+  const durationSec = Math.max(35, Math.round(logos.length * 2.4));
+  // Fisher-Yates shuffle
+  const shuffled = logos.slice();
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  const per = Math.ceil(shuffled.length / 3);
+  const groups = [shuffled.slice(0, per), shuffled.slice(per, per * 2), shuffled.slice(per * 2)];
+  const imgHtml = list => list.map(l => `<img src="${escapeAttr(l.src)}" alt="${escapeAttr(l.alt)}" loading="lazy">`).join('');
+  root.innerHTML = `
+    <section class="bfc-marq" style="--bfc-marq-dur: ${durationSec}s">
+      <div class="bfc-marq-row"><div class="bfc-marq-track">${imgHtml(groups[0])}${imgHtml(groups[0])}</div></div>
+      <div class="bfc-marq-row"><div class="bfc-marq-track reverse">${imgHtml(groups[1])}${imgHtml(groups[1])}</div></div>
+      <div class="bfc-marq-row"><div class="bfc-marq-track">${imgHtml(groups[2])}${imgHtml(groups[2])}</div></div>
+    </section>
+  `;
+}
+
+function generateMarqueeEmbed(state) {
+  const logos = marqueeLogos(state);
+  const durationSec = Math.max(35, Math.round(logos.length * 2.4));
+  const css = `
+.bfc-marq{--bfc-orange:#FA660E;background:#000;overflow:hidden;padding:60px 0;font-family:Inter,system-ui,sans-serif}
+.bfc-marq *{box-sizing:border-box}
+.bfc-marq-row{position:relative;width:100%;overflow:hidden;-webkit-mask-image:linear-gradient(to right,transparent,black 10%,black 90%,transparent);mask-image:linear-gradient(to right,transparent,black 10%,black 90%,transparent);margin-bottom:30px}
+.bfc-marq-row:last-of-type{margin-bottom:0}
+.bfc-marq-track{display:flex;gap:60px;align-items:center;width:max-content;animation:bfc-marq-l ${durationSec}s linear infinite}
+.bfc-marq-track.reverse{animation:bfc-marq-r ${durationSec}s linear infinite}
+.bfc-marq-track:hover{animation-play-state:paused}
+@keyframes bfc-marq-l{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes bfc-marq-r{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
+.bfc-marq img{flex-shrink:0;max-height:45px;max-width:220px;width:auto;height:auto;object-fit:contain;opacity:.6;filter:grayscale(100%) brightness(1.5);transition:opacity .3s,filter .3s}
+.bfc-marq img:hover{opacity:1;filter:none}
+@media(max-width:640px){.bfc-marq{padding:40px 0}.bfc-marq-track{gap:40px}.bfc-marq img{max-height:36px;max-width:160px}.bfc-marq-row{margin-bottom:20px}}
+`.trim();
+  const js = `
+(function(){
+  var logos = ${JSON.stringify(logos)};
+  for(var i=logos.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=logos[i];logos[i]=logos[j];logos[j]=t;}
+  var per = Math.ceil(logos.length/3);
+  var groups = [logos.slice(0,per), logos.slice(per,per*2), logos.slice(per*2)];
+  var root = document.currentScript && document.currentScript.previousElementSibling;
+  if(!root || !root.classList || !root.classList.contains('bfc-marq')){ var els = document.getElementsByClassName('bfc-marq'); root = els[els.length-1]; }
+  if(!root) return;
+  root.querySelectorAll('.bfc-marq-track').forEach(function(track,i){
+    var html = (groups[i] || []).map(function(l){ return '<img src="'+l.src+'" alt="'+(l.alt||'').replace(/"/g,'&quot;')+'" loading="lazy">'; }).join('');
+    track.innerHTML = html + html;
+  });
+})();`.trim();
+  return `<style>${css}<\/style>
+<section class="bfc-marq">
+  <div class="bfc-marq-row"><div class="bfc-marq-track"></div></div>
+  <div class="bfc-marq-row"><div class="bfc-marq-track reverse"></div></div>
+  <div class="bfc-marq-row"><div class="bfc-marq-track"></div></div>
+</section>
+<script>${js}<\/script>`;
 }
 </script>
 
