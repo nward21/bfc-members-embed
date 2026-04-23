@@ -254,7 +254,7 @@ const AVAILABLE_LOGOS = [
   'aifinyo','arch','avalon-labs','bitgo','blockspaces','btc-inc','byte-federal','capital-b',
   'crypto-com','ddc','fold','giga','jetking','kraken-institutional','kulr',
   'locate-technologies','london-bitcoin-co','lqwd','luxalgo','mangrove','matador','meliuz',
-  'meteplanet','mnav','moon-inc','naas','nakamoto','next-layer-capital','oranje','paystand',
+  'meteplanet','mnav','moon-inc','naas','nakamoto','next-layer-capital','on-nexus','oranje','paystand',
   'prenetics','public-square','salt','samara','semler-scientific','solar-strategy','strategy',
   'strive','swc','treasury','uproot-company','utxo','vaultz-capital','xce'
 ];
@@ -265,24 +265,28 @@ let theme = localStorage.getItem('bfc_theme') || 'dark';
 // ---------- State ----------
 const STORAGE_KEY = 'bfc_directory_v7';
 const WP_CDN = 'https://bfc-members-embed.vercel.app/logos/';
+// Bump LOGO_V whenever any logo file content changes — appends ?v=N to every
+// logo URL so browsers that already cached /logos/{slug}-logo-*.png pick up
+// the fresh bytes on the next page view.
+const LOGO_V = '3';
 
 // Logo resolution:
 //   1. Uploaded data URI wins (works in admin + embed)
 //   2. Else slug → local folder (admin/preview) or WP CDN (embed)
 function companyLogoSrc(c, t = theme) {
   if (c && c.logoDataUrl) return c.logoDataUrl;
-  if (c && c.logoSlug) return `logos/${c.logoSlug}-logo-${t === 'light' ? 'dark' : 'light'}.png`;
+  if (c && c.logoSlug) return `logos/${c.logoSlug}-logo-${t === 'light' ? 'dark' : 'light'}.png?v=${LOGO_V}`;
   return '';
 }
 function companyEmbedLogoSrc(c, t) {
   if (c && c.logoDataUrl) return c.logoDataUrl;
-  if (c && c.logoSlug) return `${WP_CDN}${c.logoSlug}-logo-${t === 'light' ? 'dark' : 'light'}.png`;
+  if (c && c.logoSlug) return `${WP_CDN}${c.logoSlug}-logo-${t === 'light' ? 'dark' : 'light'}.png?v=${LOGO_V}`;
   return '';
 }
 // Back-compat for admin preview on the slug input
 function logoPathFromSlug(slug, t = theme) {
   if (!slug) return '';
-  return `logos/${slug}-logo-${t === 'light' ? 'dark' : 'light'}.png`;
+  return `logos/${slug}-logo-${t === 'light' ? 'dark' : 'light'}.png?v=${LOGO_V}`;
 }
 
 // Derive Public/Private from ticker presence at seed time (users can override).
@@ -502,6 +506,13 @@ function loadState() {
             if (next !== c.directoryUrl) { c.directoryUrl = next; migrated = true; }
           }
           if (c.ticker) { c.ticker = ''; migrated = true; } // ticker deprecated
+          // One-time: swap the On Nexus uploaded data-URL for its proper slug
+          // (on-nexus-logo-{dark,light}.png is now in /logos).
+          if (c.logoDataUrl && (c.name === 'On Nexus' || c.id === 'c_rexaywb') && c.logoSlug !== 'on-nexus') {
+            c.logoSlug = 'on-nexus';
+            c.logoDataUrl = '';
+            migrated = true;
+          }
         });
       });
       // Add any new seed companies that don't already exist anywhere

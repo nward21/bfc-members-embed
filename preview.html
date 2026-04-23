@@ -208,7 +208,7 @@ const AVAILABLE_LOGOS = new Set([
   'aifinyo','arch','avalon-labs','bitgo','blockspaces','btc-inc','byte-federal','capital-b',
   'crypto-com','ddc','fold','giga','jetking','kraken-institutional','kulr',
   'locate-technologies','london-bitcoin-co','lqwd','luxalgo','mangrove','matador','meliuz',
-  'meteplanet','mnav','moon-inc','naas','nakamoto','next-layer-capital','oranje','paystand',
+  'meteplanet','mnav','moon-inc','naas','nakamoto','next-layer-capital','on-nexus','oranje','paystand',
   'prenetics','public-square','salt','samara','semler-scientific','solar-strategy','strategy',
   'strive','swc','treasury','uproot-company','utxo','vaultz-capital','xce'
 ]);
@@ -267,10 +267,11 @@ document.addEventListener('keydown', (e) => {
 
 // --- Embed generator (parameterized; mirrors index.html's generateEmbed) ---
 const EMBED_WP_CDN = 'https://bfc-members-embed.vercel.app/logos/';
+const LOGO_V = '3'; // bump when any logo file changes to cache-bust
 function embedLogoSrc(c, t) {
   if (!c) return '';
   if (c.logoDataUrl) return c.logoDataUrl;
-  if (c.logoSlug) return `${EMBED_WP_CDN}${c.logoSlug}-logo-${t === 'light' ? 'dark' : 'light'}.png`;
+  if (c.logoSlug) return `${EMBED_WP_CDN}${c.logoSlug}-logo-${t === 'light' ? 'dark' : 'light'}.png?v=${LOGO_V}`;
   return '';
 }
 function generateEmbed(state, t = 'dark') {
@@ -552,14 +553,14 @@ function companyLogoSrc(c, t) {
   if (!c) return '';
   if (c.logoDataUrl) return c.logoDataUrl;
   if (c.logoSlug && AVAILABLE_LOGOS.has(c.logoSlug)) {
-    return `logos/${c.logoSlug}-logo-${t === 'light' ? 'dark' : 'light'}.png`;
+    return `logos/${c.logoSlug}-logo-${t === 'light' ? 'dark' : 'light'}.png?v=${LOGO_V}`;
   }
   return '';
 }
 function companyEmbedLogoSrc(c, t) {
   if (!c) return '';
   if (c.logoDataUrl) return c.logoDataUrl;
-  if (c.logoSlug) return `${WP_CDN}${c.logoSlug}-logo-${t === 'light' ? 'dark' : 'light'}.png`;
+  if (c.logoSlug) return `${WP_CDN}${c.logoSlug}-logo-${t === 'light' ? 'dark' : 'light'}.png?v=${LOGO_V}`;
   return '';
 }
 
