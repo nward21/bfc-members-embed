@@ -45,62 +45,81 @@
 
 <!-- Top Bar -->
 <header class="sticky top-0 z-40 bg-bfc-black/90 backdrop-blur border-b border-bfc-line">
-  <div class="max-w-[1400px] mx-auto px-6 py-4 flex items-center gap-4">
-    <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-full bg-bfc-orange flex items-center justify-center font-black text-black text-lg">₿</div>
+  <div class="max-w-[1400px] mx-auto px-6 py-3 flex items-center gap-4">
+    <!-- Brand -->
+    <div class="flex items-center gap-3 shrink-0">
+      <div class="w-8 h-8 rounded-full bg-bfc-orange flex items-center justify-center font-black text-black">₿</div>
       <div class="leading-tight">
-        <div class="text-[11px] font-bold tracking-[0.14em] text-bfc-orange uppercase">Bitcoin For Corporations</div>
-        <div class="text-sm font-semibold tracking-tight">Member Directory · Admin</div>
+        <div class="text-[10px] font-bold tracking-[0.14em] text-bfc-orange uppercase">Bitcoin For Corporations</div>
+        <div class="text-xs font-semibold tracking-tight">Member Directory · Admin</div>
       </div>
     </div>
 
-    <div class="flex-1 flex items-center gap-2 max-w-md mx-auto">
-      <div class="relative w-full">
+    <!-- Saved indicator (hidden on narrow) -->
+    <div id="savedIndicator" class="hidden xl:inline-flex items-center gap-1.5 text-[11px] text-neutral-500 shrink-0">
+      <span id="savedDot" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+      <span>Saved <span id="savedTime">just now</span></span>
+    </div>
+
+    <!-- Search (flex) -->
+    <div class="flex-1 min-w-0 max-w-md mx-auto">
+      <div class="relative">
         <i data-lucide="search" class="w-4 h-4 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
-        <input id="searchInput" type="text" placeholder="Search companies or tickers…"
+        <input id="searchInput" type="search" placeholder="Search companies…"
           class="w-full bg-bfc-panel border border-bfc-line rounded-lg pl-9 pr-3 py-2 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-bfc-orange" />
       </div>
     </div>
 
-    <div class="flex items-center gap-2">
-      <!-- Saved indicator -->
-      <div id="savedIndicator" class="inline-flex items-center gap-1.5 text-xs text-neutral-400 px-2">
-        <span id="savedDot" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-        <span>Saved <span id="savedTime">just now</span></span>
+    <!-- Actions -->
+    <div class="flex items-center gap-1.5 shrink-0">
+      <!-- Theme toggle (compact) -->
+      <div class="inline-flex bg-bfc-panel border border-bfc-line rounded-lg p-0.5 text-xs" title="Theme">
+        <button id="themeDark"  aria-label="Dark theme"  class="px-2 py-1.5 rounded inline-flex items-center"><i data-lucide="moon" class="w-3.5 h-3.5"></i></button>
+        <button id="themeLight" aria-label="Light theme" class="px-2 py-1.5 rounded inline-flex items-center"><i data-lucide="sun"  class="w-3.5 h-3.5"></i></button>
       </div>
 
-      <!-- Theme toggle -->
-      <div class="inline-flex bg-bfc-panel border border-bfc-line rounded-lg p-1 text-xs">
-        <button id="themeDark" class="px-2.5 py-1 rounded font-medium inline-flex items-center gap-1"><i data-lucide="moon" class="w-3.5 h-3.5"></i> Dark</button>
-        <button id="themeLight" class="px-2.5 py-1 rounded font-medium inline-flex items-center gap-1"><i data-lucide="sun" class="w-3.5 h-3.5"></i> Light</button>
+      <!-- Add ▼ -->
+      <div class="relative" data-dropdown>
+        <button data-dropdown-trigger class="inline-flex items-center gap-1 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
+          <i data-lucide="plus" class="w-4 h-4"></i> Add
+          <i data-lucide="chevron-down" class="w-3 h-3 opacity-60"></i>
+        </button>
+        <div data-dropdown-menu class="hidden absolute right-0 top-full mt-1 w-48 bg-bfc-panel border border-bfc-line rounded-lg shadow-xl py-1 z-50">
+          <button id="btnAdd"     class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-800 inline-flex items-center gap-2"><i data-lucide="building-2" class="w-4 h-4 text-bfc-orange"></i> Add company</button>
+          <button id="btnAddTier" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-800 inline-flex items-center gap-2"><i data-lucide="layers"     class="w-4 h-4 text-bfc-orange"></i> Add tier</button>
+        </div>
       </div>
 
+      <!-- Data ▼ -->
+      <div class="relative" data-dropdown>
+        <button data-dropdown-trigger class="inline-flex items-center gap-1 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
+          <i data-lucide="database" class="w-4 h-4"></i> Data
+          <i data-lucide="chevron-down" class="w-3 h-3 opacity-60"></i>
+        </button>
+        <div data-dropdown-menu class="hidden absolute right-0 top-full mt-1 w-52 bg-bfc-panel border border-bfc-line rounded-lg shadow-xl py-1 z-50">
+          <button id="btnImport"      class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-800 inline-flex items-center gap-2"><i data-lucide="upload"   class="w-4 h-4 text-bfc-orange"></i> Import JSON</button>
+          <div class="border-t border-bfc-line my-1"></div>
+          <button id="btnExport"      class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-800 inline-flex items-center gap-2"><i data-lucide="download" class="w-4 h-4 text-bfc-orange"></i> Export JSON</button>
+          <button id="btnExportCsv"   class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-800 inline-flex items-center gap-2"><i data-lucide="table"    class="w-4 h-4 text-bfc-orange"></i> Export CSV</button>
+          <button id="btnExportLogos" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-800 inline-flex items-center gap-2"><i data-lucide="archive"  class="w-4 h-4 text-bfc-orange"></i> Export logos (ZIP)</button>
+        </div>
+      </div>
+
+      <!-- Copy ▼ -->
+      <div class="relative" data-dropdown>
+        <button data-dropdown-trigger class="inline-flex items-center gap-1 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
+          <i data-lucide="code-2" class="w-4 h-4"></i> Copy
+          <i data-lucide="chevron-down" class="w-3 h-3 opacity-60"></i>
+        </button>
+        <div data-dropdown-menu class="hidden absolute right-0 top-full mt-1 w-56 bg-bfc-panel border border-bfc-line rounded-lg shadow-xl py-1 z-50">
+          <button id="btnEmbed"   class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-800 inline-flex items-center gap-2"><i data-lucide="layout-grid"     class="w-4 h-4 text-bfc-orange"></i> Copy grid embed</button>
+          <button id="btnMarquee" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-800 inline-flex items-center gap-2"><i data-lucide="move-horizontal" class="w-4 h-4 text-bfc-orange"></i> Copy marquee embed</button>
+        </div>
+      </div>
+
+      <!-- Primary CTA -->
       <button id="btnPreview" class="inline-flex items-center gap-1.5 bg-bfc-orange hover:brightness-110 text-black font-semibold text-sm px-3 py-2 rounded-lg transition">
-        <i data-lucide="eye" class="w-4 h-4"></i> Open preview
-      </button>
-      <button id="btnAdd" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
-        <i data-lucide="plus" class="w-4 h-4"></i> Add company
-      </button>
-      <button id="btnAddTier" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
-        <i data-lucide="layers" class="w-4 h-4"></i> Add tier
-      </button>
-      <button id="btnImport" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
-        <i data-lucide="upload" class="w-4 h-4"></i> Import
-      </button>
-      <button id="btnExport" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
-        <i data-lucide="download" class="w-4 h-4"></i> Export JSON
-      </button>
-      <button id="btnExportCsv" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
-        <i data-lucide="table" class="w-4 h-4"></i> Export CSV
-      </button>
-      <button id="btnExportLogos" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
-        <i data-lucide="archive" class="w-4 h-4"></i> Export logos
-      </button>
-      <button id="btnEmbed" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
-        <i data-lucide="code-2" class="w-4 h-4"></i> Copy embed
-      </button>
-      <button id="btnMarquee" class="inline-flex items-center gap-1.5 bg-bfc-panel hover:bg-neutral-800 border border-bfc-line text-sm px-3 py-2 rounded-lg transition">
-        <i data-lucide="move-horizontal" class="w-4 h-4"></i> Copy marquee
+        <i data-lucide="eye" class="w-4 h-4"></i> Preview
       </button>
     </div>
   </div>
@@ -1526,6 +1545,31 @@ function toast(msg) {
   clearTimeout(toast._tid);
   toast._tid = setTimeout(() => t.classList.add('hidden'), 2200);
 }
+
+// ---------- Dropdown menus ----------
+function closeAllDropdowns() {
+  document.querySelectorAll('[data-dropdown-menu]').forEach(m => m.classList.add('hidden'));
+}
+document.querySelectorAll('[data-dropdown-trigger]').forEach(trigger => {
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const menu = trigger.nextElementSibling;
+    const wasOpen = !menu.classList.contains('hidden');
+    closeAllDropdowns();
+    if (!wasOpen) menu.classList.remove('hidden');
+  });
+});
+// Close dropdown after clicking any item inside
+document.querySelectorAll('[data-dropdown-menu] button').forEach(btn => {
+  btn.addEventListener('click', () => setTimeout(closeAllDropdowns, 0));
+});
+// Close on outside click or Escape
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('[data-dropdown]')) closeAllDropdowns();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeAllDropdowns();
+});
 
 // ---------- Init ----------
 populateSlugList();
