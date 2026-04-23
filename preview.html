@@ -204,6 +204,7 @@
 
 <script>
 const STORAGE_KEY = 'bfc_directory_v7';
+const LOGO_V = '3'; // bump when any logo file changes to cache-bust
 const AVAILABLE_LOGOS = new Set([
   'aifinyo','arch','avalon-labs','bitgo','blockspaces','btc-inc','byte-federal','capital-b',
   'crypto-com','ddc','fold','giga','jetking','kraken-institutional','kulr',
@@ -267,7 +268,6 @@ document.addEventListener('keydown', (e) => {
 
 // --- Embed generator (parameterized; mirrors index.html's generateEmbed) ---
 const EMBED_WP_CDN = 'https://bfc-members-embed.vercel.app/logos/';
-const LOGO_V = '3'; // bump when any logo file changes to cache-bust
 function embedLogoSrc(c, t) {
   if (!c) return '';
   if (c.logoDataUrl) return c.logoDataUrl;
